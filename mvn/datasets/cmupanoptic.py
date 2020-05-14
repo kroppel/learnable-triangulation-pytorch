@@ -75,8 +75,8 @@ class CMUPanopticDataset(Dataset):
         
         for i, camera_name in enumerate(self.labels['camera_names']):
             camera_id = int(camera_name.replace("_", ""))
-            
-            assert camera_id >= 31, "The CMU dataset only has 31 cameras in total. Please change your config file!"
+
+            assert camera_id < 31, "The CMU dataset only has 31 cameras in total. Please change your config file!"
 
             if camera_id in ignore_cameras:
                 self.ignore_cameras.append(i)
