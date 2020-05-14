@@ -12,7 +12,11 @@ def make_collate_fn(randomize_n_views=True, min_n_views=10, max_n_views=31):
             return None
 
         batch = dict()
-        total_n_views = min(len(item['images']) for item in items)
+        try:
+            total_n_views = min(len(item['images']) for item in items)
+        except KeyError:
+            print("Images does not exist for this batch")
+            return None
 
         indexes = np.arange(total_n_views)
         if randomize_n_views:
