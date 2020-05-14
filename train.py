@@ -274,11 +274,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                     continue
 
                 images_batch, keypoints_3d_gt, keypoints_3d_validity_gt, proj_matricies_batch = dataset_utils.prepare_batch(batch, device, config)
-
-                if config.dataset.kind == "cmu":
-                    keypoints_3d_gt = keypoints_3d_gt.T
-                    keypoints_3d_validity_gt = keypoints_3d_validity_gt.T
-
+                
                 keypoints_2d_pred, cuboids_pred, base_points_pred = None, None, None
                 if model_type == "alg" or model_type == "ransac":
                     keypoints_3d_pred, keypoints_2d_pred, heatmaps_pred, confidences_pred = model(images_batch, proj_matricies_batch, batch)
@@ -305,27 +301,13 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                     elif config.kind in ["coco", "cmu", "cmupanoptic"]:
                         base_joint = 11
 
-                    try: 
-                        keypoints_3d_gt_transformed = keypoints_3d_gt.clone()
-                        keypoints_3d_gt_transformed[:, torch.arange(n_joints) != base_joint] -= keypoints_3d_gt_transformed[:, base_joint:base_joint + 1]
-                        keypoints_3d_gt = keypoints_3d_gt_transformed
-                    except:
-                        print("Base Joint:", base_joint, n_joints)
-                        print(keypoints_3d_gt)
-                        print(torch.arange(n_joints))
-                        import ipdb; ipdb.set_trace()
-                        keypoints_3d_gt_transformed[:,base_joint:base_joint + 1]
-
-                        # print(keypoints_3d_gt[:, torch.arange(n_joints) != base_joint])
-                        # print(keypoints_3d_gt[:, base_joint:base_joint + 1])
-                    try:
-                        keypoints_3d_pred_transformed = keypoints_3d_pred.clone()
-                        keypoints_3d_pred_transformed[:, torch.arange(n_joints) != base_joint] -= keypoints_3d_pred_transformed[:, base_joint:base_joint + 1]
-                        keypoints_3d_pred = keypoints_3d_pred_transformed
-                    except:
-                        # Dummy index? Various shape
-                        # See where the shape mismatch is 
-                        import ipdb; ipdb.set_trace()
+                    keypoints_3d_gt_transformed = keypoints_3d_gt.clone()
+                    keypoints_3d_gt_transformed[:, torch.arange(n_joints) != base_joint] -= keypoints_3d_gt_transformed[:, base_joint:base_joint + 1]
+                    keypoints_3d_gt = keypoints_3d_gt_transformed
+                    
+                    keypoints_3d_pred_transformed = keypoints_3d_pred.clone()
+                    keypoints_3d_pred_transformed[:, torch.arange(n_joints) != base_joint] -= keypoints_3d_pred_transformed[:, base_joint:base_joint + 1]
+                    keypoints_3d_pred = keypoints_3d_pred_transformed
 
                 # calculate loss
                 # before this was keypoints_3d_gt
