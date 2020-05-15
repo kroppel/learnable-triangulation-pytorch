@@ -342,7 +342,7 @@ def draw_2d_pose(keypoints, ax, kind='cmu', keypoints_mask=None, point_size=2, l
                     color = COLOR_DICT[kind][i]
                 else:
                     color = (0, 0, 255)
-        except KeyError:
+        except IndexError:
             print(f"{index_from} to {index_to} does not exist, skipping")
             continue
 
