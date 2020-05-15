@@ -333,9 +333,13 @@ def draw_2d_pose(keypoints, ax, kind='cmu', keypoints_mask=None, point_size=2, l
 
     # connections
     for (index_from, index_to) in connectivity:
-        if keypoints_mask[index_from] and keypoints_mask[index_to]:
-            xs, ys = [np.array([keypoints[index_from, j], keypoints[index_to, j]]) for j in range(2)]
-            ax.plot(xs, ys, c=color, lw=line_width)
+        try: 
+            if keypoints_mask[index_from] and keypoints_mask[index_to]:
+                xs, ys = [np.array([keypoints[index_from, j], keypoints[index_to, j]]) for j in range(2)]
+                ax.plot(xs, ys, c=color, lw=line_width)
+        except:
+            print(f"{index_from} to {index_to} does not exist, skipping")
+            continue
 
     if radius is not None:
         root_keypoint_index = 0
