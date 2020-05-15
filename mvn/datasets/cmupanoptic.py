@@ -255,7 +255,8 @@ class CMUPanopticDataset(Dataset):
         
 
     def evaluate(self, keypoints_3d_predicted, split_by_subject=False):
-        keypoints_gt = self.labels['table']['keypoints'][:, :self.num_keypoints]
+        keypoints_gt = self.labels['table']['keypoints'][:, :self.num_keypoints, :3]
+        
         if keypoints_3d_predicted.shape != keypoints_gt.shape:
             raise ValueError(
                 '`keypoints_3d_predicted` shape should be %s, got %s' % \
