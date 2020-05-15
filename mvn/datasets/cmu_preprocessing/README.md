@@ -107,3 +107,9 @@ __NOTE: WHILE IT IS ADVISED THAT YOU DOWNLOAD ALL DATA FROM THE APPROPRIATE LINK
     ```
 
     You can test different settings by changing dataset constructor parameters in `view-dataset.py`.
+
+    The `./view_cmu_dataset` script in the root folder has been provided to aid you with this. Simply run:
+
+    ```bash
+    ./view_cmu_dataset [1-to-save-instead]
+    ```
