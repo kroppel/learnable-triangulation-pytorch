@@ -308,10 +308,16 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                     keypoints_3d_pred_transformed[:, torch.arange(n_joints) != base_joint] -= keypoints_3d_pred_transformed[:, base_joint:base_joint + 1]
                     keypoints_3d_pred = keypoints_3d_pred_transformed
 
-                    import ipdb; ipdb.set_trace()
-
                 # calculate loss
                 total_loss = 0.0
+
+                # force ground truth keypoints to fit config kind
+                if keypoints_3d_gt.shape[1] != num_joints:
+                    print(
+                        f"[Warning] Possibly due to different pretrained model type, ground truth has {keypoints_3d_gt.shape[1]} keypoints while predicted has {num_joints} keypoints"
+                    )
+                    keypoints_3d_gt = keypoints_3d_gt[:, :num_joints, :]
+
                 loss = criterion(
                     keypoints_3d_pred * scale_keypoints_3d, 
                     keypoints_3d_gt * scale_keypoints_3d, 
