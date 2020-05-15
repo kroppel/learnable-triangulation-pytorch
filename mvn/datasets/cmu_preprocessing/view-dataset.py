@@ -90,9 +90,9 @@ while sample_idx < len(dataset):
         keypoints=keypoints_2d, 
         canvas=display,
         kind='cmu',
+        point_size=3,
+        point_color=(255, 10, 10),
         line_width=2
-        point_color=(255, 10, 10)
-        point_size=3
     )
 
     # Draw BBOX
