@@ -1,6 +1,7 @@
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/190505754/3d-human-pose-estimation-on-human36m)](https://paperswithcode.com/sota/3d-human-pose-estimation-on-human36m?p=190505754)
 
 # Learnable Triangulation of Human Pose
+
 This repository is an official PyTorch implementation of the paper ["Learnable Triangulation of Human Pose"](https://arxiv.org/abs/1905.05754) (ICCV 2019, oral). Here we tackle the problem of 3D human pose estimation from multiple cameras. We present 2 novel methods — Algebraic and Volumetric learnable triangulation — that **outperform** previous state of the art.
 
 If you find a bug, have a question or know to improve the code - please open an issue!
@@ -12,28 +13,34 @@ If you find a bug, have a question or know to improve the code - please open an 
 </p>
 
 # How to use
+
 This project doesn't have any special or difficult-to-install dependencies. All installation can be down with:
 ```bash
 pip install -r requirements.txt
 ```
 
 ## Data
+
 *Note:* only [Human3.6M](http://vision.imar.ro/human3.6m/description.php) dataset training/evaluation is available right now. [CMU Panoptic](http://domedb.perception.cs.cmu.edu/) dataset will be added soon.
 
 #### Human3.6M
+
 1. Download and preprocess the dataset by following the instructions in [mvn/datasets/human36m_preprocessing/README.md](https://github.com/karfly/learnable-triangulation-pytorch/blob/master/mvn/datasets/human36m_preprocessing/README.md).
 2. Download pretrained backbone's weights from [here](https://drive.google.com/open?id=1TGHBfa9LsFPVS5CH6Qkcy5Jr2QsJdPEa) and place them here: `./data/pretrained/human36m/pose_resnet_4.5_pixels_human36m.pth` (ResNet-152 trained on COCO dataset and finetuned jointly on MPII and Human3.6M).
 3. If you want to train Volumetric model, you need rough estimations of the pelvis' 3D positions both for train and val splits. In the paper we estimate them using the Algebraic model. You can use the [pretrained](#model-zoo) Algebraic model to produce predictions or just take [precalculated 3D skeletons](#model-zoo).
 
 #### CMU Panoptic (WIP)
+
 1. Download and preprocess the dataset by following the instructions in [mvn/datasets/cmu_preprocessing/README.md](https://github.com/Samleo8/learnable-triangulation-pytorch/blob/master/mvn/datasets/cmu_preprocessing/README.md).
 2. The config files can be found at `$THIS_REPOSITORY/experiements/[train|eval]/cmupanoptic`
 3. You can also do a quick evaluation using the provided `./eval_cmu` script
 
 #### General Datasets
+
 I tried to create documentation on how you can create your own general dataset [here](https://github.com/Samleo8/learnable-triangulation-pytorch/blob/master/TESTING_ON_GENERAL_DATASET.md). I was able to evaluate the CMU Panoptic dataset using the same ideas, and an example of that is seen above [here](#cmu-panoptic-wip).
 
 ## Model zoo
+
 In this section we collect pretrained models and configs. All **pretrained weights** and **precalculated 3D skeletons** can be downloaded at once [from here](https://drive.google.com/drive/folders/1yjnD47hdcFNvbQj87pXDgqGt52K7rz_z) and placed to `./data/pretrained`, so that eval configs can work out-of-the-box (without additional setting of paths). Alternatively, the table below provides separate links to those files.
 
 **Human3.6M:**
@@ -44,9 +51,11 @@ In this section we collect pretrained models and configs. All **pretrained weigh
 | Volumetric (softmax) | [train/human36m_vol_softmax.yaml](https://github.com/karfly/learnable-triangulation-pytorch/blob/master/experiments/human36m/train/human36m_vol_softmax.yaml) | [eval/human36m_vol_softmax.yaml](https://github.com/karfly/learnable-triangulation-pytorch/blob/master/experiments/human36m/eval/human36m_vol_softmax.yaml) | [link](https://drive.google.com/file/d/1r6Ut3oMKPxhyxRh3PZ05taaXwekhJWqj/view?usp=sharing) |                                               —                                                                                                        | **20.4**                       |
 
 ## Train
+
 Every experiment is defined by `.config` files. Configs with experiments from the paper can be found in the `./experiments` directory (see [model zoo](#model-zoo)).
 
 #### Single-GPU
+
 To train a Volumetric model with softmax aggregation using **1 GPU**, run:
 
 ```bash
@@ -58,6 +67,7 @@ python3 train.py \
 The training will start with the config file specified by `--config`, and logs (including tensorboard files) will be stored in `--logdir`.
 
 #### Multi-GPU (*in testing*)
+
 Multi-GPU training is implemented with PyTorch's [DistributedDataParallel](https://pytorch.org/docs/stable/nn.html#distributeddataparallel). It can be used both for single-machine and multi-machine (cluster) training. To run the processes use the PyTorch [launch utility](https://github.com/pytorch/pytorch/blob/master/torch/distributed/launch.py).
 
 To train a Volumetric model with softmax aggregation using **2 GPUs on single machine**, run:
@@ -70,6 +80,7 @@ python3 -m torch.distributed.launch --nproc_per_node=2 --master_port=2345 \
 ```
 
 ## Tensorboard
+
 To watch your experiments' progress, run tensorboard:
 
 ```bash
@@ -87,6 +98,7 @@ which also overcomes PermissionError due to `/tmp` directory being blocked
 ## Evaluation
 
 After training, you can evaluate the model. Inside the same config file, add path to the learned weights (they are dumped to `logs` dir during training):
+
 ```yaml
 model:
     init_weights: true
@@ -151,8 +163,8 @@ MPJPE relative to pelvis (single-view methods):
 | Sun et al. [\[6\]](#references)                  	|                 **49.6**                	|
 | **Ours, volumetric single view** 	|                 **49.9**                	|
 
-
 ## CMU Panoptic
+
 * Our best model reaches **13.7 mm** error in absolute coordinates for 4 cameras
 * We managed to get much smoother and more accurate 3D pose annotations compared to dataset annotations (see [video demonstration](http://www.youtube.com/watch?v=z3f3aPSuhqg))
 
@@ -166,9 +178,11 @@ MPJPE relative to pelvis [4 cameras]:
 | **Ours, volumetric**         	| **13.7** 	|
 
 # Method overview
+
 We present 2 novel methods of learnable triangulation: Algebraic and Volumetric.
 
 ## Algebraic
+
 ![algebraic-model](docs/algebraic-model.svg)
 
 Our first method is based on Algebraic triangulation. It is similar to the previous approaches, but differs in 2 critical aspects:
@@ -177,8 +191,8 @@ Our first method is based on Algebraic triangulation. It is similar to the previ
 
 For the most popular Human3.6M dataset, this method already dramatically reduces error by **2.2 times (!)**, compared to the previous art.
 
-
 ## Volumetric
+
 ![volumetric-model](docs/volumetric-model.svg)
 
 In Volumetric triangulation model, intermediate 2D feature maps are densely unprojected to the volumetric cube and then processed with a 3D-convolutional neural network. Unprojection operation allows **dense aggregation from multiple views** and the 3D-convolutional neural network is able to model **implicit human pose prior**.
@@ -189,8 +203,8 @@ Volumetric triangulation additionally improves accuracy, drastically reducing th
   <img src="docs/unprojection.gif">
 </p>
 
-
 # Cite us!
+
 ```bibtex
 @inproceedings{iskakov2019learnable,
   title={Learnable Triangulation of Human Pose},
@@ -201,6 +215,7 @@ Volumetric triangulation additionally improves accuracy, drastically reducing th
 ```
 
 # Contributors
+
  - [Karim Iskakov](https://github.com/karfly)
  - [Egor Burkov](https://github.com/shrubb)
  - [Victor Lempitsky](https://scholar.google.com/citations?user=gYYVokYAAAAJ&hl=ru)
@@ -209,11 +224,13 @@ Volumetric triangulation additionally improves accuracy, drastically reducing th
  - [Ivan Bulygin](https://github.com/blufzzz)
 
 # News
+
 - **26 Nov 2019:** Updataed [precalculated results](#model-zoo) (see [this issue](https://github.com/karfly/learnable-triangulation-pytorch/issues/37)).
 - **18 Oct 2019:** Pretrained models (algebraic and volumetric) for Human3.6M are released.
 - **8 Oct 2019:** Code is released!
 
 # References
+
 * [\[1\]](#references) R. Hartley and A. Zisserman. **Multiple view geometry in computer vision**.
 * [\[2\]](#references) C. Ionescu, D. Papava, V. Olaru, and C. Sminchisescu. **Human3.6m: Large scale datasets and predictive methods for 3d human sensing in natural environments**.
 * [\[3\]](#references) H. Joo, T. Simon, X. Li, H. Liu, L. Tan, L. Gui, S. Banerjee, T.  S. Godisart, B. Nabbe, I. Matthews, T. Kanade,S. Nobuhara, and Y. Sheikh. **Panoptic studio: A massively multiview system for social interaction capture**.
