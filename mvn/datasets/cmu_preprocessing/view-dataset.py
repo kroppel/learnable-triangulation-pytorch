@@ -91,7 +91,7 @@ while sample_idx < len(dataset):
         canvas=display,
         kind='cmu',
         point_size=3,
-        point_color=(255, 10, 10),
+        #point_color=(200, 20, 10),
         line_width=2
     )
 
