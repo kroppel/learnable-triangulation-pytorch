@@ -286,7 +286,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                 elif model_type == "vol":
                     keypoints_3d_pred, heatmaps_pred, volumes_pred, confidences_pred, cuboids_pred, coord_volumes_pred, base_points_pred = model(images_batch, proj_matricies_batch, batch)
 
-                # batch shape[2] is likely to be the dimension of the keypoints (= 3)
+                # batch shape[2] is likely to be the number of channels
                 # n_views is also the number of cameras being used in this batch 
                 batch_size, n_views, image_shape = images_batch.shape[0], images_batch.shape[1], tuple(images_batch.shape[3:])
                 n_joints = keypoints_3d_pred.shape[1]
