@@ -31,7 +31,9 @@ except:
     save_images_instead = False
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../.."))
+
 from mvn.datasets.cmupanoptic import CMUPanopticDataset
+from mvn.utils.vis import draw_2d_pose_cv2
 
 scale_bbox = 1.0
 square_bbox = True
@@ -83,15 +85,25 @@ while sample_idx < len(dataset):
     from mvn.utils.multiview import project_3d_points_to_image_plane_without_distortion as project
     keypoints_2d = project(camera.projection, sample['keypoints_3d'][:, :3])
     
+    # Draw visualisation using vis.py
+    draw_2d_pose_cv2(
+        keypoints=keypoints_2d, 
+        canvas=display,
+        kind='cmu',
+        radius=3
+    )
+
+    '''
     for i, (x,y) in enumerate(keypoints_2d):
         cv2.circle(display, (int(x), int(y)), 3, (12*i, 12*i, 255), -1)
         cv2.putText(display, str(i), (int(x)+3, int(y)), cv2.FONT_HERSHEY_SIMPLEX, 0.2, (0,0,255))
-    
+    '''
+
     # Draw BBOX
     try:
         left, top, right, bottom = sample['detections'][camera_idx]
     except:
-        raise Exception("Cannot get BBOX")    
+        raise Exception("Cannot get BBOX")
 
     # Resize image if image size has changed            if self.image_shape is not None:
     if image_shape is not None:
