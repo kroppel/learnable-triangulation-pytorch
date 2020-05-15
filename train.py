@@ -375,10 +375,11 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                     metric_dict['base_point_l2'].append(base_point_l2)
 
                 # save answers for evalulation
-                # TODO: maybe save the images used (or at least links to them) as well? 
+                # TODO: maybe save the images used? 
                 if not is_train:
                     results['keypoints_3d'].append(keypoints_3d_pred.detach().cpu().numpy())
                     results['indexes'].append(batch['indexes'])
+                    # results['images'].append(images_batch)
 
                 # plot visualization
                 # TODO: see if transfer_cmu_h36m visualisation error
@@ -470,6 +471,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
             # dump results
             with open(os.path.join(checkpoint_dir, "results.pkl"), 'wb') as fout:
                 pickle.dump(results, fout, protocol=4)
+                # use numpy?
 
             # dump full metric
             with open(os.path.join(checkpoint_dir, "metric.json".format(epoch)), 'w') as fout:
