@@ -248,16 +248,22 @@ class CMUPanopticDataset(Dataset):
         
 
     def evaluate(self, keypoints_3d_predicted, split_by_subject=False):
-        try:
-            keypoints_gt = self.labels['table']['keypoints'][:keypoints_3d_predicted.shape[0], :self.num_keypoints, :3]
-        except:
-            pass
+        keypoints_gt = self.labels['table']['keypoints'][:, :, :3]
 
         # TODO: Try to remap keypoints first
         if keypoints_3d_predicted.shape != keypoints_gt.shape:
-            raise ValueError(
-                '`keypoints_3d_predicted` shape should be %s, got %s' % \
-                (keypoints_gt.shape, keypoints_3d_predicted.shape))
+            try:
+                print("Predicted shape:", keypoints_3d_predicted.shape, "GT Shape:", keypoints_gt.shape)
+                keypoints_gt = keypoints_gt[:keypoints_3d_predicted.shape[0], :self.num_keypoints, :3]
+
+                print(f"Forcing keypoints_gt to new shape {keypoints_gt.shape}")
+            except:
+                raise ValueError(
+                    '`keypoints_3d_predicted` shape should be %s, got %s' % \
+                    (keypoints_gt.shape, keypoints_3d_predicted.shape))
+
+        assert keypoints_3d_predicted.shape == keypoints_gt.shape, '`keypoints_3d_predicted` shape should be %s, got %s' % \
+            (keypoints_gt.shape, keypoints_3d_predicted.shape)
 
         # TODO: Conversion Code
         # TODO: Remove unnecessary 4th coordinate (confidences)
@@ -279,7 +285,6 @@ class CMUPanopticDataset(Dataset):
         #keypoints_gt = remap_keypoints(keypoints_gt, "cmu", "coco")
         #keypoints_3d_predicted = map_keypoints_cmu_to_h36m(keypoints_3d_predicted, "cmu", "coco")
 
-        '''
         if transfer_cmu_to_human36m or transfer_human36m_to_human36m:
             human36m_joints = [10, 11, 15, 14, 1, 4]
             if transfer_human36m_to_human36m:
@@ -290,8 +295,7 @@ class CMUPanopticDataset(Dataset):
             # keypoints_gt = keypoints_gt[:, human36m_joints]
             keypoints_gt = keypoints_gt[:, cmu_joints]
             keypoints_3d_predicted = keypoints_3d_predicted[:, cmu_joints]
-        '''
-
+        
         # mean error per 16/17 joints in mm, for each pose
         per_pose_error = np.sqrt(((keypoints_gt - keypoints_3d_predicted) ** 2).sum(2)).mean(1)
 
