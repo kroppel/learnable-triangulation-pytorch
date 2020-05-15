@@ -335,13 +335,13 @@ def draw_2d_pose(keypoints, ax, kind='cmu', keypoints_mask=None, point_size=2, l
     for i, (index_from, index_to) in enumerate(connectivity):
         try: 
             if keypoints_mask[index_from] and keypoints_mask[index_to]:
-                xs, ys = [np.array([keypoints[index_from, j], keypoints[index_to, j]]) for j in range(2)]
-                ax.plot(xs, ys, c=color, lw=line_width)
-
                 if kind in COLOR_DICT:
                     color = COLOR_DICT[kind][i]
                 else:
                     color = (0, 0, 255)
+
+                xs, ys = [np.array([keypoints[index_from, j], keypoints[index_to, j]]) for j in range(2)]
+                ax.plot(xs, ys, c=color, lw=line_width)
         except IndexError:
             print(f"{index_from} to {index_to} does not exist, skipping")
             continue
