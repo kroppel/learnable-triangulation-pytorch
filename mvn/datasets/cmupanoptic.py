@@ -285,7 +285,7 @@ class CMUPanopticDataset(Dataset):
         #keypoints_gt = remap_keypoints(keypoints_gt, "cmu", "coco")
         #keypoints_3d_predicted = map_keypoints_cmu_to_h36m(keypoints_3d_predicted, "cmu", "coco")
 
-        if transfer_cmu_to_human36m or transfer_human36m_to_human36m:
+        if keypoints_3d_predicted.shape[1] == 17:
             human36m_joints = [10, 11, 15, 14, 1, 4]
             if transfer_human36m_to_human36m:
                 cmu_joints = [10, 11, 15, 14, 1, 4]
