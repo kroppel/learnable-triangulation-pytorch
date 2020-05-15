@@ -109,8 +109,8 @@ class CMUPanopticDataset(Dataset):
         self.labels['table'] = self.labels['table'][np.concatenate(indices)]
 
         # TODO: Change? 
-        # self.num_keypoints = 16 if kind == "mpii" else 17
-        self.num_keypoints = 19
+        self.num_keypoints = 16 if kind == "mpii" else 17
+        # self.num_keypoints = 19
 
         assert self.labels['table']['keypoints'].shape[1] == 19, "Error with keypoints in 'labels' file"
 
@@ -250,6 +250,7 @@ class CMUPanopticDataset(Dataset):
     def evaluate(self, keypoints_3d_predicted, split_by_subject=False):
         keypoints_gt = self.labels['table']['keypoints'][:, :self.num_keypoints, :3]
         
+        # TODO: Try to remap keypoints first
         if keypoints_3d_predicted.shape != keypoints_gt.shape:
             raise ValueError(
                 '`keypoints_3d_predicted` shape should be %s, got %s' % \
