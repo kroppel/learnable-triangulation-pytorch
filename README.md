@@ -76,6 +76,14 @@ To watch your experiments' progress, run tensorboard:
 tensorboard --logdir ./logs
 ```
 
+or use the script
+
+```bash
+./startTensorboard [logs-dir (./logs by default)]
+```
+
+which also overcomes PermissionError due to `/tmp` directory being blocked
+
 ## Evaluation
 
 After training, you can evaluate the model. Inside the same config file, add path to the learned weights (they are dumped to `logs` dir during training):
