@@ -287,13 +287,9 @@ class CMUPanopticDataset(Dataset):
 
         if keypoints_3d_predicted.shape[1] == 17:
             human36m_joints = [10, 11, 15, 14, 1, 4]
-            if transfer_human36m_to_human36m:
-                cmu_joints = [10, 11, 15, 14, 1, 4]
-            else:
-                cmu_joints = [10, 8, 9, 7, 14, 13]
+            cmu_joints = [10, 8, 9, 7, 14, 13]
 
             # keypoints_gt = keypoints_gt[:, human36m_joints]
-            keypoints_gt = keypoints_gt[:, cmu_joints]
             keypoints_3d_predicted = keypoints_3d_predicted[:, cmu_joints]
         
         # mean error per 16/17 joints in mm, for each pose
