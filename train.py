@@ -379,7 +379,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                 if not is_train:
                     results['keypoints_3d'].append(keypoints_3d_pred.detach().cpu().numpy())
                     results['indexes'].append(batch['indexes'])
-                    # results['images'].append(images_batch)
+                    results['images'].append(images_batch)
 
                 # plot visualization
                 # TODO: see if transfer_cmu_h36m visualisation error
