@@ -86,11 +86,11 @@ while sample_idx < len(dataset):
     keypoints_2d = project(camera.projection, sample['keypoints_3d'][:, :3])
     
     # Draw visualisation using vis.py
-    draw_2d_pose_cv2(
+    display = draw_2d_pose_cv2(
         keypoints=keypoints_2d, 
         canvas=display,
         kind='cmu',
-        radius=3
+        point_size=3
     )
 
     '''

@@ -350,8 +350,6 @@ def draw_2d_pose_cv2(keypoints, canvas, kind='cmu', keypoints_mask=None, point_s
 
     connectivity = CONNECTIVITY_DICT[kind]
 
-    color = 'blue' if color is None else color
-
     if keypoints_mask is None:
         keypoints_mask = [True] * len(keypoints)
 
