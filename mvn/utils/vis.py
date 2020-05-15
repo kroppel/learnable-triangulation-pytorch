@@ -336,9 +336,9 @@ def draw_2d_pose(keypoints, ax, kind='cmu', keypoints_mask=None, point_size=2, l
         try: 
             if keypoints_mask[index_from] and keypoints_mask[index_to]:
                 if kind in COLOR_DICT:
-                    color = COLOR_DICT[kind][i]
+                    color = COLOR_DICT[kind][i] + (1,)
                 else:
-                    color = (0, 0, 255)
+                    color = (0, 0, 255, 1)
 
                 xs, ys = [np.array([keypoints[index_from, j], keypoints[index_to, j]]) for j in range(2)]
                 ax.plot(xs, ys, c=color, lw=line_width)
