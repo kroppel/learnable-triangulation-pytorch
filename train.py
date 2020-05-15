@@ -290,11 +290,8 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
 
                 scale_keypoints_3d = config.opt.scale_keypoints_3d if hasattr(config.opt, "scale_keypoints_3d") else 1.0
 
-                # TODO: Might be good to use the `vis.py` to visualise the results from here
-                # TODO: Might also be good to store the outputs differently and parse from there.
-
                 # 1-view case
-                # TODO: Totally remove because CMU dataset (which doesnt have pelvis-offset errors)?
+                # TODO: Totally remove for CMU dataset (which doesnt have pelvis-offset errors)?
                 if n_views == 1:
                     print(f"{config.kind} 1-view case: batch {iter_i}, images {images_batch.shape}")
 
@@ -314,7 +311,6 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                     import ipdb; ipdb.set_trace()
 
                 # calculate loss
-                # before this was keypoints_3d_gt
                 total_loss = 0.0
                 loss = criterion(
                     keypoints_3d_pred * scale_keypoints_3d, 

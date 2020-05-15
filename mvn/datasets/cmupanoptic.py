@@ -109,8 +109,8 @@ class CMUPanopticDataset(Dataset):
         self.labels['table'] = self.labels['table'][np.concatenate(indices)]
 
         # TODO: Change? 
-        self.num_keypoints = 16 if kind == "mpii" else 17
-        #self.num_keypoints = 19
+        # self.num_keypoints = 16 if kind == "mpii" else 17
+        self.num_keypoints = 19
 
         assert self.labels['table']['keypoints'].shape[1] == 19, "Error with keypoints in 'labels' file"
 
