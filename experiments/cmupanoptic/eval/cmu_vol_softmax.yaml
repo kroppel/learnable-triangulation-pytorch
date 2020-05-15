@@ -27,6 +27,7 @@ model:
   name: "vol"
   kind: "mpii"
   volume_aggregation_method: "softmax"
+  transfer_cmu_to_human36m: true
 
   init_weights: true
   # TODO: need changing?
