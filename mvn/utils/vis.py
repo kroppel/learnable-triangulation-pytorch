@@ -332,7 +332,7 @@ def draw_2d_pose(keypoints, ax, kind='cmu', keypoints_mask=None, point_size=2, l
     ax.scatter(keypoints[keypoints_mask][:, 0], keypoints[keypoints_mask][:, 1], c='red', s=point_size)
 
     # connections
-    for (index_from, index_to) in connectivity:
+    for i, (index_from, index_to) in enumerate(connectivity):
         try: 
             if keypoints_mask[index_from] and keypoints_mask[index_to]:
                 xs, ys = [np.array([keypoints[index_from, j], keypoints[index_to, j]]) for j in range(2)]
