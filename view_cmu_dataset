@@ -1,11 +1,14 @@
 #!/bin/sh
 
 cd ./mvn/datasets/cmu_preprocessing
-git pull
 
-rm -rf dataset_imgs
-rm dataset_imgs.tar.gz
-echo "Cleaned up old files"
+if [ "$1" -eq "1" ]; then
+    git pull
+
+    rm -rf dataset_imgs
+    rm dataset_imgs.tar.gz
+    echo "Cleaned up old files"
+fi
 
 # Random numbers
 python3 view-dataset.py $THIS_REPOSITORY/data/cmupanoptic $THIS_REPOSITORY/data/cmupanoptic/cmu-multiview-labels-MRCNNbboxes.npy 34020 15250 $1

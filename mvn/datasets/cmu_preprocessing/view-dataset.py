@@ -90,14 +90,10 @@ while sample_idx < len(dataset):
         keypoints=keypoints_2d, 
         canvas=display,
         kind='cmu',
+        line_width=2
+        point_color=(255, 10, 10)
         point_size=3
     )
-
-    '''
-    for i, (x,y) in enumerate(keypoints_2d):
-        cv2.circle(display, (int(x), int(y)), 3, (12*i, 12*i, 255), -1)
-        cv2.putText(display, str(i), (int(x)+3, int(y)), cv2.FONT_HERSHEY_SIMPLEX, 0.2, (0,0,255))
-    '''
 
     # Draw BBOX
     try:
