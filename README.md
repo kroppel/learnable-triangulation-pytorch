@@ -106,6 +106,8 @@ python3 train.py \
 
 Argument `--eval_dataset` can be `val` or `train`. Results can be seen in `logs` directory or in the tensorboard.
 
+Alternatively, after all the pre-processing steps above have been completed, for a quick evaluation of the datasets, you can run the `./eval_cmu` and `./eval_human36m` scripts.
+
 # Results
 
 * We conduct experiments on two available large multi-view datasets: Human3.6M [\[2\]](#references) and CMU Panoptic [\[3\]](#references).
