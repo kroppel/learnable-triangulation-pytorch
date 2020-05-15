@@ -496,8 +496,8 @@ def main(args):
 
     # Attempt to fix overflow error with pickle
     # See https://stackoverflow.com/questions/51562221/python-multiprocessing-overflowerrorcannot-serialize-a-bytes-object-larger-t
-    # ctx = torch.multiprocessing.get_context()
-    # ctx.reducer = pickle4reducer.Pickle4Reducer()
+    ctx = torch.multiprocessing.get_context()
+    ctx.reducer = pickle4reducer.Pickle4Reducer()
 
     is_distributed = init_distributed(args)
     master = True

@@ -120,6 +120,17 @@ Argument `--eval_dataset` can be `val` or `train`. Results can be seen in `logs`
 
 Alternatively, after all the pre-processing steps above have been completed, for a quick evaluation of the datasets, you can run the `./eval_cmu` and `./eval_human36m` scripts.
 
+**IMPORTANT NOTE:** There is a bug with the old Python version where `multiprocessing` connections are unable to send more than 2 Gb of data. This is fixed in a pull request for new Python versions [here](https://github.com/python/cpython/pull/10305). 
+
+Therefore, you may possible run into `MemoryError`s if running on Linux machines with Python versions < 3.8. The fix to this is to modify the `multiprocessing` library's `connection.py` file with the updated file [here](https://github.com/python/cpython/blob/bccacd19fa7b56dcf2fbfab15992b6b94ab6666b/Lib/multiprocessing/connection.py), which is from the aforementioned [pull request](https://github.com/python/cpython/pull/10305). 
+
+*It is advised that you create a backup of the old `connection.py` file in case something goes wrong.*
+
+*Example of where to find the file:*
+
+* If using virtual environment: `~/.pyenv/versions/<your_python_version>/lib/python<python_version>/connection.py`
+* Otherwise: `/usr/lib/python<python_version>/multiprocessing`* 
+
 # Results
 
 * We conduct experiments on two available large multi-view datasets: Human3.6M [\[2\]](#references) and CMU Panoptic [\[3\]](#references).
@@ -216,18 +227,18 @@ Volumetric triangulation additionally improves accuracy, drastically reducing th
 
 # Contributors
 
- - [Karim Iskakov](https://github.com/karfly)
- - [Egor Burkov](https://github.com/shrubb)
- - [Victor Lempitsky](https://scholar.google.com/citations?user=gYYVokYAAAAJ&hl=ru)
- - [Yury Malkov](https://github.com/yurymalkov)
- - [Rasul Kerimov](https://github.com/rrkarim)
- - [Ivan Bulygin](https://github.com/blufzzz)
+* [Karim Iskakov](https://github.com/karfly)
+* [Egor Burkov](https://github.com/shrubb)
+* [Victor Lempitsky](https://scholar.google.com/citations?user=gYYVokYAAAAJ&hl=ru)
+* [Yury Malkov](https://github.com/yurymalkov)
+* [Rasul Kerimov](https://github.com/rrkarim)
+* [Ivan Bulygin](https://github.com/blufzzz)
 
 # News
 
-- **26 Nov 2019:** Updataed [precalculated results](#model-zoo) (see [this issue](https://github.com/karfly/learnable-triangulation-pytorch/issues/37)).
-- **18 Oct 2019:** Pretrained models (algebraic and volumetric) for Human3.6M are released.
-- **8 Oct 2019:** Code is released!
+* **26 Nov 2019:** Updataed [precalculated results](#model-zoo) (see [this issue](https://github.com/karfly/learnable-triangulation-pytorch/issues/37)).
+* **18 Oct 2019:** Pretrained models (algebraic and volumetric) for Human3.6M are released.
+* **8 Oct 2019:** Code is released!
 
 # References
 
