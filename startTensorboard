@@ -6,6 +6,5 @@ else
 	LOGDIR="$1"
 fi
 
-TMPDIR/tmp/$USER; mkdir -p $TMPDIR; 
-
+TMPDIR=/tmp/$USER; mkdir -p $TMPDIR; 
 tensorboard --logdir $LOGDIR
