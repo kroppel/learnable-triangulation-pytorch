@@ -337,6 +337,7 @@ class VolumetricTriangulationNet(nn.Module):
 
             # transfer
             if self.transfer_cmu_to_human36m:  # different world coordinates
+                import ipdb; ipdb.set_trace()
                 coord_volume = coord_volume.permute(0, 2, 1, 3)
                 inv_idx = torch.arange(coord_volume.shape[1] - 1, -1, -1).long().to(device)
                 coord_volume = coord_volume.index_select(1, inv_idx)

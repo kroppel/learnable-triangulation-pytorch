@@ -235,6 +235,11 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
 
     results = defaultdict(list)
 
+    transfer_cmu_h36m = config.transfer_cmu_to_human36m if hasattr(
+        config, "transfer_cmu_to_human36m") else False
+
+    print("Transfer CMU to H36M: ", transfer_cmu_h36m)
+
     # used to turn on/off gradients
     grad_context = torch.autograd.enable_grad if is_train else torch.no_grad
     with grad_context():
@@ -307,6 +312,8 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                     keypoints_3d_pred_transformed = keypoints_3d_pred.clone()
                     keypoints_3d_pred_transformed[:, torch.arange(n_joints) != base_joint] -= keypoints_3d_pred_transformed[:, base_joint:base_joint + 1]
                     keypoints_3d_pred = keypoints_3d_pred_transformed
+
+                import ipdb; ipdb.set_trace()
 
                 # calculate loss
                 total_loss = 0.0
@@ -387,7 +394,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                     if n_iters_total % config.vis_freq == 0:# or total_l2.item() > 500.0:
                         vis_kind = config.kind if hasattr(config, "kind") else "coco"
 
-                        if (config.transfer_cmu_to_human36m if hasattr(config, "transfer_cmu_to_human36m") else False):
+                        if transfer_cmu_h36m:
                             vis_kind = "coco"
                         
                         for batch_i in range(min(batch_size, config.vis_n_elements)):
