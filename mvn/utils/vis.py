@@ -323,8 +323,6 @@ def draw_2d_pose(keypoints, ax, kind='cmu', keypoints_mask=None, point_size=2, l
     """
     connectivity = CONNECTIVITY_DICT[kind]
 
-    color = 'blue' if color is None else color
-
     if keypoints_mask is None:
         keypoints_mask = [True] * len(keypoints)
 
@@ -335,10 +333,10 @@ def draw_2d_pose(keypoints, ax, kind='cmu', keypoints_mask=None, point_size=2, l
     for i, (index_from, index_to) in enumerate(connectivity):
         try: 
             if keypoints_mask[index_from] and keypoints_mask[index_to]:
-                if kind in COLOR_DICT:
-                    color = COLOR_DICT[kind][i] + (1,)
+                if (color is None) and (kind in COLOR_DICT):
+                    color = tuple([float(clr/255) for clr in COLOR_DICT[kind][i]]) + (1,)
                 else:
-                    color = (0, 0, 255, 1)
+                    color = 'blue'
 
                 xs, ys = [np.array([keypoints[index_from, j], keypoints[index_to, j]]) for j in range(2)]
                 ax.plot(xs, ys, c=color, lw=line_width)
