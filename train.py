@@ -130,6 +130,7 @@ def setup_cmu_dataloaders(config, is_train, distributed_train):
             scale_bbox=config.dataset.train.scale_bbox,
             square_bbox=config.dataset.train.square_bbox if hasattr(config.dataset.train, "square_bbox") else True,
             kind=config.kind,
+            transfer_cmu_h36m=config.model.transfer_cmu_to_human36m if hasattr(config.model, "transfer_cmu_to_human36m")
             ignore_cameras=config.dataset.train.ignore_cameras if hasattr(config.dataset.train, "ignore_cameras") else [],
             crop=config.dataset.train.crop if hasattr(config.dataset.train, "crop") else True,
         )
@@ -293,7 +294,10 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
 
                 keypoints_3d_binary_validity_gt = (keypoints_3d_validity_gt > 0.0).type(torch.float32)
 
+                # Due to differences in model used, it may be possible that the gt and pred keypoints have different scales
+                # Set this difference in scaling in the config.yaml file
                 scale_keypoints_3d = config.opt.scale_keypoints_3d if hasattr(config.opt, "scale_keypoints_3d") else 1.0
+                scale_keypoints_3d_gt = config.opt.scale_keypoints_3d_gt if hasattr(config.opt, "scale_keypoints_3d_gt") else scale_keypoints_3d
 
                 # 1-view case
                 # TODO: Totally remove for CMU dataset (which doesnt have pelvis-offset errors)?
