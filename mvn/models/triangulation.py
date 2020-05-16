@@ -340,7 +340,7 @@ class VolumetricTriangulationNet(nn.Module):
                 inv_idx = torch.arange(coord_volume.shape[1] - 1, -1, -1).long().to(device)
                 coord_volume = coord_volume.index_select(1, inv_idx)
 
-                print("Using different world coordinates`")
+                # print("Using different world coordinates")
 
             coord_volumes[batch_i] = coord_volume
 
