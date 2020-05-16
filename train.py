@@ -398,8 +398,8 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                     if n_iters_total % config.vis_freq == 0:# or total_l2.item() > 500.0:
                         vis_kind = config.kind if hasattr(config, "kind") else "coco"
 
-                        if transfer_cmu_h36m:
-                            vis_kind = "coco"
+                        #if transfer_cmu_h36m:
+                        #    vis_kind = "coco"
                         
                         for batch_i in range(min(batch_size, config.vis_n_elements)):
                             keypoints_vis = vis.visualize_batch(
