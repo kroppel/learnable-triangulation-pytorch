@@ -154,6 +154,7 @@ while sample_idx < len(dataset):
 
         if c == ord('q') or c == 27:
             print('Quitting...')
+            cv2.destroyAllWindows()
             break
 
     action = sample_info['action_idx']
