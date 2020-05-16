@@ -76,6 +76,7 @@ for i in range(0, len(indexes), n_images_step):
         img = labels['images'][camera_idx]
 
         display = vis.draw_2d_pose_cv2(keypoints_2d_pred, img, kind='coco')
+        display = vis.draw_2d_pose_cv2(keypoints_2d_gt, display, kind='cmu')
         cv2.putText(display, f"Cam {camera_idx}", (10, 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0))
 
         displays.append(display)
@@ -87,13 +88,13 @@ for i in range(0, len(indexes), n_images_step):
         else:
             combined = np.concatenate((combined, display), axis=1)
 
-    title = f"Index {i}"
     cv2.imshow('w', combined)
-    cv2.setWindowTitle('w', title)
+    cv2.setWindowTitle('w', "Index {i}")
     c = cv2.waitKey(0) % 256
 
     if c == ord('q') or c == 27:
         print('Quitting...')
         cv2.destroyAllWindows()
         break
-print('Done')
+
+print('Done.')
