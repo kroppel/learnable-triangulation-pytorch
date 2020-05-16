@@ -217,8 +217,6 @@ def setup_experiment(config, model_name, is_train=True):
     # dump config to tensorboard
     writer.add_text(misc.config_to_str(config), "config", 0)
 
-    # TODO: File with images that were processed?
-
     return experiment_dir, writer
 
 
@@ -382,7 +380,6 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                     metric_dict['base_point_l2'].append(base_point_l2)
 
                 # save answers for evalulation
-                # TODO: maybe save the images used? 
                 if not is_train:
                     results['keypoints_3d'].append(keypoints_3d_pred.detach().cpu().numpy())
                     results['indexes'].append(batch['indexes'])
@@ -398,8 +395,6 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                             vis_kind = "coco"
                         
                         for batch_i in range(min(batch_size, config.vis_n_elements)):
-                            # TODO: Plot images without tensorboard?
-                            
                             keypoints_vis = vis.visualize_batch(
                                 images_batch, heatmaps_pred, keypoints_2d_pred, proj_matricies_batch,
                                 keypoints_3d_gt, keypoints_3d_pred,
