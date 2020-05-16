@@ -51,6 +51,7 @@ dataset = CMUPanopticDataset(
     kind=config.kind,
     ignore_cameras=config.dataset.val.ignore_cameras if hasattr(config.dataset.val, "ignore_cameras") else [],
     crop=config.dataset.val.crop if hasattr(config.dataset.val, "crop") else True,
+    norm_image=False
 )
 
 # Load results pkl file
@@ -67,10 +68,12 @@ for i in range(0, len(indexes), n_images_step):
     displays = []
 
     # Project and draw keypoints on images
-    for camera_idx in camera_indexes_to_show:
-        camera = labels['cameras'][camera_idx]
+    for camera_idx, camera in enumerate(labels['cameras']):
+        # camera = labels['cameras'][camera_idx]
         keypoints_2d_pred = project(camera.projection, keypoints3d_pred[i][:, :3])
         keypoints_2d_gt = project(camera.projection, labels['keypoints_3d'][:, :3])
+
+        img = labels['images'][camera_idx]
 
         display = vis.draw_2d_pose_cv2(keypoints_2d_pred, img, kind='coco')
         cv2.putText(display, f"Cam {camera_idx}", (10, 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0))
@@ -82,10 +85,10 @@ for i in range(0, len(indexes), n_images_step):
         if i == 0:
             combined = display
         else:
-            combined = np.concatenate((combined, display), axis=0)
+            combined = np.concatenate((combined, display), axis=1)
 
     title = f"Index {i}"
-    cv2.imshow('w', display)
+    cv2.imshow('w', combined)
     cv2.setWindowTitle('w', title)
     c = cv2.waitKey(0) % 256
 
@@ -93,3 +96,4 @@ for i in range(0, len(indexes), n_images_step):
         print('Quitting...')
         cv2.destroyAllWindows()
         break
+print('Done')
