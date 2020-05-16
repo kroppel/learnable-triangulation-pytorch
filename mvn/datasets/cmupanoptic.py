@@ -32,6 +32,7 @@ class CMUPanopticDataset(Dataset):
                  square_bbox=True,
                  norm_image=True,
                  kind="mpii",
+                 transfer_cmu_to_human36m=True,
                  ignore_cameras=[],
                  crop=True
                  ):
@@ -285,11 +286,12 @@ class CMUPanopticDataset(Dataset):
         #keypoints_gt = remap_keypoints(keypoints_gt, "cmu", "coco")
         #keypoints_3d_predicted = map_keypoints_cmu_to_h36m(keypoints_3d_predicted, "cmu", "coco")
 
-        if keypoints_3d_predicted.shape[1] == 17:
+        # Transfer
+        if self.transfer_cmu_to_human36m:
             human36m_joints = [10, 11, 15, 14, 1, 4]
             cmu_joints = [10, 8, 9, 7, 14, 13]
 
-            # keypoints_gt = keypoints_gt[:, human36m_joints]
+            keypoints_gt = keypoints_gt[:, human36m_joints]
             keypoints_3d_predicted = keypoints_3d_predicted[:, cmu_joints]
         
         # mean error per 16/17 joints in mm, for each pose
@@ -302,10 +304,10 @@ class CMUPanopticDataset(Dataset):
         try:
             keypoints_gt_relative = keypoints_gt - keypoints_gt[:, root_index:root_index + 1, :]
             keypoints_3d_predicted_relative = keypoints_3d_predicted - keypoints_3d_predicted[:, root_index:root_index + 1, :]
+            per_pose_error_relative = np.sqrt(((keypoints_gt_relative - keypoints_3d_predicted_relative) ** 2).sum(2)).mean(1)
         except:
             print("Cannot calculate relative mean error")
-
-        per_pose_error_relative = np.sqrt(((keypoints_gt_relative - keypoints_3d_predicted_relative) ** 2).sum(2)).mean(1)
+            per_pose_error_relative = per_pose_error
 
         result = {
             'per_pose_error': self.evaluate_using_per_pose_error(per_pose_error, split_by_subject),
