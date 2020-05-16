@@ -112,7 +112,7 @@ class CMUPanopticDataset(Dataset):
 
         # TODO: Change? 
         self.num_keypoints = 16 if kind == "mpii" else 17
-        # self.num_keypoints = 19
+        self.num_keypoints = 19
 
         assert self.labels['table']['keypoints'].shape[1] == 19, "Error with keypoints in 'labels' file"
 
@@ -256,7 +256,9 @@ class CMUPanopticDataset(Dataset):
         if keypoints_3d_predicted.shape != keypoints_gt.shape:
             try:
                 print("Predicted shape:", keypoints_3d_predicted.shape, "GT Shape:", keypoints_gt.shape)
-                keypoints_gt = keypoints_gt[:keypoints_3d_predicted.shape[0], :self.num_keypoints, :3]
+                keypoints_gt = keypoints_gt[:keypoints_3d_predicted.shape[0],
+                                            :keypoints_3d_predicted.shape[1],
+                                            :keypoints_3d_predicted.shape[2]]
 
                 print(f"Forcing keypoints_gt to new shape {keypoints_gt.shape}")
             except:
