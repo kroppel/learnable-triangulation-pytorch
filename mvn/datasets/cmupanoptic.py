@@ -252,7 +252,7 @@ class CMUPanopticDataset(Dataset):
     def evaluate(self, keypoints_3d_predicted, split_by_subject=False):
         keypoints_gt = self.labels['table']['keypoints'][:, :, :3]
 
-        # TODO: Try to remap keypoints first
+        # Likely due to batch size problems
         if keypoints_3d_predicted.shape != keypoints_gt.shape:
             try:
                 print("Predicted shape:", keypoints_3d_predicted.shape, "GT Shape:", keypoints_gt.shape)
@@ -292,11 +292,12 @@ class CMUPanopticDataset(Dataset):
             human36m_joints = [10, 11, 15, 14, 1, 4]
             cmu_joints = [10, 8, 9, 7, 14, 13]
 
-            keypoints_gt = keypoints_gt[:, human36m_joints]
-            keypoints_3d_predicted = keypoints_3d_predicted[:, cmu_joints]
+            keypoints_gt = keypoints_gt[:, human36m_joints, :]
+            keypoints_3d_predicted = keypoints_3d_predicted[:, cmu_joints, :]
         
         # mean error per 16/17 joints in mm, for each pose
         per_pose_error = np.sqrt(((keypoints_gt - keypoints_3d_predicted) ** 2).sum(2)).mean(1)
+        print(per_pose_error)
 
         # relative mean error per 16/17 joints in mm, for each pose
         # root_index = 6 if self.kind == "mpii" else 6

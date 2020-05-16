@@ -21,8 +21,8 @@ opt:
   process_features_lr: 0.001
   volume_net_lr: 0.001
 
-  scale_keypoints_3d: 1.0
-  scale_keypoints_3d_pred: 0.1
+  scale_keypoints_3d: 0.1
+  scale_keypoints_3d_gt: 1.0
 
 model:
   name: "vol"
