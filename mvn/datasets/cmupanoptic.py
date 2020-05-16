@@ -68,6 +68,7 @@ class CMUPanopticDataset(Dataset):
         self.cuboid_side = cuboid_side
         self.kind = kind
         self.crop = crop
+        self.transfer_cmu_to_human36m = transfer_cmu_to_human36m
 
         self.labels = np.load(labels_path, allow_pickle=True).item()
 
