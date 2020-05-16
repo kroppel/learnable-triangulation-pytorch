@@ -236,8 +236,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
 
     results = defaultdict(list)
 
-    transfer_cmu_h36m = config.model.transfer_cmu_to_human36m if hasattr(
-        config.model, "transfer_cmu_to_human36m") else False
+    transfer_cmu_h36m = config.model.transfer_cmu_to_human36m if hasattr(config.model, "transfer_cmu_to_human36m") else False
 
     print("Transfer CMU to H36M: ", transfer_cmu_h36m)
 
