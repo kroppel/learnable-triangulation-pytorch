@@ -69,13 +69,13 @@ for i in range(0, len(indexes), n_images_step):
 
     # Project and draw keypoints on images
     for camera_idx, camera in enumerate(labels['cameras']):
-        keypoints_3d_pred = keypoints3d_pred[i][:, :3] * 0.1
+        keypoints_3d_pred = keypoints3d_pred[i][:, :3]
         keypoints_3d_gt = labels['keypoints_3d'][:, :3]
 
         keypoints_2d_pred = project(camera.projection, keypoints_3d_pred)
         keypoints_2d_gt = project(camera.projection, keypoints_3d_gt)
 
-        import ipdb; ipdb.set_trace()
+        # import ipdb; ipdb.set_trace()
 
         img = labels['images'][camera_idx]
 

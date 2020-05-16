@@ -261,7 +261,6 @@ class VolumetricTriangulationNet(nn.Module):
             vol_confidences = vol_confidences.view(batch_size, n_views, *vol_confidences.shape[1:])
 
         # calcualte shapes
-        # TODO Breakpoint? Why resize to heatmap_shape
         image_shape, heatmap_shape = tuple(images.shape[3:]), tuple(heatmaps.shape[3:])
         n_joints = heatmaps.shape[2]
 
@@ -340,6 +339,8 @@ class VolumetricTriangulationNet(nn.Module):
                 coord_volume = coord_volume.permute(0, 2, 1, 3)
                 inv_idx = torch.arange(coord_volume.shape[1] - 1, -1, -1).long().to(device)
                 coord_volume = coord_volume.index_select(1, inv_idx)
+
+                print("Using different world coordinates`")
 
             coord_volumes[batch_i] = coord_volume
 
