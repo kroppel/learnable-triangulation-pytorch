@@ -79,7 +79,8 @@ def setup_human36m_dataloaders(config, is_train, distributed_train):
                                                      max_n_views=config.dataset.train.max_n_views),
             num_workers=config.dataset.train.num_workers,
             worker_init_fn=dataset_utils.worker_init_fn,
-            pin_memory=True
+            pin_memory=True,
+            drop_last=False
         )
 
     # val
@@ -108,7 +109,8 @@ def setup_human36m_dataloaders(config, is_train, distributed_train):
                                                  max_n_views=config.dataset.val.max_n_views),
         num_workers=config.dataset.val.num_workers,
         worker_init_fn=dataset_utils.worker_init_fn,
-        pin_memory=True
+        pin_memory=True,
+        drop_last=False
     )
 
     return train_dataloader, val_dataloader, train_sampler
