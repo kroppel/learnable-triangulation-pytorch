@@ -89,7 +89,7 @@ for i in range(0, len(indexes), n_images_step):
             combined = np.concatenate((combined, display), axis=1)
 
     cv2.imshow('w', combined)
-    cv2.setWindowTitle('w', "Index {i}")
+    cv2.setWindowTitle('w', f"Index {i}")
     c = cv2.waitKey(0) % 256
 
     if c == ord('q') or c == 27:
