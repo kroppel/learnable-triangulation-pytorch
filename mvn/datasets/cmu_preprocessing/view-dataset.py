@@ -36,10 +36,10 @@ from mvn.datasets.cmupanoptic import CMUPanopticDataset
 from mvn.utils.vis import draw_2d_pose_cv2
 
 scale_bbox = 1.0
-square_bbox = True
+square_bbox = False
 norm_image = False
-image_shape = (384, 384)
-crop = True
+image_shape = None # (384, 384)
+crop = False
 
 print(f"Scale bbox: {scale_bbox}")
 print(f"Square bbox: {square_bbox}")
