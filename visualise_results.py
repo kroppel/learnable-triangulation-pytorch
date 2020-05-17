@@ -89,6 +89,7 @@ with open(results_file, "rb") as f:
 
 img_dir = re.sub(f"{os.sep}(.+)\.pkl", "", os.path.abspath(results_file))
 img_dir = os.path.join(img_dir, "saved_images")
+print(img_dir)
 
 # camera_indexes_to_show = [0, 2, 8]
 
@@ -115,8 +116,8 @@ for i in range(0, len(indexes), n_images_step):
         displays.append(display)
 
     # Fancy stacked images
-    for i, display in enumerate(displays):
-        if i == 0:
+    for j, display in enumerate(displays):
+        if j == 0:
             combined = display
         else:
             combined = np.concatenate((combined, display), axis=1)
