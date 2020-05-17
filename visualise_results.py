@@ -85,7 +85,7 @@ with open(results_file, "rb") as f:
     indexes = data["indexes"]
     images = data["images"]
 
-img_dir = os.join(os.path.abspath(results_file), "saved_images")
+img_dir = os.path.join(os.path.abspath(results_file), "saved_images")
 
 camera_indexes_to_show = [0, 2, 8]
 
