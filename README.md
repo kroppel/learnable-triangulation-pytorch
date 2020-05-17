@@ -87,13 +87,15 @@ To watch your experiments' progress, run tensorboard:
 tensorboard --logdir ./logs
 ```
 
-or use the script
+Alternatively, use the script
 
 ```bash
 ./startTensorboard [logs-dir (./logs by default)]
 ```
 
-which also overcomes PermissionError due to `/tmp` directory being blocked
+which also overcomes `PermissionError` due to `/tmp` directory being blocked
+
+You can also [visualise the results without tensorboard](#visualising-results-without-tensorboard).
 
 ## Evaluation
 
@@ -130,6 +132,10 @@ Therefore, you may possible run into `MemoryError`s if running on Linux machines
 
 * If using virtual environment: `~/.pyenv/versions/<your_python_version>/lib/python<python_version>/connection.py`
 * Otherwise: `/usr/lib/python<python_version>/multiprocessing`* 
+
+## Visualising Results (without Tensorboard)
+
+A python script `visualise_results.py` has been created to allow you to better view (and play with) the predicted 3D keypoints after [testing/evaluation](#evaluation). 
 
 # Results
 
