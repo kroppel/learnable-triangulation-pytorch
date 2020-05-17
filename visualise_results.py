@@ -76,6 +76,7 @@ elif config.kind == "human36m" or config.kind == "h36m":
         undistort_images=config.dataset.val.undistort_images,
         ignore_cameras=config.dataset.val.ignore_cameras if hasattr(config.dataset.val, "ignore_cameras") else [],
         crop=config.dataset.val.crop if hasattr(config.dataset.val, "crop") else True,
+        norm_image=False
     )
 else:
     raise NotImplementedError(f"{config.kind} dataset not implemented")
