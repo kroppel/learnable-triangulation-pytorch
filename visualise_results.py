@@ -87,7 +87,7 @@ with open(results_file, "rb") as f:
     indexes = data["indexes"]
     images = data["images"]
 
-img_dir = re.sub(f"{os.sep}(.+)\.pkl", "", os.path.abspath(results_file))
+img_dir = re.findall(f"(.+){os.sep}(.+)\.pkl", os.path.abspath(results_file))[0]
 img_dir = os.path.join(img_dir, "saved_images")
 print(img_dir)
 
@@ -109,8 +109,9 @@ for i in range(0, len(indexes), n_images_step):
 
         img = labels['images'][camera_idx]
 
-        display = vis.draw_2d_pose_cv2(keypoints_2d_pred, img, kind='human36m')
-        # display = vis.draw_2d_pose_cv2(keypoints_2d_gt, display, kind='cmu')
+        pred_kind = config.pred_kind if hasattr(config, pred_kind) else config.kind
+        display = vis.draw_2d_pose_cv2(keypoints_2d_pred, img, kind=pred_kind)
+        # display = vis.draw_2d_pose_cv2(keypoints_2d_gt, display, kind=config.kind)
         cv2.putText(display, f"Cam {camera_idx:02}", (10, 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0))
 
         displays.append(display)
