@@ -318,8 +318,9 @@ def draw_2d_pose(keypoints, ax, kind='cmu', keypoints_mask=None, point_size=2, l
     Visualizes a 2d skeleton
 
     Args
-        keypoints numpy array of shape (19, 2): pose to draw in CMU format.
+        keypoints numpy array of shape (`num_keypoints`, 2): pose to draw in `kind` format.
         ax: matplotlib axis to draw on
+        kind: visualisation kind - affects connectivity and colours
     """
     connectivity = CONNECTIVITY_DICT[kind]
 
@@ -335,6 +336,7 @@ def draw_2d_pose(keypoints, ax, kind='cmu', keypoints_mask=None, point_size=2, l
             if keypoints_mask[index_from] and keypoints_mask[index_to]:
                 if (color is None) and (kind in COLOR_DICT):
                     color = tuple([float(clr/255) for clr in COLOR_DICT[kind][i]]) + (1,)
+                    print("Using special color",color)
                 else:
                     color = 'blue'
 
