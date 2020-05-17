@@ -18,8 +18,8 @@ class Human36MMultiViewDataset(Dataset):
         Human3.6M for multiview tasks.
     """
     def __init__(self,
-                 h36m_root='/Vol1/dbstore/datasets/Human3.6M/processed/',
-                 labels_path='/Vol1/dbstore/datasets/Human3.6M/extra/human36m-multiview-labels-SSDbboxes.npy',
+                 h36m_root='./data/human36m/processed/',
+                 labels_path='./data/human36m/extra/human36m-multiview-labels-SSDbboxes.npy',
                  pred_results_path=None,
                  image_shape=(256, 256),
                  train=False,
