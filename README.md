@@ -135,7 +135,17 @@ Therefore, you may possible run into `MemoryError`s if running on Linux machines
 
 ## Visualising Results (without Tensorboard)
 
-A python script `visualise_results.py` has been created to allow you to better view (and play with) the predicted 3D keypoints after [testing/evaluation](#evaluation). 
+A python script `visualise_results.py` has been created to allow you to better view (and play with) the predicted 3D keypoints after [testing/evaluation](#evaluation). After evaluation, a `results.pkl` file will be saved to `./logs/<experiment-name>/checkpoints/<checkpoint_number>/results.pkl`. For example, `./logs/eval_cmu_vol_softmax_VolumetricTriangulationNet@17.05.20-15:13:24/checkpoints/0000/results.pkl`.
+
+To use the script, you will need the aforementioned pickle file, and the config file used in the original experiment, also located conveniently in the `./logs/<experiment-name>/` folder.
+
+```bash
+python3 visualise_results.py <results_pkl_file> <config_yaml_file_used_in_experiment> [n_images_step=1 [save_images_instead=0]]
+```
+
+You can choose to save the images instead of viewing them via OpenCV viewer. If so, images are saved to a new directory `saved_images`, in the directory where `results_pkl_file` is found.
+
+Feel free to modify the various parameters of the script (such as which camera views to project onto).
 
 # Results
 
