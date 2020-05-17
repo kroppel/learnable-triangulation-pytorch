@@ -27,7 +27,7 @@ except:
     exit()
 
 try:
-    n_images_step = sys.argv[3]
+    n_images_step = int(sys.argv[3])
     if n_images_step < 1:
         raise Exception("n_images_step cannot be < 1")
 except:
