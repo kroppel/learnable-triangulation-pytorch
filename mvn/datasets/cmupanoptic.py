@@ -299,7 +299,7 @@ class CMUPanopticDataset(Dataset):
         
         # mean error per 16/17 joints in mm, for each pose
         per_pose_error = np.sqrt(((keypoints_gt - keypoints_3d_predicted) ** 2).sum(2)).mean(1)
-        print(per_pose_error)
+        # print(per_pose_error)
 
         # relative mean error per 16/17 joints in mm, for each pose
         # root_index = 6 if self.kind == "mpii" else 6
