@@ -398,9 +398,10 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                 if master:
                     if n_iters_total % config.vis_freq == 0:# or total_l2.item() > 500.0:
                         vis_kind = config.kind if hasattr(config, "kind") else "coco"
+                        pred_kind = config.pred_kind if hasattr(config, "pred_kind") else None
 
-                        if transfer_cmu_h36m:
-                            vis_kind = "human36m"
+                        if transfer_cmu_h36m and pred_kind is None:
+                            pred_kind = "human36m"
                         
                         # NOTE: Because of transfering, using original gt instead of truncated ones 
                         for batch_i in range(min(batch_size, config.vis_n_elements)):
@@ -411,7 +412,8 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                                 cuboids_batch=cuboids_pred,
                                 confidences_batch=confidences_pred,
                                 batch_index=batch_i, size=5,
-                                max_n_cols=10
+                                max_n_cols=10,
+                                pred_kind=pred_kind
                             )
                             writer.add_image(f"{name}/keypoints_vis/{batch_i}", keypoints_vis.transpose(2, 0, 1), global_step=n_iters_total)
 
