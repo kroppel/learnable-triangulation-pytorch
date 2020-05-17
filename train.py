@@ -303,6 +303,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                     print(
                         f"[Warning] Possibly due to different pretrained model type, ground truth has {keypoints_3d_gt.shape[1]} keypoints while predicted has {n_joints} keypoints"
                     )
+                    keypoints_gt_original = keypoints_3d_gt.clone()
                     keypoints_3d_gt = keypoints_3d_gt[:, :n_joints, :]
                     keypoints_3d_binary_validity_gt = keypoints_3d_binary_validity_gt[
                         :, :n_joints, :]
@@ -390,10 +391,10 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                 if not is_train:
                     results['keypoints_3d'].append(keypoints_3d_pred.detach().cpu().numpy())
                     results['indexes'].append(batch['indexes'])
-                    results['images'].append(images_batch)
+                    # results['images'].append(images_batch)
 
                 # plot visualization
-                # TODO: see if transfer_cmu_h36m visualisation error
+                # NOTE: transfer_cmu_h36m has a visualisation error, and connectivity dict needs to be h36m
                 if master:
                     if n_iters_total % config.vis_freq == 0:# or total_l2.item() > 500.0:
                         vis_kind = config.kind if hasattr(config, "kind") else "coco"
@@ -401,10 +402,11 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                         if transfer_cmu_h36m:
                             vis_kind = "human36m"
                         
+                        # NOTE: Because of transfering, using original gt instead of truncated ones 
                         for batch_i in range(min(batch_size, config.vis_n_elements)):
                             keypoints_vis = vis.visualize_batch(
                                 images_batch, heatmaps_pred, keypoints_2d_pred, proj_matricies_batch,
-                                keypoints_3d_gt, keypoints_3d_pred,
+                                keypoints_gt_original, keypoints_3d_pred,
                                 kind=vis_kind,
                                 cuboids_batch=cuboids_pred,
                                 confidences_batch=confidences_pred,
