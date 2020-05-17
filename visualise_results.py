@@ -99,7 +99,7 @@ for i in range(0, len(indexes), n_images_step):
     displays = []
 
     # Project and draw keypoints on images
-    for camera_idx in camera_indexes_to_show:
+    for camera_idx in range(len(labels['cameras'])): #camera_indexes_to_show:
         camera = labels['cameras'][camera_idx]
 
         keypoints_3d_pred = keypoints3d_pred[i][:, :3]
