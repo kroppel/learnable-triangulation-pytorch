@@ -336,9 +336,10 @@ def draw_2d_pose(keypoints, ax, kind='cmu', keypoints_mask=None, point_size=2, l
             if keypoints_mask[index_from] and keypoints_mask[index_to]:
                 if (color is None) and (kind in COLOR_DICT):
                     color = tuple([float(clr/255) for clr in COLOR_DICT[kind][i]]) + (1,)
-                    print("Using special color",color)
                 else:
                     color = 'blue'
+                
+                print(f"Using color {color} for {kind}, ({index_from}, {index_to})")
 
                 xs, ys = [np.array([keypoints[index_from, j], keypoints[index_to, j]]) for j in range(2)]
                 ax.plot(xs, ys, c=color, lw=line_width)
