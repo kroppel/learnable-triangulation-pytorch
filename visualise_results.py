@@ -4,6 +4,8 @@ import os, sys
 import cv2
 import numpy as np
 import pickle
+import re
+
 from mvn.utils import vis, cfg
 from mvn.datasets import human36m, cmupanoptic
 from mvn.utils.multiview import project_3d_points_to_image_plane_without_distortion as project
@@ -85,7 +87,8 @@ with open(results_file, "rb") as f:
     indexes = data["indexes"]
     images = data["images"]
 
-img_dir = os.path.join(os.path.abspath(results_file), "saved_images")
+img_dir = re.sub(f"{os.pathsep}(.+)\.pkl", "", os.path.abspath(results_file))
+img_dir = os.path.join(img_dir, "saved_images")
 
 # camera_indexes_to_show = [0, 2, 8]
 
