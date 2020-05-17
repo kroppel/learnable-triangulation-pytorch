@@ -1,5 +1,6 @@
 title: "cmu_vol_softmax"
 kind: "cmu"
+pred_kind: "human36m"
 vis_freq: 1000
 vis_n_elements: 10
 
