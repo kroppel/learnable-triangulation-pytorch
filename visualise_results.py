@@ -88,7 +88,9 @@ with open(results_file, "rb") as f:
     images = data["images"]
 
 img_dir = re.findall(f"(.+){os.sep}(.+)\.pkl", os.path.abspath(results_file))[0]
-img_dir = os.path.join(img_dir, "saved_images")
+print(img_dir)
+
+img_dir = os.path.join(str(img_dir), "saved_images")
 print(img_dir)
 
 # camera_indexes_to_show = [0, 2, 8]
