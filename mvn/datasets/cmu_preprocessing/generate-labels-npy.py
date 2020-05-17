@@ -42,10 +42,6 @@ try:
     num_processes = int(sys.argv[3])
 
     USE_MULTIPROCESSING = False if num_processes <= 1 else True
-
-    if USE_MULTIPROCESSING:
-        import multiprocessing
-
 except:
     print("Usage: ",USAGE_PROMPT)
     exit()
@@ -293,6 +289,7 @@ table_dtype = np.dtype([
 ])
 
 if USE_MULTIPROCESSING:
+    import multiprocessing
     print(f"\nGenerating labels using {num_processes} processors...")
 else:
     print(f"\nGenerating labels. No multiprocessing used (see usage on how to setup multiprocessing)")
