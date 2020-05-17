@@ -111,7 +111,7 @@ for i in range(0, len(indexes), n_images_step):
 
         img = labels['images'][camera_idx]
 
-        pred_kind = config.pred_kind if hasattr(config, pred_kind) else config.kind
+        pred_kind = config.pred_kind if hasattr(config, "pred_kind") else config.kind
         display = vis.draw_2d_pose_cv2(keypoints_2d_pred, img, kind=pred_kind)
         # display = vis.draw_2d_pose_cv2(keypoints_2d_gt, display, kind=config.kind)
         cv2.putText(display, f"Cam {camera_idx:02}", (10, 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0))
