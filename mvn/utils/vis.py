@@ -331,16 +331,17 @@ def draw_2d_pose(keypoints, ax, kind='cmu', keypoints_mask=None, point_size=2, l
     ax.scatter(keypoints[keypoints_mask][:, 0], keypoints[keypoints_mask][:, 1], c='red', s=point_size)
 
     # connections
+    force_color = color
     for i, (index_from, index_to) in enumerate(connectivity):
         try: 
             if keypoints_mask[index_from] and keypoints_mask[index_to]:
-                if (color is None) and (kind in COLOR_DICT):
+                if force_color is not None:
+                    color = force_color
+                elif kind in COLOR_DICT:
                     color = tuple([float(clr/255) for clr in COLOR_DICT[kind][i]]) + (1,)
                 else:
                     color = 'blue'
                 
-                print(f"Using color {color} for {kind}, ({index_from}, {index_to})")
-
                 xs, ys = [np.array([keypoints[index_from, j], keypoints[index_to, j]]) for j in range(2)]
                 ax.plot(xs, ys, c=color, lw=line_width)
         except IndexError:
@@ -374,13 +375,16 @@ def draw_2d_pose_cv2(keypoints, canvas, kind='cmu', keypoints_mask=None, point_s
         keypoints_mask = [True] * len(keypoints)
 
     # connections
+    force_color = color
     for i, (index_from, index_to) in enumerate(connectivity):
         try:
             if keypoints_mask[index_from] and keypoints_mask[index_to]:
                 pt_from = tuple(np.array(keypoints[index_from, :]).astype(int))
                 pt_to = tuple(np.array(keypoints[index_to, :]).astype(int))
 
-                if kind in COLOR_DICT:
+                if force_color is not None:
+                    color = force_color
+                elif kind in COLOR_DICT:
                     color = COLOR_DICT[kind][i]
                 else:
                     color = (0, 0, 255)
