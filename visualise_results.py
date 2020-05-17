@@ -92,14 +92,16 @@ img_dir = re.findall(f"(.+){os.sep}(.+)\.pkl", os.path.abspath(results_file))[0]
 img_dir = os.path.join(img_dir, "saved_images")
 print(img_dir)
 
-# camera_indexes_to_show = [0, 2, 8]
+camera_indexes_to_show = [0, 2, 8]
 
 for i in range(0, len(indexes), n_images_step):
     labels = dataset[i]
     displays = []
 
     # Project and draw keypoints on images
-    for camera_idx, camera in enumerate(labels['cameras']):
+    for camera_idx in camera_indexes_to_show:
+        camera = labels['cameras'][camera_idx]
+
         keypoints_3d_pred = keypoints3d_pred[i][:, :3]
         keypoints_3d_gt = labels['keypoints_3d'][:, :3]
 
