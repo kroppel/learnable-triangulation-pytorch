@@ -87,14 +87,14 @@ with open(results_file, "rb") as f:
 
 img_dir = os.path.join(os.path.abspath(results_file), "saved_images")
 
-camera_indexes_to_show = [0, 2, 8]
+# camera_indexes_to_show = [0, 2, 8]
 
 for i in range(0, len(indexes), n_images_step):
     labels = dataset[i]
     displays = []
 
     # Project and draw keypoints on images
-    for idx, camera_idx in enumerate(labels['cameras']):
+    for camera_idx, camera in enumerate(labels['cameras']):
         keypoints_3d_pred = keypoints3d_pred[i][:, :3]
         keypoints_3d_gt = labels['keypoints_3d'][:, :3]
 
