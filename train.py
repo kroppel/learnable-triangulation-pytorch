@@ -238,7 +238,10 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
 
     results = defaultdict(list)
     
-    extra_data = defaultdict(list)
+    save_extra_data = config.save_extra_data if hasattr(config, "save_extra_data") else False
+    
+    if save_extra_data:
+        extra_data = defaultdict(list)
 
     transfer_cmu_h36m = config.model.transfer_cmu_to_human36m if hasattr(config.model, "transfer_cmu_to_human36m") else False
 
@@ -388,10 +391,11 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                     results['keypoints_3d'].append(keypoints_3d_pred.detach().cpu().numpy())
                     results['indexes'].append(batch['indexes'])
                     
-                    extra_data['images'].append(batch['images'])
-                    extra_data['detections'].append(batch['detections'])
-                    extra_data['keypoints_3d_gt'].append(batch['keypoints_3d'])
-                    extra_data['cameras'].append(batch['cameras'])
+                    if save_extra_data:
+                        extra_data['images'].append(batch['images'])
+                        extra_data['detections'].append(batch['detections'])
+                        extra_data['keypoints_3d_gt'].append(batch['keypoints_3d'])
+                        extra_data['cameras'].append(batch['cameras'])
 
                 # plot visualization
                 # NOTE: transfer_cmu_h36m has a visualisation error, and connectivity dict needs to be h36m
@@ -419,7 +423,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
 
                             heatmaps_vis = vis.visualize_heatmaps(
                                 images_batch, heatmaps_pred,
-                                kind=vis_kind,
+                                kind=pred_kind,
                                 batch_index=batch_i, size=5,
                                 max_n_rows=10, max_n_cols=10
                             )
@@ -428,7 +432,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                             if model_type == "vol":
                                 volumes_vis = vis.visualize_volumes(
                                     images_batch, volumes_pred, proj_matricies_batch,
-                                    kind=vis_kind,
+                                    kind=pred_kind,
                                     cuboids_batch=cuboids_pred,
                                     batch_index=batch_i, size=5,
                                     max_n_rows=1, max_n_cols=16
@@ -485,10 +489,10 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
             with open(os.path.join(checkpoint_dir, "results.pkl"), 'wb') as fout:
                 pickle.dump(results, fout, protocol=4)
 
-            # dump extra data as numpy file
-            # need to fully reconstruct results
-            with open(os.path.join(checkpoint_dir, "extra_data.pkl"), 'wb') as fout:
-                pickle.dump(extra_data, fout, protocol=4)
+            # dump extra data as pkl file if need to reconstruct anything
+            if save_extra_data: 
+                with open(os.path.join(checkpoint_dir, "extra_data.pkl"), 'wb') as fout:
+                    pickle.dump(extra_data, fout, protocol=4)
 
             # dump full metric
             with open(os.path.join(checkpoint_dir, "metric.json".format(epoch)), 'w') as fout:

@@ -1,6 +1,7 @@
 title: "cmu_vol_softmax"
 kind: "cmu"
 pred_kind: "human36m"
+
 vis_freq: 1000
 vis_n_elements: 10
 
@@ -24,6 +25,10 @@ opt:
 
   scale_keypoints_3d: 0.1
   scale_keypoints_3d_gt: 1.0
+
+  # Choose whether or not to save extra data 
+  # for full reconstruction of results without Tensorboard
+  save_extra_data: True
 
 model:
   name: "vol"
