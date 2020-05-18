@@ -246,7 +246,9 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
     transfer_cmu_h36m = config.model.transfer_cmu_to_human36m if hasattr(config.model, "transfer_cmu_to_human36m") else False
 
     print("Transfer CMU to H36M: ", transfer_cmu_h36m)
-    
+    print("Using GT Pelvis position: ", config.model.use_gt_pelvis)
+    print("Using cameras: ", dataloader.dataset.choose_cameras)
+
     # used to turn on/off gradients
     grad_context = torch.autograd.enable_grad if is_train else torch.no_grad
     with grad_context():
