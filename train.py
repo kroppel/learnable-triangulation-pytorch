@@ -237,11 +237,13 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
     metric_dict = defaultdict(list)
 
     results = defaultdict(list)
+    
+    extra_data = defaultdict(list)
 
     transfer_cmu_h36m = config.model.transfer_cmu_to_human36m if hasattr(config.model, "transfer_cmu_to_human36m") else False
 
     print("Transfer CMU to H36M: ", transfer_cmu_h36m)
-
+    
     # used to turn on/off gradients
     grad_context = torch.autograd.enable_grad if is_train else torch.no_grad
     with grad_context():
@@ -263,21 +265,13 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
         - Keypoints (pred): NP Array, (17, 4) [Note: may not be there]
         '''
 
-        '''
-        for iter_i, sample in iterator:
-            print(len(sample), sample)
-            break
-        '''
-
         for iter_i, batch in iterator:
-            print(iter_i)
-
             with autograd.detect_anomaly():
                 # measure data loading time
                 data_time = time.time() - end
                     
                 if batch is None:
-                    print("Found None batch")
+                    print("Found None batch: {iter_i}")
                     continue
 
                 images_batch, keypoints_3d_gt, keypoints_3d_validity_gt, proj_matricies_batch = dataset_utils.prepare_batch(batch, device, config)
@@ -393,7 +387,11 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                 if not is_train:
                     results['keypoints_3d'].append(keypoints_3d_pred.detach().cpu().numpy())
                     results['indexes'].append(batch['indexes'])
-                    # results['images'].append(images_batch)
+                    
+                    extra_data['images'].append(batch['images'])
+                    extra_data['detections'].append(batch['detections'])
+                    extra_data['keypoints_3d_gt'].append(batch['keypoints_3d'])
+                    extra_data['cameras'].append(batch['cameras'])
 
                 # plot visualization
                 # NOTE: transfer_cmu_h36m has a visualisation error, and connectivity dict needs to be h36m
@@ -486,7 +484,11 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
             # dump results
             with open(os.path.join(checkpoint_dir, "results.pkl"), 'wb') as fout:
                 pickle.dump(results, fout, protocol=4)
-                # use numpy?
+
+            # dump extra data as numpy file
+            # need to fully reconstruct results
+            with open(os.path.join(checkpoint_dir, "extra_data.pkl"), 'wb') as fout:
+                pickle.dump(extra_data, fout, protocol=4)
 
             # dump full metric
             with open(os.path.join(checkpoint_dir, "metric.json".format(epoch)), 'w') as fout:
