@@ -54,7 +54,7 @@ class CMUPanopticDataset(Dataset):
                 Keypoint format, 'cmu' (for now)
 
             choose_cameras:
-                A list with indices of cameras to include (0 to 30 inclusive)
+                A list with indices of cameras to exclude (0 to 30 inclusive)
 
             ignore_cameras:
                 A list with indices of cameras to exclude (0 to 30 inclusive)
@@ -119,8 +119,6 @@ class CMUPanopticDataset(Dataset):
 
         self.labels['table'] = self.labels['table'][np.concatenate(indices)]
 
-        # TODO: Change? 
-        self.num_keypoints = 16 if kind == "mpii" else 17
         self.num_keypoints = 19
 
         assert self.labels['table']['keypoints'].shape[1] == 19, "Error with keypoints in 'labels' file"
@@ -131,13 +129,10 @@ class CMUPanopticDataset(Dataset):
             keypoints_3d_pred = pred_results['keypoints_3d'][np.argsort(pred_results['indexes'])]
             self.keypoints_3d_pred = keypoints_3d_pred[::retain_every_n_frames_in_test]
             
-            # TODO: Why is this here/necessary?
-            '''
             assert len(self.keypoints_3d_pred) == len(self), \
                 f"[train={train}, test={test}] {labels_path} has {len(self)} samples, but '{pred_results_path}' " + \
-                f"has {len(self.keypoints_3d_pred)}. Did you follow all preprocessing instructions carefully?"
-            '''
-
+                f"has {len(self.keypoints_3d_pred)}. Are you sure you are using the correct dataset's pre-processed 3D keypoints? The algorithm needs it for building of the cuboid."
+            
     def __len__(self):
         return len(self.labels['table'])
 
