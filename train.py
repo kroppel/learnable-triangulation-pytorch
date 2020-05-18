@@ -131,6 +131,7 @@ def setup_cmu_dataloaders(config, is_train, distributed_train):
             square_bbox=config.dataset.train.square_bbox if hasattr(config.dataset.train, "square_bbox") else True,
             kind=config.kind,
             transfer_cmu_to_human36m=config.model.transfer_cmu_to_human36m if hasattr(config.model, "transfer_cmu_to_human36m") else False,
+            choose_cameras=config.dataset.train.choose_cameras if hasattr(config.dataset.train, "choose_cameras") else [],
             ignore_cameras=config.dataset.train.ignore_cameras if hasattr(config.dataset.train, "ignore_cameras") else [],
             crop=config.dataset.train.crop if hasattr(config.dataset.train, "crop") else True,
         )
@@ -163,6 +164,7 @@ def setup_cmu_dataloaders(config, is_train, distributed_train):
         scale_bbox=config.dataset.val.scale_bbox,
         square_bbox=config.dataset.val.square_bbox if hasattr(config.dataset.val, "square_bbox") else True,
         kind=config.kind,
+        choose_cameras=config.dataset.val.choose_cameras if hasattr(config.dataset.val, "choose_cameras") else [],
         ignore_cameras=config.dataset.val.ignore_cameras if hasattr(config.dataset.val, "ignore_cameras") else [],
         crop=config.dataset.val.crop if hasattr(config.dataset.val, "crop") else True,
     )

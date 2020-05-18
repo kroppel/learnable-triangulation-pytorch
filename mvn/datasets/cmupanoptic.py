@@ -74,16 +74,21 @@ class CMUPanopticDataset(Dataset):
 
         # Populate ignore cameras array
         self.ignore_cameras = []
+        self.choose_cameras = []
         
         for i, camera_name in enumerate(self.labels['camera_names']):
             camera_id = int(camera_name.replace("_", ""))
 
             assert camera_id < 31, "The CMU dataset only has 31 cameras in total. Please change your config file!"
 
+            if (len(choose_cameras) <= 0) or (camera_id in choose_cameras):
+                self.choose_cameras.append(i)
+
             if camera_id in ignore_cameras:
                 self.ignore_cameras.append(i)
         
-        
+        assert len(self.choose_cameras) >= 1, "You must choose at least 1 camera!"
+
         # TODO: Get these from the config file?
         train_actions = ["171026_pose3", "171026_pose2", "171026_pose1", "171204_pose4",
             "171204_pose3", "171204_pose2", "171204_pose1"]
@@ -97,7 +102,7 @@ class CMUPanopticDataset(Dataset):
         ]
 
         # Testing for smaller dataset
-        if labels_path.endswith("small.npy"):    
+        if labels_path.endswith("small.npy") or labels_path.endswith("small2.npy"):
             test_actions = train_actions + test_actions
 
         indices = []
@@ -144,7 +149,7 @@ class CMUPanopticDataset(Dataset):
         frame_idx = shot['frame_name']
 
         for camera_idx, camera_name in enumerate(self.labels['camera_names']):
-            if camera_idx in self.ignore_cameras:
+            if camera_idx not in self.choose_cameras or camera_idx in self.ignore_cameras:
                 continue
 
             # load bounding box
