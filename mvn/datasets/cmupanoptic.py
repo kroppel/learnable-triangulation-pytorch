@@ -34,6 +34,7 @@ class CMUPanopticDataset(Dataset):
                  kind="mpii",
                  transfer_cmu_to_human36m=True,
                  ignore_cameras=[],
+                 choose_cameras=[],
                  crop=True
                  ):
         """
@@ -52,8 +53,11 @@ class CMUPanopticDataset(Dataset):
             kind:
                 Keypoint format, 'cmu' (for now)
 
+            choose_cameras:
+                A list with indices of cameras to include (0 to 30 inclusive)
+
             ignore_cameras:
-                A list with indices of cameras to exclude (0 to 3 inclusive)
+                A list with indices of cameras to exclude (0 to 30 inclusive)
         """
         assert train or test, '`CMUPanopticDataset` must be constructed with at least ' \
                               'one of `test=True` / `train=True`'
