@@ -81,12 +81,16 @@ dataset:
 
     undistort_images: true
     choose_cameras:
-      - 7
+      - 0
+      - 3
+      # - 7
       - 10
       - 13
       - 16
       # - 21
-      # - 29
+      
+      ignore_cameras: 
+      - 29 # faulty
       
     scale_bbox: 1.0
 
