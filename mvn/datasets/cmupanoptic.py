@@ -98,34 +98,59 @@ class CMUPanopticDataset(Dataset):
         if frames_split_file is not None:
             try:
                 self.frames_split = cfg.load_config(frames_split_file)
+
+                assert('train' in self.frames_split and 'val' in self.frames_split)
             except FileNotFoundError:
-                print(
-                    "[Warning] File {frames_split_file} not found. No frame split specified")
+                print(f"[Warning] File {frames_split_file} not found. No frame split will be specified.")
                 pass
+            except AssertionError:
+                print(f"[Warning] Invalid train/val frame splits in {frames_split_file}. No frame split will be specified.")
+        else:
+            print("[Note] No frame split specified")
 
-        # import ipdb; ipdb.set_trace()
+        # Reorganise frames split
+        new_dict = {}
+        for d in self.frames_split['train']:
+            for k in d.keys():
+                new_dict[str(k)] = d[k]
 
-        train_actions = ["171026_pose3", "171026_pose2", "171026_pose1", "171204_pose4",
-            "171204_pose3", "171204_pose2", "171204_pose1"]
-        test_actions = ["171204_pose5", "171204_pose6"]
+        self.frames_split['train'] = new_dict
+
+        new_dict = {}
+        for d in self.frames_split['val']:
+            for k in d.keys():
+                new_dict[str(k)] = d[k]
+
+        self.frames_split['val'] = new_dict
+
+        # Set actions and frames
+        if self.frames_split is not None:
+            train_actions = list(self.frames_split['train'].keys())
+            val_actions = list(self.frames_split['val'].keys())
+        else:
+            train_actions = ["171026_pose3", "171026_pose2", "171026_pose1", "171204_pose4",
+                "171204_pose3", "171204_pose2", "171204_pose1"]
+            val_actions = ["171204_pose5", "171204_pose6"]
 
         train_actions = [
             self.labels['action_names'].index(x) for x in train_actions if x in self.labels['action_names']
         ]
-        test_actions = [
-            self.labels['action_names'].index(x) for x in test_actions if x in self.labels['action_names']
+        val_actions = [
+            self.labels['action_names'].index(x) for x in val_actions if x in self.labels['action_names']
         ]
+
+        print(train_actions, val_actions)
 
         # Testing for smaller dataset
         if labels_path.endswith("small.npy") or labels_path.endswith("small2.npy"):
-            test_actions = train_actions + test_actions
+            val_actions = train_actions + val_actions
 
         indices = []
         if train:
             mask = np.isin(self.labels['table']['action_idx'], train_actions, assume_unique=True)
             indices.append(np.nonzero(mask)[0])
         if test:
-            mask = np.isin(self.labels['table']['action_idx'], test_actions, assume_unique=True)
+            mask = np.isin(self.labels['table']['action_idx'], val_actions, assume_unique=True)
             indices.append(np.nonzero(mask)[0][::retain_every_n_frames_in_test])
 
         self.labels['table'] = self.labels['table'][np.concatenate(indices)]
