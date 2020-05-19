@@ -10,8 +10,7 @@ from torch.utils.data import Dataset
 
 from mvn.utils.multiview import Camera
 from mvn.utils.img import get_square_bbox, resize_image, crop_image, normalize_image, scale_bbox
-from mvn.utils import volumetric
-from mvn.utils import vis # only for keypoint mapping
+from mvn.utils import volumetric, vis, cfg
 
 class CMUPanopticDataset(Dataset):
     """
@@ -35,7 +34,8 @@ class CMUPanopticDataset(Dataset):
                  transfer_cmu_to_human36m=True,
                  ignore_cameras=[],
                  choose_cameras=[],
-                 crop=True
+                 crop=True,
+                 frames_split_file=None
                  ):
         """
             cmu_root:
@@ -93,7 +93,18 @@ class CMUPanopticDataset(Dataset):
         
         assert len(self.choose_cameras) >= 1, "You must choose at least 1 camera!"
 
-        # TODO: Get these from the config file?
+        # Get these from the config file?
+        self.frames_split = None
+        if frames_split_file is None:
+            try:
+                self.frames_split = cfg.load_config(frames_split_file)
+            except FileNotFoundError:
+                print(
+                    "[Warning] File {frames_split_file} not found. No frame split specified")
+                pass
+
+        # import ipdb; ipdb.set_trace()
+
         train_actions = ["171026_pose3", "171026_pose2", "171026_pose1", "171204_pose4",
             "171204_pose3", "171204_pose2", "171204_pose1"]
         test_actions = ["171204_pose5", "171204_pose6"]

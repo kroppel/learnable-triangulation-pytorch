@@ -134,6 +134,7 @@ def setup_cmu_dataloaders(config, is_train, distributed_train):
             choose_cameras=config.dataset.train.choose_cameras if hasattr(config.dataset.train, "choose_cameras") else [],
             ignore_cameras=config.dataset.train.ignore_cameras if hasattr(config.dataset.train, "ignore_cameras") else [],
             crop=config.dataset.train.crop if hasattr(config.dataset.train, "crop") else True,
+            frames_split_file=config.opt.frames_split_file if hasattr(config.opt, "frames_split_file") else None
         )
 
         train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset) if distributed_train else None
@@ -167,6 +168,7 @@ def setup_cmu_dataloaders(config, is_train, distributed_train):
         choose_cameras=config.dataset.val.choose_cameras if hasattr(config.dataset.val, "choose_cameras") else [],
         ignore_cameras=config.dataset.val.ignore_cameras if hasattr(config.dataset.val, "ignore_cameras") else [],
         crop=config.dataset.val.crop if hasattr(config.dataset.val, "crop") else True,
+        frames_split_file=config.opt.frames_split_file if hasattr(config.opt, "frames_split_file") else None
     )
 
     val_dataloader = DataLoader(
