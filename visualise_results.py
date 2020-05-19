@@ -59,7 +59,8 @@ if config.kind == "cmu":
         kind=config.kind,
         ignore_cameras=config.dataset.val.ignore_cameras if hasattr(config.dataset.val, "ignore_cameras") else [],
         crop=config.dataset.val.crop if hasattr(config.dataset.val, "crop") else True,
-        norm_image=False
+        norm_image=False,
+        frames_split_file=config.opt.frames_split_file if hasattr(config.opt, "frames_split_file") else None
     )
 elif config.kind == "human36m" or config.kind == "h36m":
     dataset = human36m.Human36MMultiViewDataset(
