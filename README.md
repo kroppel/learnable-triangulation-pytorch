@@ -15,6 +15,7 @@ If you find a bug, have a question or know to improve the code - please open an 
 # How to use
 
 This project doesn't have any special or difficult-to-install dependencies. All installation can be down with:
+
 ```bash
 pip install -r requirements.txt
 ```
@@ -122,16 +123,16 @@ Argument `--eval_dataset` can be `val` or `train`. Results can be seen in `logs`
 
 Alternatively, after all the pre-processing steps above have been completed, for a quick evaluation of the datasets, you can run the `./eval_cmu` and `./eval_human36m` scripts.
 
-**IMPORTANT NOTE:** There is a bug with the old Python version where `multiprocessing` connections are unable to send more than 2 Gb of data. This is fixed in a pull request for new Python versions [here](https://github.com/python/cpython/pull/10305). 
+**IMPORTANT NOTE:** There is a bug with the old Python version where `multiprocessing` connections are unable to send more than 2 Gb of data. This is fixed in a pull request for new Python versions [here](https://github.com/python/cpython/pull/10305).
 
-Therefore, you may possible run into `MemoryError`s if running on Linux machines with Python versions < 3.8. The fix to this is to modify the `multiprocessing` library's `connection.py` file with the updated file [here](https://github.com/python/cpython/blob/bccacd19fa7b56dcf2fbfab15992b6b94ab6666b/Lib/multiprocessing/connection.py), which is from the aforementioned [pull request](https://github.com/python/cpython/pull/10305). 
+Therefore, you may possible run into `MemoryError`s if running on Linux machines with Python versions < 3.8. The fix to this is to modify the `multiprocessing` library's `connection.py` file with the updated file [here](https://github.com/python/cpython/blob/bccacd19fa7b56dcf2fbfab15992b6b94ab6666b/Lib/multiprocessing/connection.py), which is from the aforementioned [pull request](https://github.com/python/cpython/pull/10305).
 
 *It is advised that you create a backup of the old `connection.py` file in case something goes wrong.*
 
 *Example of where to find the file:*
 
 * If using virtual environment: `~/.pyenv/versions/<your_python_version>/lib/python<python_version>/connection.py`
-* Otherwise: `/usr/lib/python<python_version>/multiprocessing`* 
+* Otherwise: `/usr/lib/python<python_version>/multiprocessing`*
 
 ## Visualising Results (without Tensorboard)
 
@@ -213,6 +214,7 @@ We present 2 novel methods of learnable triangulation: Algebraic and Volumetric.
 ![algebraic-model](docs/algebraic-model.svg)
 
 Our first method is based on Algebraic triangulation. It is similar to the previous approaches, but differs in 2 critical aspects:
+
 1. It is **fully differentiable**. To achieve this, we use soft-argmax aggregation and triangulate keypoints via a differentiable SVD.
 2. The neural network additionally predicts **scalar confidences for each joint**, passed to the triangulation module, which successfully deals with outliers and occluded joints.
 
