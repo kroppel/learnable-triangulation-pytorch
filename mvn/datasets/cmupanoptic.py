@@ -95,7 +95,7 @@ class CMUPanopticDataset(Dataset):
 
         # Get these from the config file?
         self.frames_split = None
-        if frames_split_file is None:
+        if frames_split_file is not None:
             try:
                 self.frames_split = cfg.load_config(frames_split_file)
             except FileNotFoundError:
