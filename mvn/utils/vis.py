@@ -176,7 +176,7 @@ def visualize_batch(images_batch, heatmaps_batch, keypoints_2d_batch, proj_matri
         keypoints_2d = to_numpy(keypoints_2d_batch)[batch_index]
         for view_i in range(n_cols):
             axes[row_i][view_i].imshow(images[view_i])
-            draw_2d_pose(keypoints_2d[view_i], axes[row_i][view_i], kind=kind)
+            draw_2d_pose(keypoints_2d[view_i], axes[row_i][view_i], kind=kind, line_width=2, point_size=3)
         row_i += 1
 
     # 2D keypoints (gt projected)
