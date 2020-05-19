@@ -49,9 +49,11 @@ model:
     style: "simple"
 
     init_weights: true
+    
+    # TODO: need to evaluate on algebraic model first to get correct backbone for CMU?
     checkpoint: "./data/pretrained/human36m/pose_resnet_4.5_pixels_human36m.pth"
-
     num_joints: 17
+
     num_layers: 152
 
 dataset:
@@ -91,7 +93,7 @@ dataset:
   val:
     cmu_root: "./data/cmupanoptic"
     labels_path: "./data/cmupanoptic/cmu-multiview-labels-MRCNNbboxes.npy"
-    pred_results_path: "./data/pretrained/human36m/human36m_alg_10-04-2019/checkpoints/0060/results/val.pkl"
+    # pred_results_path: "./data/pretrained/human36m/human36m_alg_10-04-2019/checkpoints/0060/results/val.pkl"
 
     undistort_images: true
     choose_cameras:
