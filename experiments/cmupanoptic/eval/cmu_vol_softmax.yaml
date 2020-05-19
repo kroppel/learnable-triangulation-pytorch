@@ -89,7 +89,7 @@ dataset:
       - 16
       # - 21
       
-      ignore_cameras: 
+    ignore_cameras: 
       - 29 # faulty
       
     scale_bbox: 1.0
