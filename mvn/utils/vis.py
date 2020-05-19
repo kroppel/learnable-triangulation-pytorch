@@ -194,7 +194,7 @@ def visualize_batch(images_batch, heatmaps_batch, keypoints_2d_batch, proj_matri
     for view_i in range(n_cols):
         axes[row_i][view_i].imshow(images[view_i])
         keypoints_2d_pred_proj = project_3d_points_to_image_plane_without_distortion(proj_matricies_batch[batch_index, view_i].detach().cpu().numpy(), keypoints_3d_batch_pred[batch_index].detach().cpu().numpy())
-        draw_2d_pose(keypoints_2d_pred_proj, axes[row_i][view_i], kind=pred_kind)
+        draw_2d_pose(keypoints_2d_pred_proj, axes[row_i][view_i], kind=pred_kind, line_width=2, point_size=3)
     row_i += 1
 
     # cuboids
