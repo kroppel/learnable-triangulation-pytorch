@@ -25,6 +25,8 @@ opt:
   scale_keypoints_3d: 0.1
   scale_keypoints_3d_gt: 1.0
 
+  frames_split_file: './experiments/cmupanoptic/cmu_frames.yaml'
+
 model:
   name: "vol"
   kind: "mpii"
