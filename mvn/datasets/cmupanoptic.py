@@ -129,6 +129,8 @@ class CMUPanopticDataset(Dataset):
                     mask |= submask
                 
                 indices.extend(np.nonzero(mask)[0])
+
+            indices = np.array(indices)
         else:
             train_actions = [
                 "171026_pose3", "171026_pose2", "171026_pose1", "171204_pose4",
