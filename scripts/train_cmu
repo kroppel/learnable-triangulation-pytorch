@@ -1,6 +1,20 @@
 #!/bin/sh
 
-python3 -m torch.distributed.launch --nproc_per_node=4 \
-  train.py  \
-  --config experiments/cmupanoptic/train/cmu_vol_softmax.yaml \
-  --logdir ./logs/cmu/train
+if [ -z $1 ]; then
+  N_GPU=4
+else
+  N_GPU=$1
+fi
+
+echo "Using $N_GPU GPUs for training"
+
+if [ N_GPU = 1 ]; then
+  python3 train.py  \
+    --config ./experiments/cmupanoptic/train/cmu_vol_softmax.yaml \
+    --logdir ./logs/cmu/train
+else
+  python3 -m torch.distributed.launch --nproc_per_node=$N_GPU \
+    train.py  \
+    --config ./experiments/cmupanoptic/train/cmu_vol_softmax.yaml \
+    --logdir ./logs/cmu/train
+fi
