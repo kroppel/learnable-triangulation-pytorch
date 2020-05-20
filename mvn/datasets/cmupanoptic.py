@@ -113,7 +113,7 @@ class CMUPanopticDataset(Dataset):
 
                     mask |= submask
 
-                indices.append(np.nonzero(mask)[0])
+                indices.extend(np.nonzero(mask)[0])
 
             if test:
                 mask = 0
