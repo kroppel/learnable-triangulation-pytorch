@@ -175,6 +175,7 @@ class CMUPanopticDataset(Dataset):
 
     def read_frames_split_file(self, frames_split_file=None):
         if frames_split_file is None:
+            f"[Note] No frame split will be specified.")
             return None
         
         try:
