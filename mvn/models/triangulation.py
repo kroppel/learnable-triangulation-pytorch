@@ -292,6 +292,8 @@ class VolumetricTriangulationNet(nn.Module):
                 base_point = (keypoints_3d[11, :3] + keypoints_3d[12, :3]) / 2
             elif self.kind == "mpii":
                 base_point = keypoints_3d[6, :3]
+            elif self.kind == "cmu":
+                base_point = keypoints_3d[2, :3]
 
             base_points[batch_i] = torch.from_numpy(base_point).to(device)
 
