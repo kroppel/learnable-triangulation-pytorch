@@ -51,7 +51,7 @@ model:
     init_weights: true
     
     checkpoint: "./data/pretrained/human36m/pose_resnet_4.5_pixels_human36m.pth"
-    num_joints: 17
+    num_joints: 19
 
     num_layers: 152
 
@@ -95,11 +95,11 @@ dataset:
 
     undistort_images: true
     choose_cameras:
-      - 0
+      - 1
       - 3
       - 10
-      - 13
-      - 16
+      - 14
+      - 18
     
     ignore_cameras: 
     - 29 # faulty

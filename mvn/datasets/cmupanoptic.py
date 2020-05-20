@@ -161,6 +161,8 @@ class CMUPanopticDataset(Dataset):
 
         self.num_keypoints = 19
 
+        import ipdb; ipdb.set_trace()
+
         assert self.labels['table']['keypoints'].shape[1] == 19, "Error with keypoints in 'labels' file"
 
         self.keypoints_3d_pred = None
