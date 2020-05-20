@@ -386,6 +386,8 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                             base_point_gt = (keypoints_3d_gt[batch_i, 11, :3] + keypoints_3d[batch_i, 12, :3]) / 2
                         elif config.model.kind == "mpii":
                             base_point_gt = keypoints_3d_gt[batch_i, 6, :3]
+                        elif config.model.kind == "cmu":
+                            base_point_gt = keypoints_3d_gt[batch_i, 2, :3]
 
                         base_point_l2_list.append(torch.sqrt(torch.sum((base_point_pred * scale_keypoints_3d - base_point_gt * scale_keypoints_3d) ** 2)).item())
 
