@@ -157,9 +157,12 @@ class CMUPanopticDataset(Dataset):
                 mask = np.isin(self.labels['table']['action_idx'], val_actions, assume_unique=True)
                 indices.append(np.nonzero(mask)[0][::retain_every_n_frames_in_test])
             
+        print(indices)
         self.labels['table'] = self.labels['table'][np.concatenate(indices)]
 
         self.num_keypoints = 19
+
+        print(self.labels['table']['keypoints'].shape)
 
         assert self.labels['table']['keypoints'].shape[1] == self.num_keypoints, "Error with keypoints in 'labels' file"
 
