@@ -6,13 +6,13 @@ if [ "$1" = "1" ]; then
   python3 train.py \
     --eval --eval_dataset val \
     --config experiments/cmupanoptic/eval/cmu_vol_softmax_small.yaml \
-    --logdir ./logs
+    --logdir ./logs/cmu/eval
 else
   echo "Using main dataset"
 
   python3 train.py \
     --eval --eval_dataset val \
     --config experiments/cmupanoptic/eval/cmu_vol_softmax.yaml \
-    --logdir ./logs
+    --logdir ./logs/cmu/eval
 fi
 

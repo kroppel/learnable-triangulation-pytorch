@@ -1,0 +1,6 @@
+#!/bin/sh
+
+python3 -m torch.distributed.launch --nproc_per_node=2 --master_port=2345 \
+  train.py  \
+  --config experiments/cmupanoptic/train/cmu_vol_softmax.yaml \
+  --logdir ./logs/cmu/train
