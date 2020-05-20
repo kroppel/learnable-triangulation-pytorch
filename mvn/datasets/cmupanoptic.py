@@ -157,12 +157,9 @@ class CMUPanopticDataset(Dataset):
                 mask = np.isin(self.labels['table']['action_idx'], val_actions, assume_unique=True)
                 indices.append(np.nonzero(mask)[0][::retain_every_n_frames_in_test])
             
-        print(indices)
         self.labels['table'] = self.labels['table'][np.concatenate(indices)]
 
         self.num_keypoints = 19
-
-        print(self.labels['table']['keypoints'].shape)
 
         assert self.labels['table']['keypoints'].shape[1] == self.num_keypoints, "Error with keypoints in 'labels' file"
 
@@ -392,7 +389,7 @@ class CMUPanopticDataset(Dataset):
             keypoints_3d_predicted_relative = keypoints_3d_predicted - keypoints_3d_predicted[:, root_index:root_index + 1, :]
             per_pose_error_relative = np.sqrt(((keypoints_gt_relative - keypoints_3d_predicted_relative) ** 2).sum(2)).mean(1)
         except:
-            print("Cannot calculate relative mean error")
+            print("[Warning] Cannot calculate relative mean error")
             per_pose_error_relative = per_pose_error
 
         result = {
