@@ -129,8 +129,6 @@ class CMUPanopticDataset(Dataset):
                     mask |= submask
                 
                 indices.extend(np.nonzero(mask)[0])
-
-            # indices = [np.array(indices)]
         else:
             train_actions = [
                 "171026_pose3", "171026_pose2", "171026_pose1", "171204_pose4",
@@ -163,7 +161,7 @@ class CMUPanopticDataset(Dataset):
 
         import ipdb; ipdb.set_trace()
 
-        assert self.labels['table']['keypoints'].shape[1] == 19, "Error with keypoints in 'labels' file"
+        assert self.labels['table']['keypoints'].shape[1] == self.num_keypoints, "Error with keypoints in 'labels' file"
 
         self.keypoints_3d_pred = None
         if pred_results_path is not None:
