@@ -96,72 +96,67 @@ class CMUPanopticDataset(Dataset):
         # Get these from the config file?
         self.frames_split = self.read_frames_split_file(frames_split_file)
 
-        # Set actions and frames
-        if self.frames_split is not None:
-            train_actions = list(self.frames_split['train'].keys())
-            val_actions = list(self.frames_split['val'].keys())
-        else:
-            train_actions = ["171026_pose3", "171026_pose2", "171026_pose1", "171204_pose4",
-                "171204_pose3", "171204_pose2", "171204_pose1"]
-            val_actions = ["171204_pose5", "171204_pose6"]
-
-        train_actions = [
-            self.labels['action_names'].index(x) for x in train_actions if x in self.labels['action_names']
-        ]
-        val_actions = [
-            self.labels['action_names'].index(x) for x in val_actions if x in self.labels['action_names']
-        ]
-
-        # Testing for smaller dataset
-        if labels_path.endswith("small.npy") or labels_path.endswith("small2.npy"):
-            val_actions = train_actions + val_actions
-
         # Prune based on action names from split
         indices = []
-        if train:
-            mask = 0
-            for action in self.frames_split['train']:
-                full_ranges = []
-                for ranges in self.frames_split['train'][action]:
-                    full_ranges += list(range(ranges[0], ranges[1]))
 
-                action_idx = self.labels['action_names'].index(action)
-                submask = np.isin(self.labels['table']['action_idx'], [action_idx], assume_unique=True)
-                submask &= np.isin(self.labels['table']['frame_name'], full_ranges, assume_unique=True)
+        if self.frames_split is not None:
+            if train:
+                mask = 0
+                for action in self.frames_split['train']:
+                    full_ranges = []
+                    for ranges in self.frames_split['train'][action]:
+                        full_ranges += list(range(ranges[0], ranges[1]))
 
-                mask |= submask
+                    action_idx = self.labels['action_names'].index(action)
+                    submask = np.isin(self.labels['table']['action_idx'], [action_idx], assume_unique=True)
+                    submask &= np.isin(self.labels['table']['frame_name'], full_ranges, assume_unique=True)
 
-            indices.append(np.nonzero(mask)[0])
+                    mask |= submask
 
-        if test:
-            mask = 0
-            for action in self.frames_split['val']:
-                full_ranges = []
-                for ranges in self.frames_split['train'][action]:
-                    full_ranges += list(range(ranges[0], ranges[1]))
+                indices.append(np.nonzero(mask)[0])
 
-                action_idx = self.labels['action_names'].index(action)
-                submask = np.isin(self.labels['table']['action_idx'], [action_idx], assume_unique=True)
-                submask &= np.isin(self.labels['table']['frame_name'], full_ranges, assume_unique=True)
+            if test:
+                mask = 0
+                for action in self.frames_split['val']:
+                    full_ranges = []
+                    for ranges in self.frames_split['val'][action]:
+                        full_ranges += list(range(ranges[0], ranges[1]))
 
-                mask |= submask
+                    action_idx = self.labels['action_names'].index(action)
+                    submask = np.isin(self.labels['table']['action_idx'], [action_idx], assume_unique=True)
+                    submask &= np.isin(self.labels['table']['frame_name'], full_ranges, assume_unique=True)
+
+                    mask |= submask
+                
+                indices.extend(np.nonzero(mask)[0])
+
+            indices = [np.array(indices)]
+        else:
+            train_actions = [
+                "171026_pose3", "171026_pose2", "171026_pose1", "171204_pose4",
+                "171204_pose3", "171204_pose2", "171204_pose1"
+            ]
+            val_actions = ["171204_pose5", "171204_pose6"]
+
+            train_actions = [
+                self.labels['action_names'].index(x) for x in train_actions if x in self.labels['action_names']
+            ]
+            val_actions = [
+                self.labels['action_names'].index(x) for x in val_actions if x in self.labels['action_names']
+            ]
+
+            # Testing for smaller dataset
+            if labels_path.endswith("small.npy") or labels_path.endswith("small2.npy"):
+                val_actions = train_actions + val_actions
+
+            if train:
+                mask = np.isin(self.labels['table']['action_idx'], train_actions, assume_unique=True)
+                indices.append(np.nonzero(mask)[0])
+
+            if test:
+                mask = np.isin(self.labels['table']['action_idx'], val_actions, assume_unique=True)
+                indices.append(np.nonzero(mask)[0][::retain_every_n_frames_in_test])
             
-            indices.extend(np.nonzero(mask)[0])
-
-        indices = [np.array(indices)]
-        print(indices)
-
-        '''
-        indices = []
-        if train:
-            mask = np.isin(self.labels['table']['action_idx'], train_actions, assume_unique=True)
-            indices.append(np.nonzero(mask)[0])
-
-        if test:
-            mask = np.isin(self.labels['table']['action_idx'], val_actions, assume_unique=True)
-            indices.append(np.nonzero(mask)[0][::retain_every_n_frames_in_test])
-        '''
-
         self.labels['table'] = self.labels['table'][np.concatenate(indices)]
 
         self.num_keypoints = 19
