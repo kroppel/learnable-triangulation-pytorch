@@ -94,34 +94,7 @@ class CMUPanopticDataset(Dataset):
         assert len(self.choose_cameras) >= 1, "You must choose at least 1 camera!"
 
         # Get these from the config file?
-        self.frames_split = None
-        if frames_split_file is not None:
-            try:
-                self.frames_split = cfg.load_config(frames_split_file)
-
-                assert('train' in self.frames_split and 'val' in self.frames_split)
-            except FileNotFoundError:
-                print(f"[Warning] File {frames_split_file} not found. No frame split will be specified.")
-                pass
-            except AssertionError:
-                print(f"[Warning] Invalid train/val frame splits in {frames_split_file}. No frame split will be specified.")
-        else:
-            print("[Note] No frame split specified")
-
-        # Reorganise frames split
-        new_dict = {}
-        for d in self.frames_split['train']:
-            for k in d.keys():
-                new_dict[str(k)] = d[k]
-
-        self.frames_split['train'] = new_dict
-
-        new_dict = {}
-        for d in self.frames_split['val']:
-            for k in d.keys():
-                new_dict[str(k)] = d[k]
-
-        self.frames_split['val'] = new_dict
+        self.frames_split = self.read_frames_split_file(frames_split_file)
 
         # Set actions and frames
         if self.frames_split is not None:
@@ -139,16 +112,16 @@ class CMUPanopticDataset(Dataset):
             self.labels['action_names'].index(x) for x in val_actions if x in self.labels['action_names']
         ]
 
-        print(train_actions, val_actions)
-
         # Testing for smaller dataset
         if labels_path.endswith("small.npy") or labels_path.endswith("small2.npy"):
             val_actions = train_actions + val_actions
 
+        # Prune based on action names from split
         indices = []
         if train:
             mask = np.isin(self.labels['table']['action_idx'], train_actions, assume_unique=True)
             indices.append(np.nonzero(mask)[0])
+
         if test:
             mask = np.isin(self.labels['table']['action_idx'], val_actions, assume_unique=True)
             indices.append(np.nonzero(mask)[0][::retain_every_n_frames_in_test])
@@ -168,7 +141,41 @@ class CMUPanopticDataset(Dataset):
             assert len(self.keypoints_3d_pred) == len(self), \
                 f"[train={train}, test={test}] {labels_path} has {len(self)} samples, but '{pred_results_path}' " + \
                 f"has {len(self.keypoints_3d_pred)}. Are you sure you are using the correct dataset's pre-processed 3D keypoints? The algorithm needs it for building of the cuboid."
-            
+
+    def read_frames_split_file(self, frames_split_file=None):
+        if frames_split_file is None:
+            return None
+        
+        try:
+            frames_split = cfg.load_config(frames_split_file)
+
+            assert('train' in frames_split and 'val' in frames_split)
+        except FileNotFoundError:
+            print(
+                f"[Warning] File {frames_split_file} not found. No frame split will be specified.")
+            return None
+        except AssertionError:
+            print(
+                f"[Warning] Invalid train/val frame splits in {frames_split_file}. No frame split will be specified.")
+            return None
+
+        # Reorganise frames split
+        new_dict = {}
+        for d in frames_split['train']:
+            for k in d.keys():
+                new_dict[str(k)] = d[k]
+
+        frames_split['train'] = new_dict
+
+        new_dict = {}
+        for d in frames_split['val']:
+            for k in d.keys():
+                new_dict[str(k)] = d[k]
+
+        frames_split['val'] = new_dict
+
+        return frames_split
+    
     def __len__(self):
         return len(self.labels['table'])
 
@@ -182,6 +189,14 @@ class CMUPanopticDataset(Dataset):
         action = self.labels['action_names'][action_idx]
         
         frame_idx = shot['frame_name']
+
+        # Prune frames per action here
+        # Pruning is important because some of the frames have no persons in them
+        
+
+        for action in self.frames_split['val']:
+            for ranges in self.frames_split['val'][action]:
+                print(ranges)
 
         for camera_idx, camera_name in enumerate(self.labels['camera_names']):
             if camera_idx not in self.choose_cameras or camera_idx in self.ignore_cameras:
