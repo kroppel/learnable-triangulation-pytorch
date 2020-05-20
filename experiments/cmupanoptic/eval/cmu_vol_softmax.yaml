@@ -83,13 +83,13 @@ dataset:
 
     undistort_images: true
     choose_cameras:
-      - 0
-      - 3
-      # - 7
+      # - 0
+      #- 3
+      - 7
       - 10
       - 13
       - 16
-      # - 21
+      - 21
       
     ignore_cameras: 
       - 29 # faulty
