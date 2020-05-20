@@ -518,7 +518,7 @@ def init_distributed(args):
     torch.cuda.set_device(args.local_rank)
 
     assert os.environ["MASTER_PORT"], "set the MASTER_PORT variable or use pytorch launcher"
-    assert os.environ["RANK"], "use pytorch launcher and explicityly state the rank of the process"
+    assert os.environ["RANK"], "use pytorch launcher and explicitly state the rank of the process"
 
     torch.manual_seed(args.seed)
     torch.distributed.init_process_group(backend="nccl", init_method="env://")
@@ -535,6 +535,8 @@ def main(args):
     ctx.reducer = pickle4reducer.Pickle4Reducer()
 
     is_distributed = init_distributed(args)
+    print("Using distributed:", is_distributed)
+
     master = True
     if is_distributed and os.environ["RANK"]:
         master = int(os.environ["RANK"]) == 0
