@@ -278,7 +278,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                 data_time = time.time() - end
                     
                 if batch is None:
-                    print("Found None batch: {iter_i}")
+                    print(f"Found None batch: {iter_i}")
                     continue
 
                 images_batch, keypoints_3d_gt, keypoints_3d_validity_gt, proj_matricies_batch = dataset_utils.prepare_batch(batch, device, config)
