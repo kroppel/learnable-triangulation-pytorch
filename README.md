@@ -91,7 +91,7 @@ tensorboard --logdir ./logs
 Alternatively, use the script
 
 ```bash
-./startTensorboard [logs-dir (./logs by default)]
+./scripts/startTensorboard [logs-dir (./logs by default)]
 ```
 
 which also overcomes `PermissionError` due to `/tmp` directory being blocked
@@ -121,7 +121,7 @@ python3 train.py \
 
 Argument `--eval_dataset` can be `val` or `train`. Results can be seen in `logs` directory or in the tensorboard.
 
-Alternatively, after all the pre-processing steps above have been completed, for a quick evaluation of the datasets, you can run the `./eval_cmu` and `./eval_human36m` scripts.
+Alternatively, after all the pre-processing steps above have been completed, for a quick evaluation of the datasets, you can run the `./scripts/eval_cmu` and `./scripts/eval_human36m` scripts.
 
 **IMPORTANT NOTE:** There is a bug with the old Python version where `multiprocessing` connections are unable to send more than 2 Gb of data. This is fixed in a pull request for new Python versions [here](https://github.com/python/cpython/pull/10305).
 

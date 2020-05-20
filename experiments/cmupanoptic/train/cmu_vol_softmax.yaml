@@ -50,7 +50,6 @@ model:
 
     init_weights: true
     
-    # TODO: need to evaluate on algebraic model first to get correct backbone for CMU?
     checkpoint: "./data/pretrained/human36m/pose_resnet_4.5_pixels_human36m.pth"
     num_joints: 17
 
@@ -78,7 +77,6 @@ dataset:
     choose_cameras:
       - 1
       - 2
-      - 4
       - 6
       - 8
       - 10
