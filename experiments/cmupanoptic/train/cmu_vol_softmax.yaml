@@ -15,7 +15,7 @@ opt:
   n_epochs: 9999
 
   batch_size: 5
-  val_batch_size: 10
+  val_batch_size: 5
 
   lr: 0.0001
   process_features_lr: 0.001
@@ -27,7 +27,7 @@ opt:
 
 model:
   name: "vol"
-  kind: "mpii"
+  kind: "cmu"
   volume_aggregation_method: "softmax"
 
   init_weights: false
@@ -75,15 +75,12 @@ dataset:
     num_workers: 5
 
     choose_cameras:
-      - 1
       - 2
-      - 6
       - 8
-      - 10
       - 13
       - 16
       - 21
-      - 24
+      - 26
       
     ignore_cameras: 
       - 29 # faulty
