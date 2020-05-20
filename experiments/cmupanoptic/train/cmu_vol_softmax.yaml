@@ -33,7 +33,7 @@ model:
   init_weights: false
   checkpoint: ""
 
-  use_gt_pelvis: false
+  use_gt_pelvis: true
 
   cuboid_side: 250.0
 
