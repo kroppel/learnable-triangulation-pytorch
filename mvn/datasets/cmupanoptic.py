@@ -119,12 +119,41 @@ class CMUPanopticDataset(Dataset):
         # Prune based on action names from split
         indices = []
         if train:
+            mask = 0
+            for action in self.frames_split['train']:
+                full_ranges = []
+                for ranges in self.frames_split['train'][action]:
+                    full_ranges += list(range(ranges[0], ranges[1]))
+
+                action_idx = self.labels['action_names'].index(action)
+                submask = np.isin(self.labels['table']['action_idx'], [action_idx], assume_unique=True)
+
+                mask |= submask
+
+            indices.append(np.nonzero(mask)[0])
+
+        if test:
+            mask = 0
+            for action in self.frames_split['val']:
+                action_idx = self.labels['action_names'].index(action)
+                mask |= np.isin(self.labels['table']['action_idx'], [action_idx], assume_unique=True)
+                submask = np.isin(self.labels['table']['action_idx'], [action_idx], assume_unique=True)
+            
+            indices.extend(np.nonzero(mask)[0])
+
+        indices = [np.array(indices)]
+        print(indices)
+
+        '''
+        indices = []
+        if train:
             mask = np.isin(self.labels['table']['action_idx'], train_actions, assume_unique=True)
             indices.append(np.nonzero(mask)[0])
 
         if test:
             mask = np.isin(self.labels['table']['action_idx'], val_actions, assume_unique=True)
             indices.append(np.nonzero(mask)[0][::retain_every_n_frames_in_test])
+        '''
 
         self.labels['table'] = self.labels['table'][np.concatenate(indices)]
 
@@ -189,14 +218,6 @@ class CMUPanopticDataset(Dataset):
         action = self.labels['action_names'][action_idx]
         
         frame_idx = shot['frame_name']
-
-        # Prune frames per action here
-        # Pruning is important because some of the frames have no persons in them
-        
-
-        for action in self.frames_split['val']:
-            for ranges in self.frames_split['val'][action]:
-                print(ranges)
 
         for camera_idx, camera_name in enumerate(self.labels['camera_names']):
             if camera_idx not in self.choose_cameras or camera_idx in self.ignore_cameras:
