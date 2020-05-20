@@ -127,6 +127,7 @@ class CMUPanopticDataset(Dataset):
 
                 action_idx = self.labels['action_names'].index(action)
                 submask = np.isin(self.labels['table']['action_idx'], [action_idx], assume_unique=True)
+                submask &= np.isin(self.labels['table']['frame_name'], full_ranges, assume_unique=True)
 
                 mask |= submask
 
@@ -135,9 +136,15 @@ class CMUPanopticDataset(Dataset):
         if test:
             mask = 0
             for action in self.frames_split['val']:
+                full_ranges = []
+                for ranges in self.frames_split['train'][action]:
+                    full_ranges += list(range(ranges[0], ranges[1]))
+
                 action_idx = self.labels['action_names'].index(action)
-                mask |= np.isin(self.labels['table']['action_idx'], [action_idx], assume_unique=True)
                 submask = np.isin(self.labels['table']['action_idx'], [action_idx], assume_unique=True)
+                submask &= np.isin(self.labels['table']['frame_name'], full_ranges, assume_unique=True)
+
+                mask |= submask
             
             indices.extend(np.nonzero(mask)[0])
 
