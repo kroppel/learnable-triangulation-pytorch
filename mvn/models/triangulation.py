@@ -326,7 +326,7 @@ class VolumetricTriangulationNet(nn.Module):
 
             if self.kind == "coco":
                 axis = [0, 1, 0]  # y axis
-            elif self.kind == "mpii":
+            elif self.kind in ("mpii", "cmu"):
                 axis = [0, 0, 1]  # z axis
 
             center = torch.from_numpy(base_point).type(torch.float).to(device)
@@ -337,7 +337,7 @@ class VolumetricTriangulationNet(nn.Module):
             coord_volume = coord_volume + center
 
             # transfer
-            if self.transfer_cmu_to_human36m:  # different world coordinates
+            if self.transfer_cmu_to_human36m or self.kind == "cmu":  # different world coordinates
                 coord_volume = coord_volume.permute(0, 2, 1, 3)
                 inv_idx = torch.arange(coord_volume.shape[1] - 1, -1, -1).long().to(device)
                 coord_volume = coord_volume.index_select(1, inv_idx)
