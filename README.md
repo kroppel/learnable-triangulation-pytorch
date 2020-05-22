@@ -24,6 +24,8 @@ pip install -r requirements.txt
 
 *Note:* only [Human3.6M](http://vision.imar.ro/human3.6m/description.php) dataset training/evaluation is available right now. [CMU Panoptic](http://domedb.perception.cs.cmu.edu/) dataset will be added soon.
 
+**UPDATE:** You can now download pretrained labels and data from my Google drive [here](https://drive.google.com/drive/folders/1WkLo1k-ZLqaWm02alvl82OiuRNWG_7Kq?usp=sharing), with supplementary data and weights from the original author's Google drive [here](https://drive.google.com/open?id=1TGHBfa9LsFPVS5CH6Qkcy5Jr2QsJdPEa) 
+
 #### Human3.6M
 
 1. Download and preprocess the dataset by following the instructions in [mvn/datasets/human36m_preprocessing/README.md](https://github.com/karfly/learnable-triangulation-pytorch/blob/master/mvn/datasets/human36m_preprocessing/README.md).

@@ -55,6 +55,8 @@ __NOTE: WHILE IT IS ADVISED THAT YOU DOWNLOAD ALL DATA FROM THE APPROPRIATE LINK
     Move the folders to `$THIS_REPOSITORY/data/cmupanoptic`.
 
 2. We need the BBOXES detections of each person in the scene, by camera. ~~You can either generate the necessary npy file yourself, ~or use the npy file shipped with this repo at $THIS_REPOSITORY/mvn/datasets/cmu_preprocessing/~~.
+   
+    **UPDATE:** You can now download pre-generated npy labels files from my Google Drive [here](https://drive.google.com/drive/folders/1jDwOmkkEDBRYQCRtQfNjPhp7qAyGTLXM?usp=sharing). However, it is still advised that you download and run the script yourself due to possible differences in file structure.
 
     To generate the npy file yourself, you need to download the files from the original paper's [Google Drive](https://drive.google.com/drive/folders/1Nf2XPjHR4rw7-nESrrcoI8rMmdJmuxqX). See the original GitHub issue [#19](https://github.com/karfly/learnable-triangulation-pytorch/issues/19#issuecomment-545993330) for more details.
 
