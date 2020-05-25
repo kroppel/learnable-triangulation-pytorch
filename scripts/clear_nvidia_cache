@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Clear nvidia cache (only from user)
+kill -9 `fuser -v /dev/nvidia* | xargs`
