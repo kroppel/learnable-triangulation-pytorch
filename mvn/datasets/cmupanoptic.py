@@ -316,14 +316,19 @@ class CMUPanopticDataset(Dataset):
 
             return action_scores
 
+        print("Evaluating average actions...")
         person_scores = {
             'Average': evaluate_by_actions(self, per_pose_error)
         }
 
+        '''
         for person_id in range(len(self.labels['person_ids'])):
             person_mask = self.labels['table']['person_id'] == person_id
             person_scores[person_id] = \
                 evaluate_by_actions(self, per_pose_error, person_mask)
+        '''
+
+        print("Evaluation complete!")
 
         return person_scores
         
