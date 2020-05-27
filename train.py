@@ -619,6 +619,7 @@ def main(args):
     # optimizer
     opt = None
     if not args.eval:
+        print("Optimising model...")
         if config.model.name == "vol":
             opt = torch.optim.Adam(
                 [{'params': model.backbone.parameters()},
@@ -645,23 +646,39 @@ def main(args):
         model = DistributedDataParallel(model, device_ids=[device])
 
     if not args.eval:
-        print(f"Performing training with {config.opt.n_epochs}")
+        print(f"Performing training with {config.opt.n_epochs}...")
+
         # train loop
         n_iters_total_train, n_iters_total_val = 0, 0
         for epoch in range(config.opt.n_epochs):
-            print(f"Running epoch {epoch}")
-
             if train_sampler is not None:
                 train_sampler.set_epoch(epoch)
 
+            if DEBUG: 
+                print(f"Training epoch {epoch}...")
+
             n_iters_total_train = one_epoch(model, criterion, opt, config, train_dataloader, device, epoch, n_iters_total=n_iters_total_train, is_train=True, master=master, experiment_dir=experiment_dir, writer=writer)
+
+            if DEBUG: 
+                print(f"Epoch {epoch} training complete!")
+                print(f"Evaluating epoch {epoch}...")
+
             n_iters_total_val = one_epoch(model, criterion, opt, config, val_dataloader, device, epoch, n_iters_total=n_iters_total_val, is_train=False, master=master, experiment_dir=experiment_dir, writer=writer)
+
+            if DEBUG:
+                print(f"Epoch {epoch} evaluation complete!")
 
             if master:
                 checkpoint_dir = os.path.join(experiment_dir, "checkpoints", "{:04}".format(epoch))
                 os.makedirs(checkpoint_dir, exist_ok=True)
 
+                if DEBUG:
+                    print("Saving checkpoints to {checkpoint_dir}/weights.pth... ", end="")
+
                 torch.save(model.state_dict(), os.path.join(checkpoint_dir, "weights.pth"))
+
+                if DEBUG:
+                    print("Checkpoint saved!")
 
             print(f"{n_iters_total_train} iters done.")
     else:
