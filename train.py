@@ -525,7 +525,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                 with open(os.path.join(checkpoint_dir, "extra_data.pkl"), 'wb') as fout:
                 if DEBUG:
                     print(f"Dumping extra data to {checkpoint_dir}/extra_data.pkl... ", end="")
-                
+
                 pickle.dump(extra_data, fout, protocol=4)
                 
                 if DEBUG:
@@ -654,12 +654,12 @@ def main(args):
             if train_sampler is not None:
                 train_sampler.set_epoch(epoch)
 
-            if DEBUG: 
+            if DEBUG:
                 print(f"Training epoch {epoch}...")
 
             n_iters_total_train = one_epoch(model, criterion, opt, config, train_dataloader, device, epoch, n_iters_total=n_iters_total_train, is_train=True, master=master, experiment_dir=experiment_dir, writer=writer)
 
-            if DEBUG: 
+            if DEBUG:
                 print(f"Epoch {epoch} training complete!")
                 print(f"Evaluating epoch {epoch}...")
 
