@@ -609,9 +609,12 @@ def main(args):
         model = DistributedDataParallel(model, device_ids=[device])
 
     if not args.eval:
+        print(f"Performing training with {config.opt.n_epochs}")
         # train loop
         n_iters_total_train, n_iters_total_val = 0, 0
         for epoch in range(config.opt.n_epochs):
+            print(f"Running epoch {epoch}")
+
             if train_sampler is not None:
                 train_sampler.set_epoch(epoch)
 
