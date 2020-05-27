@@ -5,6 +5,8 @@ vis_n_elements: 10
 
 image_shape: [384, 384]
 
+debug_mode: true
+
 opt:
   criterion: "MAE"
 
@@ -31,7 +33,7 @@ model:
   volume_aggregation_method: "softmax"
 
   init_weights: false
-  checkpoint: ""
+  checkpoint: "" #doesn't matter if init_weights is false
 
   use_gt_pelvis: true
 

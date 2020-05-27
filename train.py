@@ -32,6 +32,8 @@ from mvn.datasets import utils as dataset_utils
 # need this to overcome overflow error with pickling
 import pickle4reducer 
 
+DEBUG = False
+
 def parse_args():
     parser = argparse.ArgumentParser()
 
@@ -234,8 +236,10 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
     model_type = config.model.name
 
     if is_train:
+        print("Model training...")
         model.train()
     else:
+        print("Model evaluating...")
         model.eval()
 
     metric_dict = defaultdict(list)
@@ -282,6 +286,13 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                 if batch is None:
                     print(f"Found None batch: {iter_i}")
                     continue
+                elif DEBUG:
+                    if is_train:
+                        print("Training", end=' ')
+                    else:
+                        print("Evaluating", end=' ')
+                    
+                    print(f"batch {iter_i}...")
 
                 images_batch, keypoints_3d_gt, keypoints_3d_validity_gt, proj_matricies_batch = dataset_utils.prepare_batch(batch, device, config)
                 
@@ -480,7 +491,11 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
     # calculate evaluation metrics
     if master:
         if not is_train:
-            results['keypoints_3d'] = np.concatenate(results['keypoints_3d'], axis=0)
+            if DEBUG:
+                print("Calculating evaluation metrics... ", end="")
+
+            results['keypoints_3d'] = np.concatenate(
+                results['keypoints_3d'], axis=0)
             results['indexes'] = np.concatenate(results['indexes'])
 
             try:
@@ -493,19 +508,38 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
 
             checkpoint_dir = os.path.join(experiment_dir, "checkpoints", "{:04}".format(epoch))
             os.makedirs(checkpoint_dir, exist_ok=True)
+            
+            if DEBUG:
+                print("Calculated!")
 
             # dump results
             with open(os.path.join(checkpoint_dir, "results.pkl"), 'wb') as fout:
+                if DEBUG:
+                    print(f"Dumping results to {checkpoint_dir}/results.pkl... ", end="")
                 pickle.dump(results, fout, protocol=4)
+                if DEBUG:
+                    print("Dumped!")
 
             # dump extra data as pkl file if need to reconstruct anything
             if save_extra_data: 
                 with open(os.path.join(checkpoint_dir, "extra_data.pkl"), 'wb') as fout:
-                    pickle.dump(extra_data, fout, protocol=4)
+                if DEBUG:
+                    print(f"Dumping extra data to {checkpoint_dir}/extra_data.pkl... ", end="")
+                
+                pickle.dump(extra_data, fout, protocol=4)
+                
+                if DEBUG:
+                    print("Dumped!")
 
             # dump full metric
             with open(os.path.join(checkpoint_dir, "metric.json".format(epoch)), 'w') as fout:
+                if DEBUG:
+                    print(f"Dumping metric to {checkpoint_dir}/metric.json... ", end="")
+                
                 json.dump(full_metric, fout, indent=4, sort_keys=True)
+                
+                if DEBUG:
+                    print("Dumped!")
 
         # dump to tensorboard per-epoch stats
         for title, value in metric_dict.items():
@@ -552,6 +586,8 @@ def main(args):
     # config
     config = cfg.load_config(args.config)
     config.opt.n_iters_per_epoch = config.opt.n_objects_per_epoch // config.opt.batch_size
+
+    DEBUG = config.debug_mode if hasattr(config, "debug_mode") else False
 
     model = {
         "ransac": RANSACTriangulationNet,
