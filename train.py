@@ -523,14 +523,13 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
             # dump extra data as pkl file if need to reconstruct anything
             if save_extra_data: 
                 with open(os.path.join(checkpoint_dir, "extra_data.pkl"), 'wb') as fout:
-                if DEBUG:
-                    print(
-                        f"Dumping extra data to {checkpoint_dir}/extra_data.pkl... ", end="")
+                    if DEBUG:
+                        print(f"Dumping extra data to {checkpoint_dir}/extra_data.pkl... ", end="")
 
-                pickle.dump(extra_data, fout, protocol=4)
-                
-                if DEBUG:
-                    print("Dumped!")
+                    pickle.dump(extra_data, fout, protocol=4)
+                    
+                    if DEBUG:
+                        print("Dumped!")
 
             # dump full metric
             with open(os.path.join(checkpoint_dir, "metric.json".format(epoch)), 'w') as fout:
