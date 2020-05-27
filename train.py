@@ -236,10 +236,8 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
     model_type = config.model.name
 
     if is_train:
-        print("Model training...")
         model.train()
     else:
-        print("Model evaluating...")
         model.eval()
 
     metric_dict = defaultdict(list)
@@ -646,7 +644,7 @@ def main(args):
         model = DistributedDataParallel(model, device_ids=[device])
 
     if not args.eval:
-        print(f"Performing training with {config.opt.n_epochs}...")
+        print(f"Performing training with {config.opt.n_epochs} total epochs...")
 
         # train loop
         n_iters_total_train, n_iters_total_val = 0, 0
