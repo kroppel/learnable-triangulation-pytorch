@@ -524,7 +524,8 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
             if save_extra_data: 
                 with open(os.path.join(checkpoint_dir, "extra_data.pkl"), 'wb') as fout:
                 if DEBUG:
-                    print(f"Dumping extra data to {checkpoint_dir}/extra_data.pkl... ", end="")
+                    print(
+                        f"Dumping extra data to {checkpoint_dir}/extra_data.pkl... ", end="")
 
                 pickle.dump(extra_data, fout, protocol=4)
                 
