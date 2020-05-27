@@ -586,6 +586,7 @@ def main(args):
     config.opt.n_iters_per_epoch = config.opt.n_objects_per_epoch // config.opt.batch_size
 
     DEBUG = config.debug_mode if hasattr(config, "debug_mode") else False
+    print("Debugging Mode: ", DEBUG)
 
     model = {
         "ransac": RANSACTriangulationNet,
