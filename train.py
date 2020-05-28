@@ -254,6 +254,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
     print("Transfer CMU to H36M: ", transfer_cmu_h36m)
     print("Using GT Pelvis position: ", config.model.use_gt_pelvis)
     print("Using cameras: ", dataloader.dataset.choose_cameras)
+    print("Debug Mode: ", DEBUG)
 
     # used to turn on/off gradients
     grad_context = torch.autograd.enable_grad if is_train else torch.no_grad
@@ -284,7 +285,8 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                 if batch is None:
                     print(f"Found None batch: {iter_i}")
                     continue
-                elif DEBUG:
+                
+                if DEBUG:
                     if is_train:
                         print("Training", end=' ')
                     else:
@@ -585,6 +587,7 @@ def main(args):
     config = cfg.load_config(args.config)
     config.opt.n_iters_per_epoch = config.opt.n_objects_per_epoch // config.opt.batch_size
 
+    global DEBUG
     DEBUG = config.debug_mode if hasattr(config, "debug_mode") else False
     print("Debugging Mode: ", DEBUG)
 
