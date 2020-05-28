@@ -4,6 +4,8 @@ pred_kind: "human36m"
 vis_freq: 1000
 vis_n_elements: 10
 
+debug_mode: true
+
 image_shape: [384, 384] # change accordingly
 
 opt:
