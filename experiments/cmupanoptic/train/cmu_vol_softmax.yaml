@@ -79,10 +79,10 @@ dataset:
     choose_cameras:
       - 0
       - 3
-      - 10
-      - 13
+      - 11
       - 16
       - 21
+      - 25
       
     ignore_cameras: 
       - 29 # faulty
@@ -94,9 +94,9 @@ dataset:
 
     undistort_images: true
     choose_cameras:
-      - 2
-      - 8
-      - 14
+      - 7
+      - 10
+      - 13
       
     ignore_cameras: 
       - 29 # faulty
