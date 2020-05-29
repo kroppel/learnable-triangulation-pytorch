@@ -659,7 +659,7 @@ def main(args):
             if DEBUG:
                 print(f"Training epoch {epoch}...")
 
-            n_iters_total_train = one_epoch(model, criterion, opt, config, train_dataloader, device, epoch, n_iters_total=n_iters_total_train, is_train=True, master=master, experiment_dir=experiment_dir, writer=writer)
+            # n_iters_total_train = one_epoch(model, criterion, opt, config, train_dataloader, device, epoch, n_iters_total=n_iters_total_train, is_train=True, master=master, experiment_dir=experiment_dir, writer=writer)
 
             if DEBUG:
                 print(f"Epoch {epoch} training complete!")

@@ -96,7 +96,8 @@ dataset:
     choose_cameras:
       - 7
       - 10
-      - 14
+      - 19
+      # - 14
       
     ignore_cameras: 
       - 29 # faulty
