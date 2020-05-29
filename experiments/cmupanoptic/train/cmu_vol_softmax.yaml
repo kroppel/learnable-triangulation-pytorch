@@ -78,14 +78,15 @@ dataset:
 
     choose_cameras:
       - 0
-      - 3
+      - 3  # full-view
       - 9
-      - 13
+      - 19 # full-view
       - 21
-      - 25
       
+    # faulty
     ignore_cameras: 
-      - 29 # faulty
+      - 25
+      - 29 
       
   val:
     cmu_root: "./data/cmupanoptic"
@@ -94,13 +95,14 @@ dataset:
 
     undistort_images: true
     choose_cameras:
-      - 7
-      - 10
-      - 19
-      # - 14
+      - 7   # full-view
+      - 10  # full-view 
+      - 13
       
+    # faulty
     ignore_cameras: 
-      - 29 # faulty
+      - 25
+      - 29 
       
     scale_bbox: 1.0
 
