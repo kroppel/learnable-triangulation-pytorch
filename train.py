@@ -525,6 +525,8 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
 
                     n_iters_total += 1
 
+            print("Epoch {epoch}, Batch {iter_i} complete!")
+
     # calculate evaluation metrics
     if master:
         if not is_train:
