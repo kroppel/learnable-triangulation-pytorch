@@ -255,6 +255,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
     print("Using GT Pelvis position: ", config.model.use_gt_pelvis)
     print("Using cameras: ", dataloader.dataset.choose_cameras)
     print("Debug Mode: ", DEBUG)
+    print("Training: ", is_train)
 
     # used to turn on/off gradients
     grad_context = torch.autograd.enable_grad if is_train else torch.no_grad
@@ -704,6 +705,9 @@ def main(args):
 
             if DEBUG:
                 print(f"Epoch {epoch} training complete!")
+
+                torch.cuda.empty_cache()
+
                 print(f"Evaluating epoch {epoch}...")
 
             n_iters_total_val = one_epoch(model, criterion, opt, config, val_dataloader, device, epoch, n_iters_total=n_iters_total_val, is_train=False, master=master, experiment_dir=experiment_dir, writer=writer)
