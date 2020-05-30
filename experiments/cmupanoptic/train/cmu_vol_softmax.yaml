@@ -74,7 +74,7 @@ dataset:
     randomize_n_views: false
     min_n_views: null
     max_n_views: null
-    num_workers: 5
+    num_workers: 3
 
     choose_cameras:
       - 0
