@@ -294,13 +294,26 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                     
                     print(f"batch {iter_i}...")
 
+                if DEBUG: 
+                    print("Preparing batch... ", end="")
                 images_batch, keypoints_3d_gt, keypoints_3d_validity_gt, proj_matricies_batch = dataset_utils.prepare_batch(batch, device, config)
+                if DEBUG: 
+                    print("Prepared!")
                 
+
+                if DEBUG: 
+                    print(f"Running {model_type} model... ", end="")
+
                 keypoints_2d_pred, cuboids_pred, base_points_pred = None, None, None
                 if model_type == "alg" or model_type == "ransac":
                     keypoints_3d_pred, keypoints_2d_pred, heatmaps_pred, confidences_pred = model(images_batch, proj_matricies_batch, batch)
                 elif model_type == "vol":
                     keypoints_3d_pred, heatmaps_pred, volumes_pred, confidences_pred, cuboids_pred, coord_volumes_pred, base_points_pred = model(images_batch, proj_matricies_batch, batch)
+                else:
+                    raise NotImplementedError(f"Unknown model type {model_type}")
+
+                if DEBUG:
+                    print("Done!")
 
                 # batch shape[2] is likely to be the number of channels
                 # n_views is also the number of cameras being used in this batch 
@@ -346,6 +359,9 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                 # import ipdb; ipdb.set_trace()
 
                 # calculate loss
+                if DEBUG:
+                    print("Calculating loss... ", end="")
+
                 total_loss = 0.0
 
                 loss = criterion(
@@ -369,7 +385,13 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
 
                 metric_dict['total_loss'].append(total_loss.item())
 
+                if DEBUG:
+                    print("Done!")
+
                 if is_train:
+                    if DEBUG:
+                        print("Backpropragating... ", end="")
+
                     opt.zero_grad()
                     total_loss.backward()
 
@@ -380,7 +402,13 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
 
                     opt.step()
 
+                    if DEBUG:
+                        print("Done!")
+
                 # calculate metrics
+                if DEBUG:
+                    print("Calculating metrics...")
+
                 l2 = KeypointsL2Loss()(
                     keypoints_3d_pred * scale_keypoints_3d,
                     keypoints_3d_gt * scale_keypoints_3d,
@@ -390,6 +418,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
 
                 # base point l2
                 if base_points_pred is not None:
+                    print("Calculating base point metric...", end="")
                     base_point_l2_list = []
                     for batch_i in range(batch_size):
                         base_point_pred = base_points_pred[batch_i]
@@ -659,7 +688,8 @@ def main(args):
             if DEBUG:
                 print(f"Training epoch {epoch}...")
 
-            n_iters_total_train = one_epoch(model, criterion, opt, config, train_dataloader, device, epoch, n_iters_total=n_iters_total_train, is_train=True, master=master, experiment_dir=experiment_dir, writer=writer)
+            if not DEBUG:
+                n_iters_total_train = one_epoch(model, criterion, opt, config, train_dataloader, device, epoch, n_iters_total=n_iters_total_train, is_train=True, master=master, experiment_dir=experiment_dir, writer=writer)
 
             if DEBUG:
                 print(f"Epoch {epoch} training complete!")
