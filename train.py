@@ -295,14 +295,14 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                     print(f"batch {iter_i}...")
 
                 if DEBUG: 
-                    print("Preparing batch... ", end="")
+                    print(f"[{epoch}, {iter_i}] Preparing batch... ", end="")
                 images_batch, keypoints_3d_gt, keypoints_3d_validity_gt, proj_matricies_batch = dataset_utils.prepare_batch(batch, device, config)
                 if DEBUG: 
                     print("Prepared!")
                 
 
                 if DEBUG: 
-                    print(f"Running {model_type} model... ", end="")
+                    print(f"[{epoch}, {iter_i}] Running {model_type} model... ", end="")
 
                 keypoints_2d_pred, cuboids_pred, base_points_pred = None, None, None
                 if model_type == "alg" or model_type == "ransac":
@@ -341,7 +341,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                 # 1-view case
                 # TODO: Totally remove for CMU dataset (which doesnt have pelvis-offset errors)?
                 if n_views == 1:
-                    print(f"{config.kind} 1-view case: batch {iter_i}, images {images_batch.shape}")
+                    print(f"[{epoch}, {iter_i}] {config.kind} 1-view case: batch {iter_i}, images {images_batch.shape}")
 
                     if config.kind == "human36m":
                         base_joint = 6
@@ -360,7 +360,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
 
                 # calculate loss
                 if DEBUG:
-                    print("Calculating loss... ", end="")
+                    print(f"[{epoch}, {iter_i}] Calculating loss... ", end="")
 
                 total_loss = 0.0
 
@@ -390,7 +390,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
 
                 if is_train:
                     if DEBUG:
-                        print("Backpropragating... ", end="")
+                        print(f"[{epoch}, {iter_i}] Backpropragating... ", end="")
 
                     opt.zero_grad()
                     total_loss.backward()
@@ -407,7 +407,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
 
                 # calculate metrics
                 if DEBUG:
-                    print("Calculating metrics...")
+                    print(f"[{epoch}, {iter_i}] Calculating metrics... ", end="")
 
                 l2 = KeypointsL2Loss()(
                     keypoints_3d_pred * scale_keypoints_3d,
@@ -418,7 +418,9 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
 
                 # base point l2
                 if base_points_pred is not None:
-                    print("Calculating base point metric...", end="")
+                    if DEBUG:
+                        print(f"\n\tCalculating base point metric...", end="")
+
                     base_point_l2_list = []
                     for batch_i in range(batch_size):
                         base_point_pred = base_points_pred[batch_i]
@@ -434,6 +436,12 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
 
                     base_point_l2 = 0.0 if len(base_point_l2_list) == 0 else np.mean(base_point_l2_list)
                     metric_dict['base_point_l2'].append(base_point_l2)
+
+                    if DEBUG:
+                        print("Done!")
+
+                if DEBUG:
+                    print("Done!")
 
                 # save answers for evalulation
                 if not is_train:
