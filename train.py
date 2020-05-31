@@ -605,7 +605,7 @@ def init_distributed(args):
     # Default timeout: 30 min
     # BUT NOTE: Must set `NCCL_BLOCKING_WAIT=1`
     # NOTE: Timeout doesnt work
-    os.environ["NCCL_BLOCKING_WAIT"] = 1
+    os.environ["NCCL_BLOCKING_WAIT"] = "1"
     torch.distributed.init_process_group(backend="nccl", init_method="env://")
 
     return True
