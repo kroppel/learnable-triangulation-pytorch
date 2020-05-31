@@ -357,8 +357,6 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                     keypoints_3d_pred_transformed[:, torch.arange(n_joints) != base_joint] -= keypoints_3d_pred_transformed[:, base_joint:base_joint + 1]
                     keypoints_3d_pred = keypoints_3d_pred_transformed
 
-                # import ipdb; ipdb.set_trace()
-
                 # calculate loss
                 if DEBUG:
                     print(f"[{epoch}, {iter_i}] Calculating loss... ", end="")
@@ -708,7 +706,7 @@ def main(args):
             if DEBUG:
                 print(f"Training epoch {epoch}...")
 
-            if not DEBUG:
+            if True: # not DEBUG:
                 n_iters_total_train = one_epoch(model, criterion, opt, config, train_dataloader, device, epoch, n_iters_total=n_iters_total_train, is_train=True, master=master, experiment_dir=experiment_dir, writer=writer)
 
             if DEBUG:
