@@ -599,6 +599,10 @@ def init_distributed(args):
     assert os.environ["RANK"], "use pytorch launcher and explicitly state the rank of the process"
 
     torch.manual_seed(args.seed)
+
+    # Default timeout: 30 min
+    # BUT NOTE: Must set `NCCL_BLOCKING_WAIT=1`
+    os.environ["NCCL_BLOCKING_WAIT"] = "1"
     torch.distributed.init_process_group(backend="nccl", init_method="env://")
 
     return True
