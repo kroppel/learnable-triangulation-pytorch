@@ -277,8 +277,12 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
         - Keypoints (gt): NP Array, (17, 4)
         - Keypoints (pred): NP Array, (17, 4) [Note: may not be there]
         '''
+        ignore_batch = [ 1 ]
 
         for iter_i, batch in iterator:
+            if not is_train and iter_i in ignore_batch:
+                continue
+
             with autograd.detect_anomaly():
                 # measure data loading time
                 data_time = time.time() - end
@@ -600,7 +604,8 @@ def init_distributed(args):
 
     # Default timeout: 30 min
     # BUT NOTE: Must set `NCCL_BLOCKING_WAIT=1`
-    os.environ["NCCL_BLOCKING_WAIT"] = "1"
+    # NOTE: Timeout doesnt work
+    os.environ["NCCL_BLOCKING_WAIT"] = 1
     torch.distributed.init_process_group(backend="nccl", init_method="env://")
 
     return True
