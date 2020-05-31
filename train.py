@@ -281,6 +281,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
 
         for iter_i, batch in iterator:
             if not is_train and iter_i in ignore_batch:
+                print("Ignoring batch", iter_i)
                 continue
 
             with autograd.detect_anomaly():
