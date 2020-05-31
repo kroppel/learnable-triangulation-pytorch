@@ -638,6 +638,10 @@ def main(args):
         "vol": VolumetricTriangulationNet
     }[config.model.name](config, device=device).to(device)
 
+    # https://pytorch.org/docs/stable/notes/multiprocessing.html
+    # NOTE: this is required for the ``fork`` method to work
+    model.share_memory()
+
     if config.model.init_weights:
         state_dict = torch.load(config.model.checkpoint)
         for key in list(state_dict.keys()):
