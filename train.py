@@ -530,6 +530,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
             if DEBUG:
                 print(f"Training of epoch {epoch}, batch {iter_i} complete!")
 
+
     # calculate evaluation metrics
     if master:
         if not is_train:
@@ -586,6 +587,8 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
         # dump to tensorboard per-epoch stats
         for title, value in metric_dict.items():
             writer.add_scalar(f"{name}/{title}_epoch", np.mean(value), epoch)
+
+    global training_complete = 1
 
     print(f"Epoch {epoch} {train_eval_mode} complete!")
 
@@ -712,11 +715,16 @@ def main(args):
             if DEBUG:
                 print(f"Training epoch {epoch}...")
 
+            global training_complete = 0
+
             n_iters_total_train = one_epoch(model, criterion, opt, config, train_dataloader, device, epoch, n_iters_total=n_iters_total_train, is_train=True, master=master, experiment_dir=experiment_dir, writer=writer)
+
+            while not training_complete:
+                pass
 
             if DEBUG:
                 print(f"Epoch {epoch} training complete!")
-                
+
                 # torch.cuda.empty_cache()
 
                 print(f"Evaluating epoch {epoch}...")
