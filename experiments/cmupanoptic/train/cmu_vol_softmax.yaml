@@ -80,9 +80,9 @@ dataset:
       - 0
       - 3  # full-view
       - 7  # full-view
-      - 10 # full-view 
+      - 10 # full-view
+      - 15 
       - 19 # full-view
-      - 30
       
     ignore_cameras: 
       # faulty
