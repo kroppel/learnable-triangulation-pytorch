@@ -587,6 +587,8 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
         for title, value in metric_dict.items():
             writer.add_scalar(f"{name}/{title}_epoch", np.mean(value), epoch)
 
+    print(f"Epoch {epoch} {train_eval_mode} complete!")
+
     return n_iters_total
 
 
