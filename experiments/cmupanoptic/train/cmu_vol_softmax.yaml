@@ -17,7 +17,7 @@ opt:
   n_epochs: 9999
 
   batch_size: 1
-  val_batch_size: 1
+  val_batch_size: 5
 
   lr: 0.0001
   process_features_lr: 0.001
@@ -76,16 +76,21 @@ dataset:
     max_n_views: null
     num_workers: 3
 
-    choose_cameras:
-      - 0
-      - 3  # full-view
-      - 7   # full-view
-      - 10  # full-view 
-      - 19 # full-view
-      - 21
+    # choose_cameras:
+    #   - 0
+    #   - 3  # full-view
+    #   - 7   # full-view
+    #   - 10  # full-view 
+    #   - 19 # full-view
+    #   - 21
       
-    # faulty
     ignore_cameras: 
+      - 2
+      - 13
+      - 16
+      - 18
+      - 28
+      # faulty
       - 25
       - 29 
       
@@ -100,6 +105,7 @@ dataset:
       - 13
       - 16
       - 18
+      - 28
       
     # faulty
     ignore_cameras: 
