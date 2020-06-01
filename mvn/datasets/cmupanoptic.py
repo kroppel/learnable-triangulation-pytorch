@@ -86,7 +86,8 @@ class CMUPanopticDataset(Dataset):
             assert camera_id < 31, "The CMU dataset only has 31 cameras in total. Please change your config file!"
 
             if (len(choose_cameras) <= 0) or (camera_id in choose_cameras):
-                self.choose_cameras.append(i)
+                if camera_id not in ignore_cameras:
+                    self.choose_cameras.append(i)
 
             if camera_id in ignore_cameras:
                 self.ignore_cameras.append(i)
