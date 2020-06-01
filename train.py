@@ -717,7 +717,7 @@ def main(args):
             if DEBUG:
                 print(f"Epoch {epoch} training complete!")
 
-                torch.cuda.empty_cache()
+                # torch.cuda.empty_cache()
 
                 print(f"Evaluating epoch {epoch}...")
 
