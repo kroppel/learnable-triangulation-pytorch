@@ -530,7 +530,6 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
             if DEBUG:
                 print(f"Training of epoch {epoch}, batch {iter_i} complete!")
 
-
     # calculate evaluation metrics
     if master:
         if not is_train:
@@ -721,8 +720,10 @@ def main(args):
 
             n_iters_total_train = one_epoch(model, criterion, opt, config, train_dataloader, device, epoch, n_iters_total=n_iters_total_train, is_train=True, master=master, experiment_dir=experiment_dir, writer=writer)
 
+            '''
             while not training_complete:
                 pass
+            '''
 
             if DEBUG:
                 print(f"Epoch {epoch} training complete!")
