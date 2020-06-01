@@ -279,7 +279,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
         - Keypoints (gt): NP Array, (17, 4)
         - Keypoints (pred): NP Array, (17, 4) [Note: may not be there]
         '''
-        ignore_batch = [ 1 ]
+        ignore_batch = [ ]
 
         for iter_i, batch in iterator:
             if not is_train and iter_i in ignore_batch:
