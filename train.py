@@ -257,6 +257,8 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
     print("Debug Mode: ", DEBUG)
     print("Training: ", is_train)
 
+    train_eval_mode = "Train" if is_train else "Eval"
+
     # used to turn on/off gradients
     grad_context = torch.autograd.enable_grad if is_train else torch.no_grad
     with grad_context():
@@ -289,26 +291,22 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                 data_time = time.time() - end
                     
                 if batch is None:
-                    print(f"Found None batch: {iter_i}")
+                    print(
+                        f"[{train_eval_mode}, {epoch}] Found None batch: {iter_i}")
                     continue
                 
-                if DEBUG:
-                    if is_train:
-                        print("Training", end=' ')
-                    else:
-                        print("Evaluating", end=' ')
-                    
-                    print(f"batch {iter_i}...")
+                if DEBUG:                    
+                    print(f"{train_eval_mode} batch {iter_i}...")
+                    print(f"[{train_eval_mode}, {epoch}, {iter_i}] Preparing batch... ", end="")
 
-                if DEBUG: 
-                    print(f"[{epoch}, {iter_i}] Preparing batch... ", end="")
                 images_batch, keypoints_3d_gt, keypoints_3d_validity_gt, proj_matricies_batch = dataset_utils.prepare_batch(batch, device, config)
+
                 if DEBUG: 
                     print("Prepared!")
                 
 
                 if DEBUG: 
-                    print(f"[{epoch}, {iter_i}] Running {model_type} model... ", end="")
+                    print(f"[{train_eval_mode}, {epoch}, {iter_i}] Running {model_type} model... ", end="")
 
                 keypoints_2d_pred, cuboids_pred, base_points_pred = None, None, None
                 if model_type == "alg" or model_type == "ransac":
@@ -347,7 +345,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                 # 1-view case
                 # TODO: Totally remove for CMU dataset (which doesnt have pelvis-offset errors)?
                 if n_views == 1:
-                    print(f"[{epoch}, {iter_i}] {config.kind} 1-view case: batch {iter_i}, images {images_batch.shape}")
+                    print(f"[{train_eval_mode}, {epoch}, {iter_i}] {config.kind} 1-view case: batch {iter_i}, images {images_batch.shape}")
 
                     if config.kind == "human36m":
                         base_joint = 6
@@ -364,7 +362,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
 
                 # calculate loss
                 if DEBUG:
-                    print(f"[{epoch}, {iter_i}] Calculating loss... ", end="")
+                    print(f"[{train_eval_mode}, {epoch}, {iter_i}] Calculating loss... ", end="")
 
                 total_loss = 0.0
 
@@ -394,7 +392,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
 
                 if is_train:
                     if DEBUG:
-                        print(f"[{epoch}, {iter_i}] Backpropragating... ", end="")
+                        print(f"[{train_eval_mode}, {epoch}, {iter_i}] Backpropragating... ", end="")
 
                     opt.zero_grad()
                     total_loss.backward()
@@ -411,7 +409,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
 
                 # calculate metrics
                 if DEBUG:
-                    print(f"[{epoch}, {iter_i}] Calculating metrics... ", end="")
+                    print(f"[{train_eval_mode}, {epoch}, {iter_i}] Calculating metrics... ", end="")
 
                 l2 = KeypointsL2Loss()(
                     keypoints_3d_pred * scale_keypoints_3d,
@@ -530,7 +528,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                     n_iters_total += 1
 
             if DEBUG:
-                print(f"Epoch {epoch}, Batch {iter_i} complete!")
+                print(f"Training of epoch {epoch}, batch {iter_i} complete!")
 
     # calculate evaluation metrics
     if master:
@@ -712,8 +710,7 @@ def main(args):
             if DEBUG:
                 print(f"Training epoch {epoch}...")
 
-            if True: # not DEBUG:
-                n_iters_total_train = one_epoch(model, criterion, opt, config, train_dataloader, device, epoch, n_iters_total=n_iters_total_train, is_train=True, master=master, experiment_dir=experiment_dir, writer=writer)
+            n_iters_total_train = one_epoch(model, criterion, opt, config, train_dataloader, device, epoch, n_iters_total=n_iters_total_train, is_train=True, master=master, experiment_dir=experiment_dir, writer=writer)
 
             if DEBUG:
                 print(f"Epoch {epoch} training complete!")
