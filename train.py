@@ -588,7 +588,8 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
         for title, value in metric_dict.items():
             writer.add_scalar(f"{name}/{title}_epoch", np.mean(value), epoch)
 
-    global training_complete = 1
+    global training_complete
+    training_complete = True
 
     print(f"Epoch {epoch} {train_eval_mode} complete!")
 
@@ -715,7 +716,8 @@ def main(args):
             if DEBUG:
                 print(f"Training epoch {epoch}...")
 
-            global training_complete = 0
+            global training_complete
+            training_complete = False
 
             n_iters_total_train = one_epoch(model, criterion, opt, config, train_dataloader, device, epoch, n_iters_total=n_iters_total_train, is_train=True, master=master, experiment_dir=experiment_dir, writer=writer)
 
