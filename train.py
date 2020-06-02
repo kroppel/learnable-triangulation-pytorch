@@ -286,7 +286,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                 print("Ignoring batch", iter_i)
                 continue
 
-            with autograd.detect_anomaly():
+            if True: # with autograd.detect_anomaly():
                 # measure data loading time
                 data_time = time.time() - end
                     
