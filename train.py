@@ -718,6 +718,9 @@ def main(args):
             global training_complete
             training_complete = False
 
+            # Cache needs to be emptied first
+            torch.cuda.empty_cache()
+
             n_iters_total_train = one_epoch(model, criterion, opt, config, train_dataloader, device, epoch, n_iters_total=n_iters_total_train, is_train=True, master=master, experiment_dir=experiment_dir, writer=writer)
 
             '''
