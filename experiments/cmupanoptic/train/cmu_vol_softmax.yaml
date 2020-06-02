@@ -32,8 +32,8 @@ model:
   kind: "cmu"
   volume_aggregation_method: "softmax"
 
-  init_weights: false
-  checkpoint: "" #doesn't matter if init_weights is false
+  init_weights: true
+  checkpoint: "./logs/cmu/train/cmu_vol_softmax_VolumetricTriangulationNet_stuck0_with_checkpoint/checkpoints/0000/weights.pth" # continue from checkpoint
 
   use_gt_pelvis: true
 
