@@ -632,7 +632,8 @@ def main(args):
         master = int(os.environ["RANK"]) == 0
 
     if is_distributed:
-        device = torch.device("Rank:", args.local_rank)
+        print("Rank:", args.local_rank)
+        device = torch.device(args.local_rank)
     else:
         device = torch.device(0)
 
