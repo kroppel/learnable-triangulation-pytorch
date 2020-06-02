@@ -103,7 +103,7 @@ class CMUPanopticDataset(Dataset):
         if self.frames_split is not None:
             if train:
                 mask = 0
-                print("Train", self.frames_split['train'])
+                # print("Train", self.frames_split['train'])
                 for action in self.frames_split['train']:
                     full_ranges = []
                     for ranges in self.frames_split['train'][action]:
@@ -119,7 +119,7 @@ class CMUPanopticDataset(Dataset):
 
             if test:
                 mask = 0
-                print("Eval", self.frames_split['val'])
+                # print("Eval", self.frames_split['val'])
 
                 for action in self.frames_split['val']:
                     full_ranges = []
