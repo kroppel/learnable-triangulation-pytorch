@@ -610,6 +610,7 @@ def init_distributed(args):
     # BUT NOTE: Must set `NCCL_BLOCKING_WAIT=1`
     # NOTE: Timeout doesnt work
     os.environ["NCCL_BLOCKING_WAIT"] = "1"
+    # os.environ['CUDA_VISIBLE_DEVICES'] = '0,1,2,3'
     torch.distributed.init_process_group(backend="nccl", init_method="env://")
 
     return True
@@ -631,6 +632,7 @@ def main(args):
         master = int(os.environ["RANK"]) == 0
 
     if is_distributed:
+        print(args.local_rank)
         device = torch.device(args.local_rank)
     else:
         device = torch.device(0)
