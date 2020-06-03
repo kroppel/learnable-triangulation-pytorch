@@ -269,6 +269,10 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
         if is_train and config.opt.n_iters_per_epoch is not None:
             iterator = islice(iterator, config.opt.n_iters_per_epoch)
 
+        if not is_train and hasattr(config.opt, n_iters_per_epoch_val) and config.opt.n_iters_per_epoch_val >= 1:
+            iterator = islice(iterator, config.opt.n_iters_per_epoch_val)
+            
+
         '''
         Data breakdown:
         - For each of the (max) 31 cameras in CMU dataset:
