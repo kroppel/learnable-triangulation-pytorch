@@ -629,6 +629,8 @@ def main(args):
     ctx = torch.multiprocessing.get_context()
     ctx.reducer = pickle4reducer.Pickle4Reducer()
 
+    config = cfg.load_config(args.config)
+
     global DEBUG
     DEBUG = config.debug_mode if hasattr(config, "debug_mode") else False
     print("Debugging Mode: ", DEBUG)
@@ -647,7 +649,6 @@ def main(args):
         device = torch.device(0)
 
     # config
-    config = cfg.load_config(args.config)
     config.opt.n_iters_per_epoch = config.opt.n_objects_per_epoch // config.opt.batch_size
     if hasattr(config.opt, "n_objects_per_epoch_val"):
         config.opt.n_iters_per_epoch_val = config.opt.n_objects_per_epoch_val // config.opt.val_batch_size
