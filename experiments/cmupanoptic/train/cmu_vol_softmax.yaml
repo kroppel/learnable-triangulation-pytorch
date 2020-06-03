@@ -33,7 +33,7 @@ model:
   volume_aggregation_method: "softmax"
 
   init_weights: true
-  checkpoint: "./logs/cmu/train/cmu_vol_softmax_VolumetricTriangulationNet_stuck1_with_checkpoint/checkpoints/0000/weights.pth" # continue from checkpoint
+  checkpoint: "./logs/cmu/train/checkpoints/epoch2-weights.pth" # continue from checkpoint
 
   use_gt_pelvis: true
 
