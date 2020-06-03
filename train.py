@@ -658,7 +658,7 @@ def main(args):
     }[config.model.name](config, device=device).to(device)
 
     # NOTE: May be a bad idea to share memory since NCCL used
-    # https: // pytorch.org/docs/stable/distributed.html  # torch.distributed.Backend
+    # https://pytorch.org/docs/stable/distributed.html#torch.distributed.Backend
     # model.share_memory()
 
     if config.model.init_weights:
