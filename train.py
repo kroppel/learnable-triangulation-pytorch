@@ -749,7 +749,7 @@ def main(args):
                 os.makedirs(checkpoint_dir, exist_ok=True)
 
                 if DEBUG:
-                    print("Saving checkpoints to {checkpoint_dir}/weights.pth... ", end="")
+                    print(f"Saving checkpoints to {checkpoint_dir}/weights.pth... ", end="")
 
                 torch.save(model.state_dict(), os.path.join(checkpoint_dir, "weights.pth"))
 
