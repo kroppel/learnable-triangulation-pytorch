@@ -7,6 +7,7 @@ else
 fi
 
 echo "Using $N_GPU GPUs for training"
+export NCCL_DEBUG=INFO
 
 if [ N_GPU = 1 ]; then
   python3 train.py  \
