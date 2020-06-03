@@ -269,10 +269,13 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
         if is_train and config.opt.n_iters_per_epoch is not None:
             iterator = islice(iterator, config.opt.n_iters_per_epoch)
 
-        if not is_train and hasattr(config.opt, 'n_iters_per_epoch_val'):
-            print("Hi trying to eval here!")
+        if not is_train:
+            iterator = islice(iterator, 2)
+
+        if not is_train and config.opt.n_iters_per_epoch_val is not None:
+            print("yay?")
             iterator = islice(iterator, config.opt.n_iters_per_epoch_val)
-            
+
         '''
         Data breakdown:
         - For each of the (max) 31 cameras in CMU dataset:
@@ -283,12 +286,10 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
         - Keypoints (gt): NP Array, (17, 4)
         - Keypoints (pred): NP Array, (17, 4) [Note: may not be there]
         '''
-        ignore_batch = [ 5 ]
+        ignore_batch = [ ]
 
         for iter_i, batch in iterator:
             if not is_train and iter_i in ignore_batch:
-                print("Ignoring batch", iter_i)
-                break
                 continue
 
             if True: # with autograd.detect_anomaly():
