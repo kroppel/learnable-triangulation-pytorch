@@ -17,7 +17,7 @@ opt:
   n_epochs: 9999
 
   batch_size: 1
-  val_batch_size: 1
+  val_batch_size: 5
 
   lr: 0.0001
   process_features_lr: 0.001
@@ -102,7 +102,6 @@ dataset:
       - 2
       - 5
       - 13
-      - 16
       
     # faulty
     ignore_cameras: 
