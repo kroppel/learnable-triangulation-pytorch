@@ -14,7 +14,7 @@ opt:
   volumetric_ce_loss_weight: 0.01
 
   n_objects_per_epoch: 3 # 15000
-  n_objects_per_epoch_val: 5 # 15000
+  n_objects_per_epoch_val: 15 # 15000
 
   n_epochs: 9999
 

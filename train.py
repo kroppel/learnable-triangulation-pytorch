@@ -615,6 +615,9 @@ def init_distributed(args):
     # os.environ['CUDA_VISIBLE_DEVICES'] = '0,1,2,3'
     torch.distributed.init_process_group(backend="nccl", init_method="env://")
 
+    if DEBUG:
+        os.environ["NCCL_DEBUG"] = "INFO"
+
     return True
 
 
@@ -625,6 +628,10 @@ def main(args):
     # See https://stackoverflow.com/questions/51562221/python-multiprocessing-overflowerrorcannot-serialize-a-bytes-object-larger-t
     ctx = torch.multiprocessing.get_context()
     ctx.reducer = pickle4reducer.Pickle4Reducer()
+
+    global DEBUG
+    DEBUG = config.debug_mode if hasattr(config, "debug_mode") else False
+    print("Debugging Mode: ", DEBUG)
 
     is_distributed = init_distributed(args)
     print("Using distributed:", is_distributed)
@@ -646,10 +653,6 @@ def main(args):
         config.opt.n_iters_per_epoch_val = config.opt.n_objects_per_epoch_val // config.opt.val_batch_size
     else:
         config.opt.n_iters_per_epoch_val = None
-
-    global DEBUG
-    DEBUG = config.debug_mode if hasattr(config, "debug_mode") else False
-    print("Debugging Mode: ", DEBUG)
 
     model = {
         "ransac": RANSACTriangulationNet,
