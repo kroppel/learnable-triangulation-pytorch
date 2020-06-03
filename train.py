@@ -269,11 +269,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
         if is_train and config.opt.n_iters_per_epoch is not None:
             iterator = islice(iterator, config.opt.n_iters_per_epoch)
 
-        if not is_train:
-            iterator = islice(iterator, 2)
-
-        if not is_train and config.opt.n_iters_per_epoch_val is not None:
-            print("yay?")
+        if not is_train and config.opt.n_objects_per_epoch_val is not None:
             iterator = islice(iterator, config.opt.n_iters_per_epoch_val)
 
         '''
@@ -646,6 +642,10 @@ def main(args):
     # config
     config = cfg.load_config(args.config)
     config.opt.n_iters_per_epoch = config.opt.n_objects_per_epoch // config.opt.batch_size
+    if hasattr(config.opt, "n_objects_per_epoch_val"):
+        config.opt.n_iters_per_epoch_val = config.opt.n_objects_per_epoch_val // config.opt.val_batch_size
+    else:
+        config.opt.n_iters_per_epoch_val = None
 
     global DEBUG
     DEBUG = config.debug_mode if hasattr(config, "debug_mode") else False
@@ -731,11 +731,6 @@ def main(args):
             # print("CUDA Cache Empty!")
 
             n_iters_total_train = one_epoch(model, criterion, opt, config, train_dataloader, device, epoch, n_iters_total=n_iters_total_train, is_train=True, master=master, experiment_dir=experiment_dir, writer=writer)
-
-            '''
-            while not training_complete:
-                pass
-            '''
 
             if DEBUG:
                 print(f"Epoch {epoch} training complete!")
