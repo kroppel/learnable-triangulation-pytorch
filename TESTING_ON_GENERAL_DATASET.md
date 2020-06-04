@@ -22,24 +22,25 @@ There are actually 3 main parts that one is required to do before to fully do te
   - [Data Organisation](#data-organisation)
     - [Images](#images)
     - [Camera Calibration Data](#camera-calibration-data)
-    - [Pose Data (Needed for training, and volumetric triangulation testing)](#pose-data-needed-for-training-and-volumetric-triangulation-testing)
+    - [Pose Data (needed for training, and volumetric triangulation testing)](#pose-data-needed-for-training-and-volumetric-triangulation-testing)
   - [Generating bounding boxes](#generating-bounding-boxes)
     - [Algorithm for BBOXes](#algorithm-for-bboxes)
     - [BBOX Labels File](#bbox-labels-file)
+  - [Needed Python Scripts](#needed-python-scripts)
+    - [Labels Generation Script](#labels-generation-script)
+    - [BBOX Generation Script](#bbox-generation-script)
 
 # 1. Generating the Labels
 
 ## Requirements
 
-For testing, you will need the following data:
-
-For training, see [these requirements](TRAINING_ON_GENERAL_DATASET.md#requirements)
+For testing (and training), you will need the following data:
 
 ## Data Organisation
 
 Preferably, the data should be organised similar to that of the CMU Panoptic Studio dataset, where the data is grouped by `action/scene` > `camera` > `person`.
 
-Specifically, it would be good if the data is organised as below. Of course, the data does not necessarily have to be in the exact format; you would just need to make the appropriate changes to the respective label generation and dataset subclass files.
+Specifically, it would be good if the data is organised as below. Of course, the data does not necessarily have to be in the exact format; you would just need to make the appropriate changes to the respective [label generation](#labels-generation-script) and dataset subclass files.
 
 ### Images
 
@@ -75,7 +76,7 @@ The JSON data should have this format, with the camera IDs in their appropriate 
 
 More information on distortion coefficients [here](#https://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html).
 
-### Pose Data (Needed for training, and volumetric triangulation testing)
+### Pose Data (needed for training, and volumetric triangulation testing)
 
 `$DIR_ROOT/[ACTION_NAME]/3DKeypoints_[FRAME_ID].json`
 
@@ -99,5 +100,16 @@ There are 2 inherent parts to this: the algorithm (MRCNN or SSD) to figure out t
 
 ### Algorithm for BBOXes
 
+This repository does not contain any algorithm to detect persons in the scene. For now, you need to find your own. Popular algorithms include Mask-RCNN (MRCNN) and Single Shot Detectors (SSD). Current SOTA include [Detectron2](https://github.com/facebookresearch/detectron2) and [MM Detection](https://github.com/open-mmlab/mmdetection).
+
+The data should ideally be organised by **action/scene** > **camera ID** > **person ID** with a JSON file containing an array of BBOXes in order of frame number.
 
 ### BBOX Labels File
+
+A python script is needed to consolidate the bouding box labels. More information is given [below](#bbox-generation-script)
+
+## Needed Python Scripts
+
+### Labels Generation Script
+
+### BBOX Generation Script
