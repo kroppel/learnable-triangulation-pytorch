@@ -269,7 +269,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
         if is_train and config.opt.n_iters_per_epoch is not None:
             iterator = islice(iterator, config.opt.n_iters_per_epoch)
 
-        if not is_train and config.opt.n_objects_per_epoch_val is not None:
+        if not is_train and config.opt.n_iters_per_epoch_val is not None:
             iterator = islice(iterator, config.opt.n_iters_per_epoch_val)
 
         '''
@@ -650,6 +650,7 @@ def main(args):
 
     # config
     config.opt.n_iters_per_epoch = config.opt.n_objects_per_epoch // config.opt.batch_size
+    
     if hasattr(config.opt, "n_objects_per_epoch_val"):
         config.opt.n_iters_per_epoch_val = config.opt.n_objects_per_epoch_val // config.opt.val_batch_size
     else:
