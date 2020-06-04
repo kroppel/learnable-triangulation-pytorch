@@ -6,26 +6,98 @@ Note that this document only entails **testing** on a general dataset. If you wo
 
 ## Overview
 
-There are actually 2 main parts that are required before to fully do testing/training:
+There are actually 3 main parts that one is required to do before to fully do testing/training:
 
-1. Generate a labels file (`.npy`) file containing all the necessary data the algorithm needs, as listed in the [requirements](#requirements) section below. This is done using a `generate labels.py` file, specific to the dataset and [how the data is organised](#data-organisation).
-2. A subclass of the pytorch `Dataset` class that loads information specific to your dataset, as organised in your npy labels file.
+1. Generate a labels file (`.npy`) file containing all the necessary data the algorithm needs, as listed in the [requirements](#requirements) section below. This is done using a `generate labels.py` file under `mvn/datasets/<your_dataset>`, specific to the dataset and [how the data is organised](#data-organisation). 
+
+   Part of this label file generation will also include generating a consolidated `npy` file with the BBOX data. This may be done separately using another python script.
+
+2. Create a subclass of the pytorch `Dataset` class that loads information specific to your dataset, as organised in your npy labels file. This should be in `mvn/datasets/`
+3. Create config files under the `experiments` folder that tell the algorithm how to handle your data.
+
+- [Testing on a General Dataset](#testing-on-a-general-dataset)
+  - [Overview](#overview)
+- [1. Generating the Labels](#1-generating-the-labels)
+  - [Requirements](#requirements)
+  - [Data Organisation](#data-organisation)
+    - [Images](#images)
+    - [Camera Calibration Data](#camera-calibration-data)
+    - [Pose Data (Needed for training, and volumetric triangulation testing)](#pose-data-needed-for-training-and-volumetric-triangulation-testing)
+  - [Generating bounding boxes](#generating-bounding-boxes)
+    - [Algorithm for BBOXes](#algorithm-for-bboxes)
+    - [BBOX Labels File](#bbox-labels-file)
+
+# 1. Generating the Labels
 
 ## Requirements
 
 For testing, you will need the following data:
 
-- Images (not videos) for each frame
-- Camera extrinsics: `R, t, K, dist_coefficient` components of camera matrix for each camera
-- Bounding boxes for individual persons *(see (Generating bounding boxes)[#generating-bounding-boxes])*
-- *Ground truth/predicted pelvis positions (optional, for volumetric only)*
-
 For training, see [these requirements](TRAINING_ON_GENERAL_DATASET.md#requirements)
 
 ## Data Organisation
 
-Preferably, 
+Preferably, the data should be organised similar to that of the CMU Panoptic Studio dataset, where the data is grouped by `action/scene` > `camera` > `person`.
+
+Specifically, it would be good if the data is organised as below. Of course, the data does not necessarily have to be in the exact format; you would just need to make the appropriate changes to the respective label generation and dataset subclass files.
+
+### Images
+
+`$DIR_ROOT/[ACTION_NAME]/hdImgs/[CAMERA_ID]/[FRAME_ID].jpg`
+
+### Camera Calibration Data
+
+`$DIR_ROOT/[ACTION_NAME]/calibration_[ACTION_NAME].json`
+
+The JSON data should have this format, with the camera IDs in their appropriate order, or labelled accordingly:
+
+```json
+[
+    {
+        'id':   0 // optional
+        'R':    [3x3 rotation matrix],
+        'k':    [3x3 calibration/instrinsics matrix]
+        't':    [3x1 translation matrix]
+        'dist': [5x1 distortion coefficients]
+    },
+    {
+        'id':   1 // optional
+        'R':    [3x3 rotation matrix],
+        'k':    [3x3 calibration/instrinsics matrix]
+        't':    [3x1 translation matrix]
+        'dist': [5x1 distortion coefficients]
+    },
+    {
+        ...
+    }
+]
+```
+
+More information on distortion coefficients [here](#https://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html).
+
+### Pose Data (Needed for training, and volumetric triangulation testing)
+
+`$DIR_ROOT/[ACTION_NAME]/3DKeypoints_[FRAME_ID].json`
+
+The JSON data should have this notable format:
+
+```json
+[
+    {
+        'id':     [PERSON_ID],
+        'joints': [ARRAY OF JOINT COORDINATES IN COCO 19 FORMAT]
+    },
+    {
+        ...
+    }
+]
+```
 
 ## Generating bounding boxes
 
-WIP
+There are 2 inherent parts to this: the algorithm (MRCNN or SSD) to figure out the actual bounding boxes; and the generation of a labels file that consolidates the said data into a single labels file.
+
+### Algorithm for BBOXes
+
+
+### BBOX Labels File
