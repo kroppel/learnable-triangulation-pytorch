@@ -29,6 +29,8 @@ There are actually 3 main parts that one is required to do before to fully do te
   - [Needed Python Scripts](#needed-python-scripts)
     - [Labels Generation Script](#labels-generation-script)
     - [BBOX Generation Script](#bbox-generation-script)
+- [2. Dataset Subclass](#2-dataset-subclass)
+- [3. Config Files](#3-config-files)
 
 # 1. Generating the Labels
 
@@ -115,3 +117,14 @@ I have included a template python script for a dataset called `ExampleDataset` w
 ### Labels Generation Script
 
 ### BBOX Generation Script
+
+
+# 2. Dataset Subclass
+
+An example of the dataset subclass is found in `./mvn/datasets/example_dataset.py`. Just follow the `TODO` comments in the `example_dataset.py` file and modify accordingly.
+
+# 3. Config Files
+
+There are also appropriate `.yaml` config files to be found that require appropriate modification in `./experiments/example` folder that the above subclass file uses. Again, follow the `TODO` comments in the respective YAML files.
+
+In particular, 
