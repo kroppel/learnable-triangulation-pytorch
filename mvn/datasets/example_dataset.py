@@ -85,7 +85,7 @@ class Example(Dataset):
         for i, camera_name in enumerate(self.labels['camera_names']):
             camera_id = int(camera_name.replace("_", ""))
 
-            assert camera_id < self.total_cameras, "The CMU dataset only has 31 cameras in total. Please change your config file!"
+            assert camera_id < self.total_cameras, f"The example dataset only has {self.total_cameras} cameras in total. Please change your config file!"
 
             if (len(choose_cameras) <= 0) or (camera_id in choose_cameras):
                 if camera_id not in ignore_cameras:
@@ -96,7 +96,7 @@ class Example(Dataset):
         
         assert len(self.choose_cameras) >= 1, "You must choose at least 1 camera!"
 
-        # Get these from the config file?
+        # Get these from the frames config file, if it exists
         self.frames_split = self.read_frames_split_file(frames_split_file)
 
         # Prune based on action names from split
@@ -111,6 +111,7 @@ class Example(Dataset):
                     for ranges in self.frames_split['train'][action]:
                         full_ranges += list(range(ranges[0], ranges[1]))
 
+                    # TODO: Change according to naming conventions in labels generation files
                     action_idx = self.labels['action_names'].index(action)
                     submask = np.isin(self.labels['table']['action_idx'], [action_idx], assume_unique=True)
                     submask &= np.isin(self.labels['table']['frame_name'], full_ranges, assume_unique=True)
@@ -128,6 +129,7 @@ class Example(Dataset):
                     for ranges in self.frames_split['val'][action]:
                         full_ranges += list(range(ranges[0], ranges[1]))
 
+                    # TODO: Change according to naming conventions in labels generation files
                     action_idx = self.labels['action_names'].index(action)
                     submask = np.isin(self.labels['table']['action_idx'], [action_idx], assume_unique=True)
                     submask &= np.isin(self.labels['table']['frame_name'], full_ranges, assume_unique=True)
@@ -165,10 +167,14 @@ class Example(Dataset):
             
         self.labels['table'] = self.labels['table'][np.concatenate(indices)]
 
+        # TODO: Update according to num_keypoints
         self.num_keypoints = 19
 
         assert self.labels['table']['keypoints'].shape[1] == self.num_keypoints, "Error with keypoints in 'labels' file"
 
+        # TODO: It is possible that you do not have pre-processed/ground 3D keypoints
+        #   If you don't have them, make sure to comment out the config.dataset.[train|val].pred_results_path
+        #   This is needed mainly because the volumetric algorithm needs it for building the cuboid for unprojection
         self.keypoints_3d_pred = None
         if pred_results_path is not None:
             pred_results = np.load(pred_results_path, allow_pickle=True)
@@ -218,6 +224,7 @@ class Example(Dataset):
         return len(self.labels['table'])
 
     def __getitem__(self, idx):
+        # TOOD: Change according to naming conventions
         sample = defaultdict(list) # return value
         shot = self.labels['table'][idx]
 
@@ -246,6 +253,7 @@ class Example(Dataset):
             
             bbox = scale_bbox(bbox, self.scale_bbox)
 
+            # TODO: Change according to dataset paths
             # load image
             # $DIR_ROOT/[action_NAME]/hdImgs/[VIEW_ID]/[VIEW_ID]_[FRAME_ID].jpg
             # NOTE: pad with 0s using {frame_idx:08}
