@@ -289,8 +289,10 @@ class Example(Dataset):
             # Maybe remove to save space? 
             # sample['proj_matrices'].append(retval_camera.projection)
 
+        # TODO: Can remove or modify depending on whether your dataset has ground truth
         # 3D keypoints (with real confidences, cos CMU)
-        sample['keypoints_3d'] = np.array(shot['keypoints'][:self.num_keypoints])
+        if 'keypoints' in shot:
+            sample['keypoints_3d'] = np.array(shot['keypoints'][:self.num_keypoints])
         
         # build cuboid
         # base_point = sample['keypoints_3d'][6, :3]
@@ -308,7 +310,7 @@ class Example(Dataset):
         sample.default_factory = None
         return sample
 
-    # TODO: Need to check this
+    # TODO: May be able to modify/remove if your dataset doesn't have ground truth data
     def evaluate_using_per_pose_error(self, per_pose_error, split_by_subject):
         def evaluate_by_actions(self, per_pose_error, mask=None):
             if mask is None:
