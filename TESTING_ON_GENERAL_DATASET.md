@@ -110,6 +110,8 @@ A python script is needed to consolidate the bouding box labels. More informatio
 
 ## Needed Python Scripts
 
+I have included a template python script for a dataset called `ExampleDataset` which can be modified accordingly for your use. Parts which require attention have been marked with `TODO` statements
+
 ### Labels Generation Script
 
 ### BBOX Generation Script
