@@ -127,4 +127,4 @@ An example of the dataset subclass is found in `./mvn/datasets/example_dataset.p
 
 There are also appropriate `.yaml` config files to be found that require appropriate modification in `./experiments/example` folder that the above subclass file uses. Again, follow the `TODO` comments in the respective YAML files.
 
-In particular, 
+In particular, there is an `example_frames.yaml` file which allows you to specify the train/val splits by action > person > frames. This is an optional file.

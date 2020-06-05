@@ -1,5 +1,5 @@
-title: "cmu_vol_softmax"
-kind: "cmu"
+title: "example_vol_softmax"
+kind: "example"
 vis_freq: 1000
 vis_n_elements: 10
 
@@ -27,15 +27,15 @@ opt:
 
   scale_keypoints_3d: 1.0
 
-  frames_split_file: './experiments/cmupanoptic/cmu_frames.yaml'
+  frames_split_file: './experiments/example/example_frames.yaml'
 
 model:
   name: "vol"
-  kind: "cmu"
+  kind: "example"
   volume_aggregation_method: "softmax"
 
   init_weights: true
-  checkpoint: "./logs/cmu/train/checkpoints/epoch5-weights.pth"
+  checkpoint: "./logs/example/train/checkpoints/epoch5-weights.pth"
 
   use_gt_pelvis: true
 
@@ -60,11 +60,11 @@ model:
     num_layers: 152
 
 dataset:
-  kind: "cmu"
+  kind: "example"
 
   train:
-    cmu_root: "./data/cmupanoptic"
-    labels_path: "./data/cmupanoptic/cmu-multiview-labels-MRCNNbboxes.npy"
+    example_root: "./data/example"
+    labels_path: "./data/example/example-multiview-labels-MRCNNbboxes.npy"
     # pred_results_path: "./data/pretrained/human36m/human36m_alg_10-04-2019/checkpoints/0060/results/train.pkl"
 
     with_damaged_actions: true
@@ -95,8 +95,8 @@ dataset:
       - 29 
       
   val:
-    cmu_root: "./data/cmupanoptic"
-    labels_path: "./data/cmupanoptic/cmu-multiview-labels-MRCNNbboxes.npy"
+    example_root: "./data/example"
+    labels_path: "./data/example/example-multiview-labels-MRCNNbboxes.npy"
     # pred_results_path: "./data/pretrained/human36m/human36m_alg_10-04-2019/checkpoints/0060/results/val.pkl"
 
     undistort_images: true

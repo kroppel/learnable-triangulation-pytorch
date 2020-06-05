@@ -1,5 +1,5 @@
-title: "cmu_alg"
-kind: "cmu"
+title: "example_alg"
+kind: "example"
 pred_kind: "human36m"
 
 vis_freq: 1000
@@ -26,7 +26,7 @@ model:
   name: "alg"
 
   init_weights: true
-  checkpoint: "./data/pretrained/cmu/cmu_alg_10-04-2019/checkpoints/0060/weights.pth"
+  checkpoint: "./data/pretrained/example/example_alg_10-04-2019/checkpoints/0060/weights.pth"
 
   use_confidences: true
   heatmap_multiplier: 100.0
@@ -37,18 +37,18 @@ model:
     style: "simple"
 
     init_weights: true
-    transfer_cmu_to_human36m: true
-    checkpoint: "./data/pretrained/cmu/pose_resnet_4.5_pixels_cmu.pth"
+    transfer_example_to_human36m: true
+    checkpoint: "./data/pretrained/example/pose_resnet_4.5_pixels_example.pth"
 
     num_joints: 17
     num_layers: 152
 
 dataset:
-  kind: "cmu"
+  kind: "example"
 
   train:
-    cmu_root: "./data/cmupanoptic/"
-    labels_path: "./data/cmupanoptic/cmu-multiview-labels-MRCNNbboxes.npy" 
+    example_root: "./data/example/"
+    labels_path: "./data/example/example-multiview-labels-MRCNNbboxes.npy" 
     with_damaged_actions: true
     undistort_images: true
 
@@ -69,8 +69,8 @@ dataset:
     num_workers: 8
 
   val:
-    cmu_root: "./data/cmupanoptic"
-    labels_path: "./data/cmupanoptic/cmu-multiview-labels-MRCNNbboxes.npy"
+    example_root: "./data/example"
+    labels_path: "./data/example/example-multiview-labels-MRCNNbboxes.npy"
 
     undistort_images: true
     choose_cameras:
