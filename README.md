@@ -2,7 +2,9 @@
 
 # Learnable Triangulation of Human Pose
 
-This repository is an official PyTorch implementation of the paper ["Learnable Triangulation of Human Pose"](https://arxiv.org/abs/1905.05754) (ICCV 2019, oral). Here we tackle the problem of 3D human pose estimation from multiple cameras. We present 2 novel methods — Algebraic and Volumetric learnable triangulation — that **outperform** previous state of the art.
+This repository aims to extend the capabilities of the [original repository](https://github.com/karfly/learnable-triangulation-pytorch) with the CMU dataset. See [here](#cmu-panoptic) for more details!
+
+The [original repository](https://github.com/karfly/learnable-triangulation-pytorch) is the official PyTorch implementation of the paper ["Learnable Triangulation of Human Pose"](https://arxiv.org/abs/1905.05754) (ICCV 2019, oral). Here we tackle the problem of 3D human pose estimation from multiple cameras. We present 2 novel methods — Algebraic and Volumetric learnable triangulation — that **outperform** previous state of the art.
 
 If you find a bug, have a question or know to improve the code - please open an issue!
 
@@ -24,6 +26,8 @@ pip install -r requirements.txt
 
 *Note:* only [Human3.6M](http://vision.imar.ro/human3.6m/description.php) dataset training/evaluation is available right now. [CMU Panoptic](http://domedb.perception.cs.cmu.edu/) dataset will be added soon.
 
+**UPDATE:** Evaluation of the CMU Panoptic Studio Dataset is no longer WIP. I have been able to successfully test the dataset based on pre-trained weights from Human3.6M, and the volumetric triangulation algorithm. More discussion [here](https://github.com/karfly/learnable-triangulation-pytorch/issues/75) and results [here](CMU_EVAL_RESULTS.md). Currently working on the training of the CMU dataset!
+
 **UPDATE:** You can now download pretrained labels and data from my Google drive [here](https://drive.google.com/drive/folders/1WkLo1k-ZLqaWm02alvl82OiuRNWG_7Kq?usp=sharing), with supplementary data and weights from the original author's Google drive [here](https://drive.google.com/open?id=1TGHBfa9LsFPVS5CH6Qkcy5Jr2QsJdPEa) 
 
 #### Human3.6M
@@ -32,7 +36,7 @@ pip install -r requirements.txt
 2. Download pretrained backbone's weights from [here](https://drive.google.com/open?id=1TGHBfa9LsFPVS5CH6Qkcy5Jr2QsJdPEa) and place them here: `./data/pretrained/human36m/pose_resnet_4.5_pixels_human36m.pth` (ResNet-152 trained on COCO dataset and finetuned jointly on MPII and Human3.6M).
 3. If you want to train Volumetric model, you need rough estimations of the pelvis' 3D positions both for train and val splits. In the paper we estimate them using the Algebraic model. You can use the [pretrained](#model-zoo) Algebraic model to produce predictions or just take [precalculated 3D skeletons](#model-zoo).
 
-#### CMU Panoptic (WIP)
+#### CMU Panoptic
 
 1. Download and preprocess the dataset by following the instructions in [mvn/datasets/cmu_preprocessing/README.md](https://github.com/Samleo8/learnable-triangulation-pytorch/blob/master/mvn/datasets/cmu_preprocessing/README.md).
 2. The config files can be found at `$THIS_REPOSITORY/experiements/[train|eval]/cmupanoptic`
@@ -40,7 +44,7 @@ pip install -r requirements.txt
 
 #### General Datasets
 
-I tried to create documentation on how you can create your own general dataset [here](https://github.com/Samleo8/learnable-triangulation-pytorch/blob/master/TESTING_ON_GENERAL_DATASET.md). I was able to evaluate the CMU Panoptic dataset using the same ideas, and an example of that is seen above [here](#cmu-panoptic-wip).
+I tried to create documentation on how you can create your own general dataset [here](https://github.com/Samleo8/learnable-triangulation-pytorch/blob/master/TESTING_ON_GENERAL_DATASET.md). I was able to evaluate the CMU Panoptic dataset using the same ideas, and an example of that is seen above [here](#cmu-panoptic).
 
 ## Model zoo
 
