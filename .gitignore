@@ -12,7 +12,6 @@ mvn/datasets/cmu_preprocessing/cmu-bboxes.npy
 data/*
 logs/*
 results/*
-eval_images/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
