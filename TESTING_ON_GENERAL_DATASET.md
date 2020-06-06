@@ -141,7 +141,7 @@ Feel free to add more options into the config files, and then change the `train.
 
 # 4. Modifying `train.py`
 
-After setting up your dataset subclass and config files, you need to let the `train.py` file "know about" your new dataset. If you directly run your dataset config files, you will get a `NotImplementedError`, which you need to fix by implementing your dataset. In this example, we are assuming that you dataset is named as `example`.
+After setting up your dataset subclass and config files, you need to let the `train.py` file "know about" your new dataset. If you directly run your dataset config files, you will get a `NotImplementedError`, which you need to fix by implementing your dataset. In this example, we are assuming that you dataset is named as `example`; this name is set in the [config files](#3-config-files) above.
 
 ## Setup Dataloaders function
 
@@ -159,3 +159,29 @@ elif config.dataset.kind == 'example':
     train_dataloader, val_dataloader, train_sampler = setup_example_dataloaders(config, is_train, distributed_train)
 ```
 
+Then, you will need to create the actual `setup_example_dataloaders` function. This is a literal copy pasta of the `setup_cmu_dataloaders` function, with modifications to the names of the [dataset subclasses](#2-dataset-subclass):
+
+```python
+def setup_cmu_dataloaders(config, is_train, distributed_train):
+    train_dataloader = None
+    if is_train:
+        # train
+        train_dataset = example_dataset.ExampleDataset(
+            example_root=config.dataset.train.example_root,
+            # ...
+        )
+
+        # ...
+
+    # val
+    val_dataset = example_dataset.ExampleDataset(
+        example_root=config.dataset.train.example_root,
+        #...
+    )
+
+    # ...
+
+    return train_dataloader, val_dataloader, train_sampler
+```
+
+Note that it does not matter whether or not you have keypoint ground truth data, or whether you intend to use it for training or not. The code will just ignore it later accordingly.
