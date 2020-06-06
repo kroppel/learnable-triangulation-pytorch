@@ -195,6 +195,9 @@ def setup_dataloaders(config, is_train=True, distributed_train=False):
         train_dataloader, val_dataloader, train_sampler = setup_human36m_dataloaders(config, is_train, distributed_train)
     elif config.dataset.kind in ['cmu', 'cmupanoptic']:
         train_dataloader, val_dataloader, train_sampler = setup_cmu_dataloaders(config, is_train, distributed_train)
+    elif config.dataset.kind == 'example':
+        raise NotImplementedError("Please follow instructions at TESTING_ON_GENERAL_DATASET.md to implement your dataset")
+        # train_dataloader, val_dataloader, train_sampler = setup_example_dataloaders(config, is_train, distributed_train)
     else:
         raise NotImplementedError("Unknown dataset: {}".format(config.dataset.kind))
 

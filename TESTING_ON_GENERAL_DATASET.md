@@ -33,6 +33,7 @@ There are actually 4 main parts that one is required to do before to fully do te
 - [2. Dataset Subclass](#2-dataset-subclass)
 - [3. Config Files](#3-config-files)
 - [4. Modifying `train.py`](#4-modifying-trainpy)
+  - [Setup Dataloaders function](#setup-dataloaders-function)
 
 # 1. Generating the Labels
 
@@ -59,21 +60,21 @@ The JSON data should have this format, with the camera IDs in their appropriate 
 ```json
 [
     {
-        'id':   0 // optional
-        'R':    [3x3 rotation matrix],
-        'k':    [3x3 calibration/instrinsics matrix]
-        't':    [3x1 translation matrix]
-        'dist': [5x1 distortion coefficients]
+        'id':   0, // optional
+        'R':    [ /* 3x3 rotation matrix */ ],
+        'k':    [ /* 3x3 calibration/instrinsics matrix */ ],
+        't':    [ /* 3x1 translation matrix */ ],
+        'dist': [ /* 5x1 distortion coefficients */ ]
     },
     {
-        'id':   1 // optional
-        'R':    [3x3 rotation matrix],
-        'k':    [3x3 calibration/instrinsics matrix]
-        't':    [3x1 translation matrix]
-        'dist': [5x1 distortion coefficients]
+        'id':   1, // optional
+        'R':    [ /* 3x3 rotation matrix */ ],
+        'k':    [ /* 3x3 calibration/instrinsics matrix */ ],
+        't':    [ /* 3x1 translation matrix */ ],
+        'dist': [ /* 5x1 distortion coefficients */ ]
     },
     {
-        ...
+        // ...
     }
 ]
 ```
@@ -89,11 +90,11 @@ The JSON data should have this notable format:
 ```json
 [
     {
-        'id':     [PERSON_ID],
-        'joints': [ARRAY OF JOINT COORDINATES IN COCO 19 FORMAT]
+        'id':     [ /* PERSON_ID */ ],
+        'joints': [ /* ARRAY OF JOINT COORDINATES IN COCO 19 FORMAT */ ]
     },
     {
-        ...
+        // ...
     }
 ]
 ```
@@ -140,5 +141,21 @@ Feel free to add more options into the config files, and then change the `train.
 
 # 4. Modifying `train.py`
 
-After setting up your dataset subclass and config files, you need to let the `train.py` file "know about" your new dataset. If you directly run your dataset config files, you will get a `NotImplementedError`, which you need to fix by implementing your dataset. 
+After setting up your dataset subclass and config files, you need to let the `train.py` file "know about" your new dataset. If you directly run your dataset config files, you will get a `NotImplementedError`, which you need to fix by implementing your dataset. In this example, we are assuming that you dataset is named as `example`.
+
+## Setup Dataloaders function
+
+The first thing you need to do is to `import` your [dataset subclass](#2-dataset-subclass) at the top of `train.py`:
+
+```python
+from mvn.datasets import human36m, cmupanoptic, example # name of your dataset
+```
+
+After that, you need to setup your dataset for loading. Under the `setup_dataloaders` function, you need to add the following:
+
+```python
+# Change according to name of dataset
+elif config.dataset.kind == 'example':
+    train_dataloader, val_dataloader, train_sampler = setup_example_dataloaders(config, is_train, distributed_train)
+```
 
