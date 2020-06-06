@@ -16,6 +16,8 @@ $ python3 generate-lables-npy.py <path/to/data> <path/to/bbox-npy-file> <number-
 Example (default):
 $ python3 generate-lables-npy.py $THIS_REPOSITORY/data/example $THIS_REPOSITORY/data/example/example-bboxes.npy 4
 """
+
+# TODO: If your files are not in JSON format, need to change parser accordingly
 def jsonToDict(filename):
     # Read file
     with open(filename, 'r') as f:
@@ -62,6 +64,7 @@ assert os.path.isdir(example_root), "Invalid data directory '%s'\n%s" % (example
 # of better formatted data, with 
 # key: camera name, value: dictionary of intrinsics
 def parseCameraData(filename):
+    # TODO: If your files are not in JSON format, need to change parser accordingly
     info_array = jsonToDict(filename)['cameras']
     data = {}
 
@@ -89,7 +92,7 @@ def parsePersonData(filename):
     info_array = jsonToDict(filename)['bodies']
     people_array = []
 
-    # TODO: Modify according to JSON formatting
+    # TODO: Modify according to how data is formatted in JSON
     for person_data in info_array:
         D = {}
         D['joints'] = parseJointsData(person_data['joints19'])
@@ -99,13 +102,15 @@ def parsePersonData(filename):
     
     return people_array
 
+
+# TODO: Modify according to how data is formatted
 def parseBBOXData(bbox_dir):
     bboxes = np.load(bbox_dir, allow_pickle=True).item()
 
     return bboxes
 
 
-# TODO: Modify according to BBOX
+# TODO: Modify according to BBOX Source
 if BBOXES_SOURCE == 'MRCNN':
     print(f"Loading bbox data from {bbox_root}...")
 
@@ -119,7 +124,7 @@ else:
     # NOTE: If you are not using the provided MRCNN detections, you have to implement the parser yourself
     raise NotImplementedError
 
-# TODO: Update accordingly
+# TODO: Update according to how data is organised
 # In CMU data everything is by pose, not by person/subject
 # NOTE: Calibration data for CMU is different for every pose, although only slightly :(
 data_by_pose = {}
@@ -140,6 +145,7 @@ def get_frames_data(images_dir_cam, camera_name):
 # TODO: Update according to data format/organisation
 # Loop thru directory files and find scene names
 for action_name in os.listdir(example_root):
+    # TODO: Update according to naming conventions (folder level)
     # Make sure that this is actually a scene
     # and not sth like 'scripts' or 'matlab'
     if '_pose' not in action_name:
@@ -156,6 +162,7 @@ for action_name in os.listdir(example_root):
         continue
 
     # Retrieve camera calibration data
+    # TODO: Update according to naming conventions (file and folder level)
     calibration_file = os.path.join(action_dir, f'calibration_{action_name}.json')
 
     if not os.path.isfile(calibration_file):
@@ -170,6 +177,8 @@ for action_name in os.listdir(example_root):
     # Otherwise have missing data/images --> ignore
     frame_cnt = {}
     camera_names = []
+
+    # TODO: Update according to naming conventions (file and folder level)
     person_data_path = os.path.join(action_dir, 'hdPose3d_stage1_coco19')
 
     if not os.path.isdir(person_data_path):
@@ -177,11 +186,13 @@ for action_name in os.listdir(example_root):
             print(f"{person_data_path} does not exist")
         continue
 
+    # TODO: Update according to naming conventions (file and folder level)
     for frame_name in os.listdir(person_data_path):
         frame_name = frame_name.replace(
             'body3DScene_', '').replace('.json', '')
         frame_cnt[frame_name] = 1
 
+    # TODO: Update according to naming conventions (file and folder level)
     # Find the cameras
     images_dir = os.path.join(action_dir, 'hdImgs')
 
@@ -215,6 +226,7 @@ for action_name in os.listdir(example_root):
         if frame_cnt[frame_name] == 1 + len(camera_names):
             valid_frames.append(frame_name)
 
+            # TODO: Update according to naming conventions (file level)
             person_data_filename = os.path.join(
                 person_data_path, f'body3DScene_{frame_name}.json')
             person_data_arr = parsePersonData(person_data_filename)
@@ -249,6 +261,10 @@ retval['cameras'] = np.empty(
         ('dist', np.float32, 5)
     ]
 )
+
+# TODO: Update according to how your data is organised
+# TODO: and what data exists (or doesn't)
+# TODO: for example, you may not have ground truth keypoints
 
 # Now that we have collated the data into easier-to-parse ways
 # Need to reorganise data into return values needed for dataset class 
@@ -285,17 +301,6 @@ def load_table_segment(data, action_idx, action_name):
     # NOTE: Also an array, of size len(cameras)
     table_segment['bbox_by_camera_tlbr'] = 0
 
-    '''
-    for camera_idx, camera_name in enumerate(retval['camera_names']):
-        for bbox, frame_nm in zip(table_segment['bbox_by_camera_tlbr'], data['valid_frames']):
-            try:
-                bbox[camera_idx] = bbox_data[action_name][camera_name][int(frame_nm)]
-            except KeyError:
-                print(f"Missing bbox data {action_name}, {camera_name}.. Ignoring")
-                missing_data.append((action_name, camera_name))
-                bbox[camera_idx] = [0,0,0,0,0]
-    '''
-
     for frame_idx, frame_name in enumerate(data['valid_frames']):
         person_data_arr = data['person_data'][frame_name]
 
@@ -323,7 +328,6 @@ def load_table_segment(data, action_idx, action_name):
                     missing_data.append((action_name, camera_name))
                     table_segment[frame_idx]['bbox_by_camera_tlbr'][camera_idx] = [0, 0, 0, 0, 0]
 
-            
     return table_segment, person_ids
 
 def save_segment_to_table(args):
@@ -343,6 +347,7 @@ for action_idx, action_name in enumerate(retval['action_names']):
     # For CMU, at most 31 cameras, so should be fast
     for camera_idx, camera_name in enumerate(data['camera_data']):
         if DEBUG: 
+            # TODO: Update according to data organisation
             print(f"{action_name}, cam {camera_name}: ({action_idx},{camera_idx})")
 
         cam_retval = retval['cameras'][action_idx][camera_idx]
@@ -351,7 +356,7 @@ for action_idx, action_name in enumerate(retval['action_names']):
         cam_retval['R'] = np.array(camera_data['R'])
         cam_retval['K'] = np.array(camera_data['K'])
         cam_retval['t'] = np.array(camera_data['t'])
-        cam_retval['dist']=np.array(camera_data['dist'])
+        cam_retval['dist'] = np.array(camera_data['dist'])
 
     if DEBUG:
         print("")
@@ -382,6 +387,7 @@ if USE_MULTIPROCESSING:
 
 retval['person_ids'] = sorted(list(retval['person_ids']))
 
+# TODO: Remove the false flag if you want to check manually
 # Check 
 if DEBUG or False:
     print("\nChecking cameras:")
