@@ -2,7 +2,7 @@
 
 # Learnable Triangulation of Human Pose
 
-This repository aims to extend the capabilities of the [original repository](https://github.com/karfly/learnable-triangulation-pytorch) with the CMU dataset. See [here](#cmu-panoptic) for more details!
+This repository aims to extend the capabilities of the [original repository](https://github.com/karfly/learnable-triangulation-pytorch) with the **CMU dataset**. See **[here](#cmu-panoptic)** for more details! Also see the [**preliminary results here**](CMU_EVAL_RESULTS.md). 
 
 The [original repository](https://github.com/karfly/learnable-triangulation-pytorch) is the official PyTorch implementation of the paper ["Learnable Triangulation of Human Pose"](https://arxiv.org/abs/1905.05754) (ICCV 2019, oral). Here we tackle the problem of 3D human pose estimation from multiple cameras. We present 2 novel methods — Algebraic and Volumetric learnable triangulation — that **outperform** previous state of the art.
 
@@ -41,6 +41,7 @@ pip install -r requirements.txt
 1. Download and preprocess the dataset by following the instructions in [mvn/datasets/cmu_preprocessing/README.md](https://github.com/Samleo8/learnable-triangulation-pytorch/blob/master/mvn/datasets/cmu_preprocessing/README.md).
 2. The config files can be found at `$THIS_REPOSITORY/experiements/[train|eval]/cmupanoptic`
 3. You can also do a quick evaluation using the provided `./eval_cmu` script
+4. You can view preliminary results [here](CMU_EVAL_RESULTS.md)
 
 #### General Datasets
 
