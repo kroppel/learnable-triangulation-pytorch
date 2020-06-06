@@ -1,14 +1,14 @@
 #!/bin/python
 
 '''
-Collate BBOX data from CMU Panoptic Dataset into a npy file
+Collate BBOX data from Example Dataset into a npy file
 '''
 
 USAGE_PROMPT="""
 $ python3 collect-bboxes-npy.py <path/to/mrcnn-detections/folder> <path/to/output/file> <1-for-debug(optional)>
 
 Example:
-$ python3 collect-bboxes-npy.py $THIS_REPOSITORY/data/pretrained/cmu/mrcnn-detections $THIS_REPOSITORY/data/pretrained/cmu
+$ python3 collect-bboxes-npy.py $THIS_REPOSITORY/data/pretrained/example/mrcnn-detections $THIS_REPOSITORY/data/pretrained/example
 """
 
 import os, sys
@@ -18,6 +18,7 @@ from collections import defaultdict
 
 DEBUG = False
 
+# TODO: If your files are not in JSON format, need to change parser accordingly
 def jsonToDict(filename):
     # Read file
     with open(filename, 'r') as f:
@@ -40,7 +41,7 @@ except:
 
 print(f"Debug mode: {DEBUG}\n")
 
-destination_file_path = os.path.join(output_dir, "cmu-bboxes.npy")
+destination_file_path = os.path.join(output_dir, "example-bboxes.npy")
 
 # BBOX Data
 def nesteddict(): return defaultdict(nesteddict)
@@ -53,11 +54,13 @@ print("Collecting BBOXes...")
 assert os.path.isdir(bbox_dir), "Invalid BBOX directory '%s'\n%s" % (bbox_dir, USAGE_PROMPT)
 
 for action_name in os.listdir(bbox_dir):
+    # TODO: Change according to your datasets naming conventions
     # Make sure that this is actually a scene
     # and not sth like 'scripts' or 'matlab'
     if '_pose' not in action_name:
         continue
 
+    # TODO: Change according to your datasets data organisation (folder level)
     bbox_action_dir = os.path.join(bbox_dir, action_name, 'mrcnn-detections')
 
     if not os.path.isdir(bbox_action_dir):
@@ -65,6 +68,8 @@ for action_name in os.listdir(bbox_dir):
 
     bbox_data[action_name] = {}
 
+    # TODO: Change according to your datasets data organisation (file level)
+    # TODO: If your files are not in JSON format, need to change parser accordingly
     for camera_name in os.listdir(bbox_action_dir):
         bbox_data_arr = jsonToDict(os.path.join(bbox_action_dir, camera_name))
 
