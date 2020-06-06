@@ -57,7 +57,7 @@ Specifically, it would be good if the data is organised as below. Of course, the
 
 The JSON data should have this format, with the camera IDs in their appropriate order, or labelled accordingly:
 
-```json
+```javascript
 [
     {
         'id':   0, // optional
@@ -87,7 +87,7 @@ More information on distortion coefficients [here](#https://docs.opencv.org/2.4/
 
 The JSON data should have this notable format:
 
-```json
+```javascript
 [
     {
         'id':     [ /* PERSON_ID */ ],
