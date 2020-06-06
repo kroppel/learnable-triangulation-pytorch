@@ -6,14 +6,15 @@ Note that this document only entails **testing** on a general dataset. If you wo
 
 ## Overview
 
-There are actually 3 main parts that one is required to do before to fully do testing/training:
+There are actually 4 main parts that one is required to do before to fully do testing/training:
 
-1. Generate a labels file (`.npy`) file containing all the necessary data the algorithm needs, as listed in the [requirements](#requirements) section below. This is done using a `generate labels.py` file under `mvn/datasets/<your_dataset>`, specific to the dataset and [how the data is organised](#data-organisation). 
+1. Generate a labels file (`.npy`) file containing all the necessary data the algorithm needs, as listed in the [requirements](#requirements) section below. This is done using a `generate labels.py` file under `mvn/datasets/<your_dataset>`, specific to the dataset and [how the data is organised](#data-organisation).
 
    Part of this label file generation will also include generating a consolidated `npy` file with the BBOX data. This may be done separately using another python script.
 
 2. Create a subclass of the pytorch `Dataset` class that loads information specific to your dataset, as organised in your npy labels file. This should be in `mvn/datasets/`
 3. Create config files under the `experiments` folder that tell the algorithm how to handle your data.
+4. Updating the train.py file
 
 - [Testing on a General Dataset](#testing-on-a-general-dataset)
   - [Overview](#overview)
@@ -31,6 +32,7 @@ There are actually 3 main parts that one is required to do before to fully do te
     - [Labels Generation Script](#labels-generation-script)
 - [2. Dataset Subclass](#2-dataset-subclass)
 - [3. Config Files](#3-config-files)
+- [4. Modifying `train.py`](#4-modifying-trainpy)
 
 # 1. Generating the Labels
 
@@ -130,4 +132,10 @@ An example of the dataset subclass is found in `./mvn/datasets/example_dataset.p
 
 There are also appropriate `.yaml` config files to be found that require appropriate modification in `./experiments/example` folder that the above subclass file uses. Again, follow the `TODO` comments in the respective YAML files. In particular, you need to update the file paths in the individual config files.
 
-In particular, there is an `example_frames.yaml` file which allows you to specify the train/val splits by action > person > frames. This is an optional file.
+In particular, there is an `example_frames.yaml` file which allows you to specify the train/val splits by action > person > frames. This is an optional file. The config files that you will most likely use are `train/vol`.
+
+Feel free to add more options into the config files, and then change the `train.py` files accordingly.
+
+# 4. Modifying `train.py`
+
+After setting up 

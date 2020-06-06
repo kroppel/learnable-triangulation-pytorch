@@ -1,10 +1,12 @@
+# Config file for volumetric triangulation algo
+
 title: "example_vol_softmax"
 kind: "example"
 vis_freq: 1000
 vis_n_elements: 10
 
+# TODO: Change accordingly
 image_shape: [384, 384]
-
 debug_mode: true
 
 opt:
@@ -18,6 +20,7 @@ opt:
 
   n_epochs: 9999
 
+  # TODO: Reduce if out of memory error 
   batch_size: 1
   val_batch_size: 5
 
@@ -27,16 +30,23 @@ opt:
 
   scale_keypoints_3d: 1.0
 
+  # TODO: Can uncomment if you don't need or want to pick the actions for train/eval via a config file
   frames_split_file: './experiments/example/example_frames.yaml'
 
 model:
   name: "vol"
-  kind: "example"
+  kind: "mpii"
   volume_aggregation_method: "softmax"
 
-  init_weights: true
-  checkpoint: "./logs/example/train/checkpoints/epoch5-weights.pth"
+  # TODO: Depends on whether you have a checkpoint to start from
+  init_weights: false
+  checkpoint: ""
+  
+  # init_weights: true
+  # checkpoint: "./logs/example/train/checkpoints/epoch5-weights.pth"
 
+  # TODO: Set to false if you don't have ground truth pelvis data
+  # TODO: Also set to false if you have pr  # TODO: Also set to false if you have pre-processed predictions, set below in `dataset.pred_results_path`
   use_gt_pelvis: true
 
   cuboid_side: 250.0
@@ -55,6 +65,7 @@ model:
     init_weights: true
     
     checkpoint: "./data/pretrained/human36m/pose_resnet_4.5_pixels_human36m.pth"
+    # TODO: Change according to the number of joints in your dataset
     num_joints: 19
 
     num_layers: 152
@@ -63,11 +74,13 @@ dataset:
   kind: "example"
 
   train:
+    # TODO: Change according to path to data and labels
     example_root: "./data/example"
     labels_path: "./data/example/example-multiview-labels-MRCNNbboxes.npy"
+
+    # TODO: Uncomment if you have (pelvis) predictions 
     # pred_results_path: "./data/pretrained/human36m/human36m_alg_10-04-2019/checkpoints/0060/results/train.pkl"
 
-    with_damaged_actions: true
     undistort_images: true
 
     scale_bbox: 1.0
@@ -78,6 +91,7 @@ dataset:
     max_n_views: null
     num_workers: 3
 
+    # TODO: Can specify cameras to use or ignore
     choose_cameras:
       - 0
       - 3  # full-view
@@ -93,13 +107,18 @@ dataset:
       - 26
       - 25
       - 29 
-      
+  
   val:
+    # TODO: Change according to path to data and labels
     example_root: "./data/example"
     labels_path: "./data/example/example-multiview-labels-MRCNNbboxes.npy"
+
+    # TODO: Uncomment if you have (pelvis) predictions
     # pred_results_path: "./data/pretrained/human36m/human36m_alg_10-04-2019/checkpoints/0060/results/val.pkl"
 
     undistort_images: true
+    
+    # TODO: Can specify cameras to use or ignore
     choose_cameras:
       - 2
       - 5
