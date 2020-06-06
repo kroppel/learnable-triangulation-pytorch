@@ -27,8 +27,8 @@ There are actually 3 main parts that one is required to do before to fully do te
     - [Algorithm for BBOXes](#algorithm-for-bboxes)
     - [BBOX Labels File](#bbox-labels-file)
   - [Needed Python Scripts](#needed-python-scripts)
-    - [Labels Generation Script](#labels-generation-script)
     - [BBOX Generation Script](#bbox-generation-script)
+    - [Labels Generation Script](#labels-generation-script)
 - [2. Dataset Subclass](#2-dataset-subclass)
 - [3. Config Files](#3-config-files)
 
@@ -112,13 +112,15 @@ A python script is needed to consolidate the bouding box labels. More informatio
 
 ## Needed Python Scripts
 
-I have included a template python script for a dataset called `ExampleDataset` which can be modified accordingly for your use. Parts which require attention have been marked with `TODO` statements
-
-### Labels Generation Script
-
+I have included a template python script for a dataset called `ExampleDataset` which can be modified accordingly for your use. Parts which require attention have been marked with `TODO` statements. The scripts are modified directly from the relevant files related to the CMU Panoptic Dataset; you can reference those scripts too.
 
 ### BBOX Generation Script
 
+Modify the `./mvn/datasets/example_preprocessing/collect-bboxes-npy.py` script. This script is used to generate an npy file that consolidates the BBOX data needed for the [labels generation script](#labels-generation-script). In the file are `TODO` statements which will point out what needs to be changed, and where.
+
+### Labels Generation Script
+
+Modify the `./mvn/datasets/example_preprocessing/generate-labels-npy.py` script. This script is used to generate an npy file containing all the information needed for the [dataset subclass python file](#2-dataset-subclass) to parse. In the file are `TODO` statements which will point out what needs to be changed, and where.
 
 # 2. Dataset Subclass
 
