@@ -124,6 +124,8 @@ Modify the `./mvn/datasets/example_preprocessing/collect-bboxes-npy.py` script. 
 
 Modify the `./mvn/datasets/example_preprocessing/generate-labels-npy.py` script. This script is used to generate an npy file containing all the information needed for the [dataset subclass python file](#2-dataset-subclass) to parse. In the file are `TODO` statements which will point out what needs to be changed, and where.
 
+In particular, note that if you only want to do testing (no training) and have no ground truth keypoint data, you have to remove the `keypoints` field accordingly.
+
 # 2. Dataset Subclass
 
 An example of the dataset subclass is found in `./mvn/datasets/example_dataset.py`. Just follow the `TODO` comments in the `example_dataset.py` file and modify accordingly.
@@ -138,4 +140,5 @@ Feel free to add more options into the config files, and then change the `train.
 
 # 4. Modifying `train.py`
 
-After setting up 
+After setting up your dataset subclass and config files, you need to let the `train.py` file "know about" your new dataset. If you directly run your dataset config files, you will get a `NotImplementedError`, which you need to fix by implementing your dataset. 
+
