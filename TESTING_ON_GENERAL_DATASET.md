@@ -32,8 +32,9 @@ There are actually 4 main parts that one is required to do before to fully do te
     - [Labels Generation Script](#labels-generation-script)
 - [2. Dataset Subclass](#2-dataset-subclass)
 - [3. Config Files](#3-config-files)
-- [4. Modifying `train.py`](#4-modifying-trainpy)
-  - [Setup Dataloaders function](#setup-dataloaders-function)
+- [4. Modifying main algorithm files](#4-modifying-main-algorithm-files)
+  - [Modifying `train.py`](#modifying-trainpy)
+  - [Modifying `triangulation.py`](#modifying-triangulationpy)
 
 # 1. Generating the Labels
 
@@ -139,11 +140,13 @@ In particular, there is an `example_frames.yaml` file which allows you to specif
 
 Feel free to add more options into the config files, and then change the `train.py` files accordingly.
 
-# 4. Modifying `train.py`
+# 4. Modifying main algorithm files
 
 After setting up your dataset subclass and config files, you need to let the `train.py` file "know about" your new dataset. If you directly run your dataset config files, you will get a `NotImplementedError`, which you need to fix by implementing your dataset. In this example, we are assuming that you dataset is named as `example`; this name is set in the [config files](#3-config-files) above.
 
-## Setup Dataloaders function
+Moreover, if you are testing using H36M as your pretrained weights, there may be some differences between your dataset and the pretrained one. This may require modifications to the other sections. For example, there may be differences in metric system (mm vs cm), or you may have different axes. See the issues [here](https://github.com/karfly/learnable-triangulation-pytorch/issues/24) and [here](https://github.com/karfly/learnable-triangulation-pytorch/issues/75) for reference.
+
+## Modifying `train.py`
 
 The first thing you need to do is to `import` your [dataset subclass](#2-dataset-subclass) at the top of `train.py`:
 
@@ -185,3 +188,21 @@ def setup_cmu_dataloaders(config, is_train, distributed_train):
 ```
 
 Note that it does not matter whether or not you have keypoint ground truth data, or whether you intend to use it for training or not. The code will just ignore it later accordingly.
+
+## Modifying `triangulation.py`
+
+It may be possible that your world coordinate system is different from that of the dataset used for the pretrained weights (Human 3.6M by default). Please refer to these issues [here](https://github.com/karfly/learnable-triangulation-pytorch/issues/24) and [here](https://github.com/karfly/learnable-triangulation-pytorch/issues/75) to check. If this is the case, you may need to change code in `triangulation.py`.
+
+In `triangulation.py`, search for the comment `# different world coordinates` or the variable `self.transfer_cmu_to_human36m`. You should find a code similar to the following.
+
+```
+# transfer
+if self.transfer_cmu_to_human36m or self.kind == "cmu":  # different world coordinates
+    coord_volume = coord_volume.permute(0, 2, 1, 3)
+    inv_idx = torch.arange(coord_volume.shape[1] - 1, -1, -1).long().to(device)
+    coord_volume = coord_volume.index_select(1, inv_idx)
+
+    # print("Using different world coordinates")
+```
+
+Similary, you need to write code which changes the world coordinates if necessary, based on the `self.kind` parameter set in the config file.
