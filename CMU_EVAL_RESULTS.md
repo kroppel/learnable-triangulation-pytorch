@@ -8,7 +8,7 @@ Below are some pictures of the evaluation results for the **volumetric triangula
 
 It is important to note that for the volumetric triangulation algorithm, a ground truth or predicted 3D position of the pelvis is needed to construct the cubiod surrounding the body. In our case, we used the **ground truth** pelvis positions.
 
-Interestingly, the algorithm worked quite well (visually) despite the transfer from H36M to CMU. However, there is an issue with the algorithm when not all cameras show the full body, as the algorithm tends to think the truncated legs are the bottom of the picture. More disucssion [here](https://github.com/karfly/learnable-triangulation-pytorch/issues/75).
+Interestingly, the algorithm worked quite well (visually) despite the transfer from H36M to CMU. However, there is an issue with the algorithm when not all cameras show the full body, as the algorithm tends to think the truncated legs are the bottom of the picture. More disucssion [here](https://github.com/karfly/learnable-triangulation-pytorch/issues/75). It is likely that due to the limitations of the H36M dataset (which does not have views where part of the body is occluded), the network pretained on H36M is not robust to partial-view occlusions. We hypothesised that if we were to train the network on the CMU dataset and purposely include partially-occluded views, the algorithm would be robust against occlusions in some views.
 
 ### All cameras showing full body
 
