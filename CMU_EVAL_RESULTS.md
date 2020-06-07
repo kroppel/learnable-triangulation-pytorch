@@ -16,8 +16,6 @@ Interestingly, the algorithm worked quite well (visually) despite the transfer f
 
 ![Pose 2](eval_images/cmu/allfull_1.png)
 
-![Pose 3](eval_images/cmu/allfull_2.png)
-
 ### Some cameras not showing full body
 
 ![Pose 4](eval_images/cmu/truncated_0.png)
