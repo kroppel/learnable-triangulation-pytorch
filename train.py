@@ -768,11 +768,19 @@ def main(args):
     print("Done.")
 
 program_count = 0
+max_program_count = 10
 
 def main_recurse(args):
     global program_count
 
+    if program_count == max_program_count:
+        return
 
+    try:
+        main(args)
+    except RuntimeError as e:
+        program_count += 1
+        main_recurse(args)
 
 if __name__ == '__main__':
     args = parse_args()
