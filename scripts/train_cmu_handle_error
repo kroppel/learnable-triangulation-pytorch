@@ -20,5 +20,6 @@ do
         cd ./logs/cmu/train
         ./change_checkpoints cmu_vol_softmax_VolumetricTriangulationNet@* $epoch
         echo "Epoch $epoch complete!" | write $WRITE_TO_USER
+        cd -
     }
 done
