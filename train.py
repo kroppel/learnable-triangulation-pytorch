@@ -592,9 +592,6 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
         for title, value in metric_dict.items():
             writer.add_scalar(f"{name}/{title}_epoch", np.mean(value), epoch)
 
-    global training_complete
-    training_complete = True
-
     print(f"Epoch {epoch} {train_eval_mode} complete!")
 
     return n_iters_total
@@ -731,9 +728,6 @@ def main(args):
             if DEBUG:
                 print(f"Training epoch {epoch}...")
 
-            global training_complete
-            training_complete = False
-
             # Cache needs to be emptied first
             # torch.cuda.empty_cache()
             # print("CUDA Cache Empty!")
@@ -773,7 +767,16 @@ def main(args):
 
     print("Done.")
 
+program_count = 0
+
+def main_recurse(args):
+    global program_count
+
+
+
 if __name__ == '__main__':
     args = parse_args()
     print("args: {}".format(args))
-    main(args)
+    
+    # main(args)
+    main_recurse(args)
