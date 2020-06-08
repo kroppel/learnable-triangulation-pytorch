@@ -615,7 +615,7 @@ def init_distributed(args):
     # BUT NOTE: Must set `NCCL_BLOCKING_WAIT=1`
     # NOTE: Timeout doesnt work
     os.environ["NCCL_BLOCKING_WAIT"] = "1"
-    os.environ['CUDA_VISIBLE_DEVICES'] = '1,2'
+    os.environ['CUDA_VISIBLE_DEVICES'] = "1,2"
     torch.distributed.init_process_group(backend="nccl", init_method="env://")
 
     if DEBUG:

@@ -8,6 +8,7 @@ fi
 
 echo "Using $N_GPU GPUs for training"
 export NCCL_DEBUG=INFO
+export CUDA_VISIBLE_DEVICES=1,2
 
 if [ N_GPU = 1 ]; then
   python3 train.py  \
