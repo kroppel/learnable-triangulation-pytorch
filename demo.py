@@ -26,7 +26,7 @@ from mvn.models.triangulation import RANSACTriangulationNet, AlgebraicTriangulat
 from mvn.models.loss import KeypointsMSELoss, KeypointsMSESmoothLoss, KeypointsMAELoss, KeypointsL2Loss, VolumetricCELoss
 
 from mvn.utils import img, multiview, op, vis, misc, cfg
-from mvn.datasets import human36m, cmupanoptic
+from mvn.datasets import human36m, cmupanoptic, example_dataset
 from mvn.datasets import utils as dataset_utils
 
 # need this to overcome overflow error with pickling
@@ -38,8 +38,6 @@ def parse_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--config", type=str, required=True, help="Path, where config file is stored")
-    parser.add_argument('--eval', action='store_true', help="If set, then only evaluation will be done")
-    parser.add_argument('--eval_dataset', type=str, default='val', help="Dataset split on which evaluate. Can be 'train' and 'val'")
 
     parser.add_argument("--local_rank", type=int, help="Local rank of the process on the node")
     parser.add_argument("--seed", type=int, default=42, help="Random seed for reproducibility")
@@ -50,41 +48,7 @@ def parse_args():
     return args
 
 
-def setup_human36m_dataloaders(config, is_train, distributed_train):
-    train_dataloader = None
-    if is_train:
-        # train
-        train_dataset = human36m.Human36MMultiViewDataset(
-            h36m_root=config.dataset.train.h36m_root,
-            pred_results_path=config.dataset.train.pred_results_path if hasattr(config.dataset.train, "pred_results_path") else None,
-            train=True,
-            test=False,
-            image_shape=config.image_shape if hasattr(config, "image_shape") else (256, 256),
-            labels_path=config.dataset.train.labels_path,
-            with_damaged_actions=config.dataset.train.with_damaged_actions,
-            scale_bbox=config.dataset.train.scale_bbox,
-            kind=config.kind,
-            undistort_images=config.dataset.train.undistort_images,
-            ignore_cameras=config.dataset.train.ignore_cameras if hasattr(config.dataset.train, "ignore_cameras") else [],
-            crop=config.dataset.train.crop if hasattr(config.dataset.train, "crop") else True,
-        )
-
-        train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset) if distributed_train else None
-
-        train_dataloader = DataLoader(
-            train_dataset,
-            batch_size=config.opt.batch_size,
-            shuffle=config.dataset.train.shuffle and (train_sampler is None), # debatable
-            sampler=train_sampler,
-            collate_fn=dataset_utils.make_collate_fn(randomize_n_views=config.dataset.train.randomize_n_views,
-                                                     min_n_views=config.dataset.train.min_n_views,
-                                                     max_n_views=config.dataset.train.max_n_views),
-            num_workers=config.dataset.train.num_workers,
-            worker_init_fn=dataset_utils.worker_init_fn,
-            pin_memory=True,
-            drop_last=False
-        )
-
+def setup_human36m_dataloaders(config):
     # val
     val_dataset = human36m.Human36MMultiViewDataset(
         h36m_root=config.dataset.val.h36m_root,
@@ -115,46 +79,10 @@ def setup_human36m_dataloaders(config, is_train, distributed_train):
         drop_last=False
     )
 
-    return train_dataloader, val_dataloader, train_sampler
+    return val_dataloader
 
 
-def setup_cmu_dataloaders(config, is_train, distributed_train):
-    train_dataloader = None
-    if is_train:
-        # train
-        train_dataset = cmupanoptic.CMUPanopticDataset(
-            cmu_root=config.dataset.train.cmu_root,
-            pred_results_path=config.dataset.train.pred_results_path if hasattr(config.dataset.train, "pred_results_path") else None,
-            train=True,
-            test=False,
-            image_shape=config.image_shape if hasattr(config, "image_shape") else (256, 256),
-            labels_path=config.dataset.train.labels_path,
-            scale_bbox=config.dataset.train.scale_bbox,
-            square_bbox=config.dataset.train.square_bbox if hasattr(config.dataset.train, "square_bbox") else True,
-            kind=config.kind,
-            transfer_cmu_to_human36m=config.model.transfer_cmu_to_human36m if hasattr(config.model, "transfer_cmu_to_human36m") else False,
-            choose_cameras=config.dataset.train.choose_cameras if hasattr(config.dataset.train, "choose_cameras") else [],
-            ignore_cameras=config.dataset.train.ignore_cameras if hasattr(config.dataset.train, "ignore_cameras") else [],
-            crop=config.dataset.train.crop if hasattr(config.dataset.train, "crop") else True,
-            frames_split_file=config.opt.frames_split_file if hasattr(config.opt, "frames_split_file") else None
-        )
-
-        train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset) if distributed_train else None
-
-        train_dataloader = DataLoader(
-            train_dataset,
-            batch_size=config.opt.batch_size,
-            shuffle=config.dataset.train.shuffle and (train_sampler is None),  # debatable
-            sampler=train_sampler,
-            collate_fn=dataset_utils.make_collate_fn(randomize_n_views=config.dataset.train.randomize_n_views,
-                                                     min_n_views=config.dataset.train.min_n_views,
-                                                     max_n_views=config.dataset.train.max_n_views),
-            num_workers=config.dataset.train.num_workers,
-            worker_init_fn=dataset_utils.worker_init_fn,
-            pin_memory=True,
-            drop_last=False
-        )
-
+def setup_cmu_dataloaders(config):
     # val
     val_dataset = cmupanoptic.CMUPanopticDataset(
         cmu_root=config.dataset.val.cmu_root,
@@ -187,25 +115,24 @@ def setup_cmu_dataloaders(config, is_train, distributed_train):
         drop_last=False
     )
 
-    return train_dataloader, val_dataloader, train_sampler
-
+    return val_dataloader
 
 def setup_dataloaders(config, is_train=True, distributed_train=False):
     if config.dataset.kind == 'human36m':
-        train_dataloader, val_dataloader, train_sampler = setup_human36m_dataloaders(config, is_train, distributed_train)
+        val_dataloader = setup_human36m_dataloaders(config)
     elif config.dataset.kind in ['cmu', 'cmupanoptic']:
-        train_dataloader, val_dataloader, train_sampler = setup_cmu_dataloaders(config, is_train, distributed_train)
+        val_dataloader = setup_cmu_dataloaders(config)
     elif config.dataset.kind == 'example':
-        raise NotImplementedError("Please follow instructions at TESTING_ON_GENERAL_DATASET.md to implement your dataset")
-        # train_dataloader, val_dataloader, train_sampler = setup_example_dataloaders(config, is_train, distributed_train)
+        raise NotImplementedError("Please follow instructions at TESTING_ON_GENERAL_DATASET.md to implement your dataset.")
+        # val_dataloader = setup_example_dataloaders(config)
     else:
         raise NotImplementedError("Unknown dataset: {}".format(config.dataset.kind))
 
-    return train_dataloader, val_dataloader, train_sampler
+    return val_dataloader
 
 
-def setup_experiment(config, model_name, is_train=True):
-    prefix = "" if is_train else "eval_"
+def setup_experiment(config, model_name):
+    prefix = "demo_"
 
     if config.title:
         experiment_title = config.title + "_" + model_name
@@ -234,14 +161,11 @@ def setup_experiment(config, model_name, is_train=True):
     return experiment_dir, writer
 
 
-def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_total=0, is_train=True, caption='', master=False, experiment_dir=None, writer=None):
+def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_total=0, caption='', master=False, experiment_dir=None, writer=None):
     name = "train" if is_train else "val"
     model_type = config.model.name
-
-    if is_train:
-        model.train()
-    else:
-        model.eval()
+    
+    model.eval()
 
     metric_dict = defaultdict(list)
 
@@ -258,19 +182,13 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
     print("Using GT Pelvis position: ", config.model.use_gt_pelvis)
     print("Using cameras: ", dataloader.dataset.choose_cameras)
     print("Debug Mode: ", DEBUG)
-    print("Training: ", is_train)
+    train_eval_mode = "Demo"
 
-    train_eval_mode = "Train" if is_train else "Eval"
-
-    # used to turn on/off gradients
-    grad_context = torch.autograd.enable_grad if is_train else torch.no_grad
-    with grad_context():
+    # no gradients as we are only testing/evaluating
+    with torch.no_grad():
         end = time.time()
 
         iterator = enumerate(dataloader)
-
-        if is_train and config.opt.n_iters_per_epoch is not None:
-            iterator = islice(iterator, config.opt.n_iters_per_epoch)
 
         if not is_train and config.opt.n_iters_per_epoch_val is not None:
             iterator = islice(iterator, config.opt.n_iters_per_epoch_val)
@@ -288,10 +206,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
         ignore_batch = [ ]
 
         for iter_i, batch in iterator:
-            if not is_train and iter_i in ignore_batch:
-                continue
-
-            if True: # with autograd.detect_anomaly():
+            with autograd.detect_anomaly():
                 # measure data loading time
                 data_time = time.time() - end
                     
@@ -309,7 +224,6 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                 if DEBUG: 
                     print("Prepared!")
                 
-
                 if DEBUG: 
                     print(f"[{train_eval_mode}, {epoch}, {iter_i}] Running {model_type} model... ", end="")
 
@@ -329,23 +243,12 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                 batch_size, n_views, image_shape = images_batch.shape[0], images_batch.shape[1], tuple(images_batch.shape[3:])
                 n_joints = keypoints_3d_pred.shape[1]
 
-                keypoints_3d_binary_validity_gt = (keypoints_3d_validity_gt > 0.0).type(torch.float32)
-
                 # Due to differences in model used, it may be possible that the gt and pred keypoints have different scales
                 # Set this difference in scaling in the config.yaml file
                 scale_keypoints_3d = config.opt.scale_keypoints_3d if hasattr(config.opt, "scale_keypoints_3d") else 1.0
-                scale_keypoints_3d_gt = config.opt.scale_keypoints_3d_gt if hasattr(config.opt, "scale_keypoints_3d_gt") else scale_keypoints_3d
 
                 # force ground truth keypoints to fit config kind
                 keypoints_gt_original = keypoints_3d_gt.clone()
-
-                if keypoints_3d_gt.shape[1] != n_joints and transfer_cmu_h36m:
-                    print(
-                        f"[Warning] Possibly due to different pretrained model type, ground truth has {keypoints_3d_gt.shape[1]} keypoints while predicted has {n_joints} keypoints"
-                    )
-                    keypoints_3d_gt = keypoints_3d_gt[:, :n_joints, :]
-                    keypoints_3d_binary_validity_gt = keypoints_3d_binary_validity_gt[
-                        :, :n_joints, :]
 
                 # 1-view case
                 # TODO: Totally remove for CMU dataset (which doesnt have pelvis-offset errors)?
@@ -357,98 +260,16 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                     elif config.kind in ["coco", "cmu", "cmupanoptic"]:
                         base_joint = 11
 
-                    keypoints_3d_gt_transformed = keypoints_3d_gt.clone()
-                    keypoints_3d_gt_transformed[:, torch.arange(n_joints) != base_joint] -= keypoints_3d_gt_transformed[:, base_joint:base_joint + 1]
-                    keypoints_3d_gt = keypoints_3d_gt_transformed
-                    
                     keypoints_3d_pred_transformed = keypoints_3d_pred.clone()
                     keypoints_3d_pred_transformed[:, torch.arange(n_joints) != base_joint] -= keypoints_3d_pred_transformed[:, base_joint:base_joint + 1]
                     keypoints_3d_pred = keypoints_3d_pred_transformed
 
-                # calculate loss
-                if DEBUG:
-                    print(f"[{train_eval_mode}, {epoch}, {iter_i}] Calculating loss... ", end="")
-
-                total_loss = 0.0
-
-                loss = criterion(
-                    keypoints_3d_pred * scale_keypoints_3d, 
-                    keypoints_3d_gt * scale_keypoints_3d, 
-                    keypoints_3d_binary_validity_gt
-                )
-                total_loss += loss
-                metric_dict[f'{config.opt.criterion}'].append(loss.item())
-
-                # volumetric ce loss
-                use_volumetric_ce_loss = config.opt.use_volumetric_ce_loss if hasattr(config.opt, "use_volumetric_ce_loss") else False
-                if use_volumetric_ce_loss:
-                    volumetric_ce_criterion = VolumetricCELoss()
-
-                    loss = volumetric_ce_criterion(coord_volumes_pred, volumes_pred, keypoints_3d_gt, keypoints_3d_binary_validity_gt)
-                    metric_dict['volumetric_ce_loss'].append(loss.item())
-
-                    weight = config.opt.volumetric_ce_loss_weight if hasattr(config.opt, "volumetric_ce_loss_weight") else 1.0
-                    total_loss += weight * loss
-
-                metric_dict['total_loss'].append(total_loss.item())
-
                 if DEBUG:
                     print("Done!")
-
-                if is_train:
-                    if DEBUG:
-                        print(f"[{train_eval_mode}, {epoch}, {iter_i}] Backpropragating... ", end="")
-
-                    opt.zero_grad()
-                    total_loss.backward()
-
-                    if hasattr(config.opt, "grad_clip"):
-                        torch.nn.utils.clip_grad_norm_(model.parameters(), config.opt.grad_clip / config.opt.lr)
-
-                    metric_dict['grad_norm_times_lr'].append(config.opt.lr * misc.calc_gradient_norm(filter(lambda x: x[1].requires_grad, model.named_parameters())))
-
-                    opt.step()
-
-                    if DEBUG:
-                        print("Done!")
 
                 # calculate metrics
                 if DEBUG:
                     print(f"[{train_eval_mode}, {epoch}, {iter_i}] Calculating metrics... ", end="")
-
-                l2 = KeypointsL2Loss()(
-                    keypoints_3d_pred * scale_keypoints_3d,
-                    keypoints_3d_gt * scale_keypoints_3d,
-                    keypoints_3d_binary_validity_gt
-                )
-                metric_dict['l2'].append(l2.item())
-
-                # base point l2
-                if base_points_pred is not None:
-                    if DEBUG:
-                        print(f"\n\tCalculating base point metric...", end="")
-
-                    base_point_l2_list = []
-                    for batch_i in range(batch_size):
-                        base_point_pred = base_points_pred[batch_i]
-
-                        if config.model.kind == "coco":
-                            base_point_gt = (keypoints_3d_gt[batch_i, 11, :3] + keypoints_3d[batch_i, 12, :3]) / 2
-                        elif config.model.kind == "mpii":
-                            base_point_gt = keypoints_3d_gt[batch_i, 6, :3]
-                        elif config.model.kind == "cmu":
-                            base_point_gt = keypoints_3d_gt[batch_i, 2, :3]
-
-                        base_point_l2_list.append(torch.sqrt(torch.sum((base_point_pred * scale_keypoints_3d - base_point_gt * scale_keypoints_3d) ** 2)).item())
-
-                    base_point_l2 = 0.0 if len(base_point_l2_list) == 0 else np.mean(base_point_l2_list)
-                    metric_dict['base_point_l2'].append(base_point_l2)
-
-                    if DEBUG:
-                        print("Done!")
-
-                if DEBUG:
-                    print("Done!")
 
                 # save answers for evalulation
                 if not is_train:
@@ -458,7 +279,6 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                     if save_extra_data:
                         extra_data['images'].append(batch['images'])
                         extra_data['detections'].append(batch['detections'])
-                        extra_data['keypoints_3d_gt'].append(batch['keypoints_3d'])
                         extra_data['cameras'].append(batch['cameras'])
 
                 # plot visualization
@@ -475,7 +295,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                         for batch_i in range(min(batch_size, config.vis_n_elements)):
                             keypoints_vis = vis.visualize_batch(
                                 images_batch, heatmaps_pred, keypoints_2d_pred, proj_matricies_batch,
-                                keypoints_gt_original, keypoints_3d_pred,
+                                None, keypoints_3d_pred,
                                 kind=vis_kind,
                                 cuboids_batch=cuboids_pred,
                                 confidences_batch=confidences_pred,
@@ -513,11 +333,6 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                                 print(p_name, p)
                                 exit()
 
-                    # dump to tensorboard per-iter loss/metric stats
-                    if is_train:
-                        for title, value in metric_dict.items():
-                            writer.add_scalar(f"{name}/{title}", value[-1], n_iters_total)
-
                     # measure elapsed time
                     batch_time = time.time() - end
                     end = time.time()
@@ -534,63 +349,6 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
 
             if DEBUG:
                 print(f"Training of epoch {epoch}, batch {iter_i} complete!")
-
-    # calculate evaluation metrics
-    if master:
-        if not is_train:
-            if DEBUG:
-                print("Calculating evaluation metrics... ", end="")
-
-            results['keypoints_3d'] = np.concatenate(
-                results['keypoints_3d'], axis=0)
-            results['indexes'] = np.concatenate(results['indexes'])
-
-            try:
-                scalar_metric, full_metric = dataloader.dataset.evaluate(results['keypoints_3d'])
-            except Exception as e:
-                print("Failed to evaluate. Reason: ", e)
-                scalar_metric, full_metric = 0.0, {}
-
-            metric_dict['dataset_metric'].append(scalar_metric)
-
-            checkpoint_dir = os.path.join(experiment_dir, "checkpoints", "{:04}".format(epoch))
-            os.makedirs(checkpoint_dir, exist_ok=True)
-            
-            if DEBUG:
-                print("Calculated!")
-
-            # dump results
-            with open(os.path.join(checkpoint_dir, "results.pkl"), 'wb') as fout:
-                if DEBUG:
-                    print(f"Dumping results to {checkpoint_dir}/results.pkl... ", end="")
-                pickle.dump(results, fout, protocol=4)
-                if DEBUG:
-                    print("Dumped!")
-
-            # dump extra data as pkl file if need to reconstruct anything
-            if save_extra_data: 
-                with open(os.path.join(checkpoint_dir, "extra_data.pkl"), 'wb') as fout:
-                    if DEBUG:
-                        print(f"Dumping extra data to {checkpoint_dir}/extra_data.pkl... ", end="")
-
-                    pickle.dump(extra_data, fout, protocol=4)
-                    
-                    if DEBUG:
-                        print("Dumped!")
-
-            # dump full metric
-            with open(os.path.join(checkpoint_dir, "metric.json".format(epoch)), 'w') as fout:
-                if DEBUG:
-                    print(f"Dumping metric to {checkpoint_dir}/metric.json... ", end="")
-                
-                json.dump(full_metric, fout, indent=4, sort_keys=True)
-                
-                if DEBUG:
-                    print("Dumped!")
-
-        # dump to tensorboard per-epoch stats
-        for title, value in metric_dict.items():
-            writer.add_scalar(f"{name}/{title}_epoch", np.mean(value), epoch)
 
     print(f"Epoch {epoch} {train_eval_mode} complete!")
 
@@ -687,84 +445,17 @@ def main(args):
     else:
         criterion = criterion_class()
 
-    # optimizer
-    opt = None
-    if not args.eval:
-        print("Optimising model...")
-        if config.model.name == "vol":
-            opt = torch.optim.Adam(
-                [{'params': model.backbone.parameters()},
-                 {'params': model.process_features.parameters(), 'lr': config.opt.process_features_lr if hasattr(config.opt, "process_features_lr") else config.opt.lr},
-                 {'params': model.volume_net.parameters(), 'lr': config.opt.volume_net_lr if hasattr(config.opt, "volume_net_lr") else config.opt.lr}
-                ],
-                lr=config.opt.lr
-            )
-        else:
-            opt = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=config.opt.lr)
-
-
-    # datasets
     print("Loading data...")
-    train_dataloader, val_dataloader, train_sampler = setup_dataloaders(config, distributed_train=is_distributed)
+    val_dataloader = setup_dataloaders(config)
 
     # experiment
     experiment_dir, writer = None, None
     if master:
-        experiment_dir, writer = setup_experiment(config, type(model).__name__, is_train=not args.eval)
+        experiment_dir, writer = setup_experiment(config, type(model).__name__)
 
-    # multi-gpu
-    if is_distributed:
-        model = DistributedDataParallel(model, device_ids=[device])
-
-    if not args.eval:
-        print(f"Performing training with {config.opt.n_epochs} total epochs...")
-
-        # train loop
-        n_iters_total_train, n_iters_total_val = 0, 0
-        for epoch in range(config.opt.n_epochs):
-            if train_sampler is not None:
-                train_sampler.set_epoch(epoch)
-
-            if DEBUG:
-                print(f"Training epoch {epoch}...")
-
-            # Cache needs to be emptied first
-            # torch.cuda.empty_cache()
-            # print("CUDA Cache Empty!")
-
-            n_iters_total_train = one_epoch(model, criterion, opt, config, train_dataloader, device, epoch, n_iters_total=n_iters_total_train, is_train=True, master=master, experiment_dir=experiment_dir, writer=writer)
-
-            if DEBUG:
-                print(f"Epoch {epoch} training complete!")
-
-                # torch.cuda.empty_cache()
-
-                print(f"Evaluating epoch {epoch}...")
-
-            n_iters_total_val = one_epoch(model, criterion, opt, config, val_dataloader, device, epoch, n_iters_total=n_iters_total_val, is_train=False, master=master, experiment_dir=experiment_dir, writer=writer)
-
-            if DEBUG:
-                print(f"Epoch {epoch} evaluation complete!")
-
-            if master:
-                checkpoint_dir = os.path.join(experiment_dir, "checkpoints", "{:04}".format(epoch))
-                os.makedirs(checkpoint_dir, exist_ok=True)
-
-                if DEBUG:
-                    print(f"Saving checkpoints to {checkpoint_dir}/weights.pth... ", end="")
-
-                torch.save(model.state_dict(), os.path.join(checkpoint_dir, "weights.pth"))
-
-                if DEBUG:
-                    print("Checkpoint saved!")
-
-            print(f"{n_iters_total_train} iters done.")
-    else:
-        if args.eval_dataset == 'train':
-            one_epoch(model, criterion, opt, config, train_dataloader, device, 0, n_iters_total=0, is_train=False, master=master, experiment_dir=experiment_dir, writer=writer)
-        else:
-            one_epoch(model, criterion, opt, config, val_dataloader, device, 0, n_iters_total=0, is_train=False, master=master, experiment_dir=experiment_dir, writer=writer)
-
+    
+    one_epoch(model, criterion, opt, config, val_dataloader, device, 0, n_iters_total=0, master=master, experiment_dir=experiment_dir, writer=writer)
+    
     print("Done.")
 
 if __name__ == '__main__':
