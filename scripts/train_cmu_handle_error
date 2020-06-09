@@ -1,7 +1,7 @@
 #!/bin/sh
 # Runs train_cmu script iteratively with error handling
 
-OFFSET=$1
+START=$1
 
 if [ -z $2 ]; then
     END=9999
@@ -9,11 +9,10 @@ else
     END=$2
 fi
 
-WRITE_TO_USER=scleong
-
 git pull && ./scripts/clear_nvidia_cache
 
-for (( epoch=$START; epoch<=$END; epoch++ ))
+epoch=$START
+while [[ $epoch -le $END ]]
 do
     git pull && ./scripts/clear_nvidia_cache
     ./scripts/train_cmu 3 || {
@@ -22,4 +21,6 @@ do
         echo "Epoch $epoch complete!" >> ~/.messages # | write $WRITE_TO_USER
         cd -
     }
+
+    ((epoch = epoch + 1))
 done
