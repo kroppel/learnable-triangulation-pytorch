@@ -13,7 +13,7 @@ WRITE_TO_USER=scleong
 
 git pull && ./scripts/clear_nvidia_cache
 
-for epoch in {$OFFSET..$END}
+for (( epoch=$START; epoch<=$END; epoch++ ))
 do
     git pull && ./scripts/clear_nvidia_cache
     ./scripts/train_cmu 3 || {
