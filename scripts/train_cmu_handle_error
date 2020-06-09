@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Runs train_cmu script iteratively with error handling
 
 START=$1
