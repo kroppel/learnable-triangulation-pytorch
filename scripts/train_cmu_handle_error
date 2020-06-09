@@ -12,7 +12,7 @@ fi
 git pull && ./scripts/clear_nvidia_cache
 
 epoch=$START
-while [[ $epoch -le $END ]]
+while [ $epoch -le $END ]
 do
     git pull && ./scripts/clear_nvidia_cache
     ./scripts/train_cmu 3 || {
