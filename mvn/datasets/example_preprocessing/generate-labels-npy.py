@@ -235,6 +235,8 @@ for action_name in os.listdir(example_root):
                 person_data_path, f'body3DScene_{frame_name}.json')
             person_data_arr = parsePersonData(person_data_filename)
 
+            # TODO: If you have no 3d ground truth, you need to find a
+            #       way to input your own person data, needed for BBOX
             person_data[frame_name] = person_data_arr
 
     del frame_cnt
