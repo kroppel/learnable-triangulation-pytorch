@@ -178,7 +178,9 @@ for action_name in os.listdir(example_root):
     frame_cnt = {}
     camera_names = []
 
+    # TODO: Should remove if 3d ground truth keypoints do not exist
     # TODO: Update according to naming conventions (file and folder level)
+    # Retrieve person 3d keypoints data (gt)
     person_data_path = os.path.join(action_dir, 'hdPose3d_stage1_coco19')
 
     if not os.path.isdir(person_data_path):
@@ -186,6 +188,7 @@ for action_name in os.listdir(example_root):
             print(f"{person_data_path} does not exist")
         continue
 
+    # TODO: Should remove if 3d ground truth keypoints do not exist
     # TODO: Update according to naming conventions (file and folder level)
     for frame_name in os.listdir(person_data_path):
         frame_name = frame_name.replace(
@@ -226,6 +229,7 @@ for action_name in os.listdir(example_root):
         if frame_cnt[frame_name] == 1 + len(camera_names):
             valid_frames.append(frame_name)
 
+            # TODO: Should remove if 3d ground truth keypoints do not exist
             # TODO: Update according to naming conventions (file level)
             person_data_filename = os.path.join(
                 person_data_path, f'body3DScene_{frame_name}.json')
