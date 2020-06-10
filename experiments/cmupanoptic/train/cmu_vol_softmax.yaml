@@ -1,6 +1,6 @@
 title: "cmu_vol_softmax"
 kind: "cmu"
-vis_freq: 1000
+vis_freq: 500
 vis_n_elements: 10
 
 image_shape: [384, 384]
