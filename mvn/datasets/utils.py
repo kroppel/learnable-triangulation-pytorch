@@ -57,14 +57,17 @@ def prepare_batch(batch, device, config, is_train=True):
     images_batch = torch.stack(images_batch, dim=0)
 
     keypoints_3d_batch_gt = None
-    keypoints_3d_validity_batch_gt
-    if 'keypoints_3d' in batch:
+    keypoints_3d_validity_batch_gt = None
+
+    try:
 
         # 3D keypoints (ground truths)
         keypoints_3d_batch_gt = torch.from_numpy(np.stack(batch['keypoints_3d'], axis=0)[:, :, :3]).float().to(device)
 
         # 3D keypoints validity (confidences)'
         keypoints_3d_validity_batch_gt = torch.from_numpy(np.stack(batch['keypoints_3d'], axis=0)[:, :, 3:]).float().to(device)
+    except KeyError:
+        print("No 3D ground truth provided.")
 
     # projection matricies
     proj_matricies_batch = torch.stack([torch.stack([torch.from_numpy(camera.projection) for camera in camera_batch], dim=0) for camera_batch in batch['cameras']], dim=0).transpose(1, 0)  # shape (batch_size, n_views, 3, 4)
