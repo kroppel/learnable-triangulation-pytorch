@@ -108,6 +108,8 @@ There are 2 inherent parts to this: the algorithm (MRCNN or SSD) to figure out t
 
 This repository does not contain any algorithm to detect persons in the scene. For now, you need to find your own. Popular algorithms include Mask-RCNN (MRCNN) and Single Shot Detectors (SSD). Current SOTA include [Detectron2](https://github.com/facebookresearch/detectron2) and [MM Detection](https://github.com/open-mmlab/mmdetection).
 
+**UPDATE:** I have used detectron to generate BBOXes for the CMU panoptic studio dance dataset [here](https://github.com/Samleo8/detectron2).
+
 The data should ideally be organised by **action/scene** > **camera ID** > **person ID** with a JSON file containing an array of BBOXes in order of frame number.
 
 ### BBOX Labels File
