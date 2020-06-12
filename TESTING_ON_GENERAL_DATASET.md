@@ -16,7 +16,7 @@ Simply run
 ```bash
 python3 train.py \
   --eval --eval_dataset val \
-  --config experiments/human36m/eval/human36m_vol_softmax.yaml \
+  --config experiments/path/to/config_file.yaml \
   --logdir ./logs
 ```
 
@@ -28,8 +28,13 @@ Simply run
 
 ```bash
 python3 demo.py \
-  --config experiments/human36m/eval/human36m_vol_softmax.yaml \
+  --config experiments/path/to/config_file.yaml \
   --logdir ./logs
 ```
 
 Argument `--eval_dataset` can be `val` or `train`. Results can be seen in `logs` directory or in the tensorboard.
+
+## Visualising Results
+
+To visualise your results, follow the instructions in the [README](README.md). You can choose to run [with](README.md#tensorboard
+) or [without]((README.md#visualising-results-without-tensorboard) tensorboard.
