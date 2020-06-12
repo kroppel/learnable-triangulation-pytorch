@@ -2,7 +2,7 @@
 
 This document aims to outline how to use the code in the repository herein on a general dataset (could be your own). For examples, see the additional code and documentation for the addition of the [CMU Panoptic Studio](http://domedb.perception.cs.cmu.edu/) dataset at [mvn/datasets/cmu_preprocessing/README.md](https://github.com/Samleo8/learnable-triangulation-pytorch/blob/master/mvn/datasets/cmu_preprocessing/README.md)
 
-Note that this document only entails the setup for a general dataset. If you would like to use your dataset for testing or training, you can consult the others document for [testing](TESTING_ON_GENERAL_DATASET.md) and [training](TRAINING_ON_GENERAL_DATASET.md) respectively.
+Note that this document only entails the setup for a general dataset. The next steps are probably to test or train your dataset; you can consult the other documents for [testing](TESTING_ON_GENERAL_DATASET.md) and [training](TRAINING_ON_GENERAL_DATASET.md) respectively.
 
 ## Overview
 
@@ -14,7 +14,7 @@ There are actually 4 main parts that one is required to do before to fully do te
 
 2. Create a subclass of the pytorch `Dataset` class that loads information specific to your dataset, as organised in your npy labels file. This should be in `mvn/datasets/`
 3. Create config files under the `experiments` folder that tell the algorithm how to handle your data.
-4. Updating the train.py file
+4. Updating the `train.py` (or `demo.py`) file
 
 - [Setup for a General Dataset](#setup-for-a-general-dataset)
   - [Overview](#overview)
@@ -35,6 +35,8 @@ There are actually 4 main parts that one is required to do before to fully do te
 - [4. Modifying main algorithm files](#4-modifying-main-algorithm-files)
   - [Modifying `train.py` or `demo.py`](#modifying-trainpy-or-demopy)
   - [Modifying `triangulation.py`](#modifying-triangulationpy)
+
+***
 
 # 1. Generating the Labels
 

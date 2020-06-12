@@ -54,7 +54,7 @@ pip install -r requirements.txt
 
 #### General Datasets
 
-I tried to create documentation on how you can create your own general dataset [here](https://github.com/Samleo8/learnable-triangulation-pytorch/blob/master/TESTING_ON_GENERAL_DATASET.md). I was able to evaluate the CMU Panoptic dataset using the same ideas, and an example of that is seen above [here](#cmu-panoptic).
+I tried to create documentation on how you can create your own general dataset [here](https://github.com/Samleo8/learnable-triangulation-pytorch/blob/master/SETUP_GENERAL_DATASET.md). You can also refer to the wiki [here](https://github.com/Samleo8/learnable-triangulation-pytorch/wiki/Setup-for-General-Datasets). I was able to evaluate the CMU Panoptic dataset using the same ideas, and an example of that is seen above [here](#cmu-panoptic).
 
 ## Model zoo
 
