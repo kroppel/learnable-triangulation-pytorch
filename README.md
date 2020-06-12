@@ -54,7 +54,9 @@ pip install -r requirements.txt
 
 #### General Datasets
 
-I tried to create documentation on how you can create your own general dataset [here](https://github.com/Samleo8/learnable-triangulation-pytorch/blob/master/SETUP_GENERAL_DATASET.md). You can also refer to the wiki [here](https://github.com/Samleo8/learnable-triangulation-pytorch/wiki/Setup-for-General-Datasets). I was able to evaluate the CMU Panoptic dataset using the same ideas, and an example of that is seen above [here](#cmu-panoptic).
+I tried to create documentation on how you can [setup](https://github.com/Samleo8/learnable-triangulation-pytorch/blob/master/SETUP_GENERAL_DATASET.md), [test](https://github.com/Samleo8/learnable-triangulation-pytorch/blob/master/TESTING_ON_GENERAL_DATASET.md) and [train](https://github.com/Samleo8/learnable-triangulation-pytorch/blob/master/tRAINING_ON_GENERAL_DATASET.md) your own general dataset. You can also refer to the wiki pages for [setup](https://github.com/Samleo8/learnable-triangulation-pytorch/wiki/Setup-for-General-Datasets) and [testing/training]. 
+
+I was able to evaluate the CMU Panoptic dataset using the same ideas, and an example of that is seen above [here](#cmu-panoptic). I'm also working on testing the CMU Panoptic dataset which does not have ground truth.
 
 ## Model zoo
 
@@ -133,13 +135,34 @@ model:
 
 Also, you can change other config parameters like `retain_every_n_frames_test`.
 
-Run:
+For H36M, run:
 
 ```bash
 python3 train.py \
   --eval --eval_dataset val \
   --config experiments/human36m/eval/human36m_vol_softmax.yaml \
   --logdir ./logs
+```
+
+or simply,
+
+```bash
+./scripts/eval_h36m
+```
+
+For CMU, run
+
+```bash
+python3 train.py \
+  --eval --eval_dataset val \
+  --config experiments/human36m/eval/human36m_vol_softmax.yaml \
+  --logdir ./logs
+```
+
+or simply,
+
+```bash
+./scripts/eval_cmu
 ```
 
 Argument `--eval_dataset` can be `val` or `train`. Results can be seen in `logs` directory or in the tensorboard.
