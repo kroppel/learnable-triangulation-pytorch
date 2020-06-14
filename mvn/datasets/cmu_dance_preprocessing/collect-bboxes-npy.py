@@ -8,7 +8,7 @@ USAGE_PROMPT="""
 $ python3 collect-bboxes-npy.py <path/to/mrcnn-detections/folder> <path/to/output/file> <1-for-debug(optional)>
 
 Example:
-$ python3 collect-bboxes-npy.py $THIS_REPOSITORY/data/pretrained/example/mrcnn-detections $THIS_REPOSITORY/data/pretrained/example
+$ python3 collect-bboxes-npy.py $THIS_REPOSITORY/data/pretrained/cmu/mrcnn-detections $THIS_REPOSITORY/data/pretrained/cmu
 """
 
 import os, sys
@@ -56,12 +56,7 @@ assert os.path.isdir(bbox_dir), "Invalid BBOX directory '%s'\n%s" % (bbox_dir, U
 for action_name in os.listdir(bbox_dir):
     # Make sure that this is actually a scene
     # and not sth like 'scripts' or 'matlab'
-    if '_pose' not in action_name:
-        continue
-
-    bbox_action_dir = os.path.join(bbox_dir, action_name, 'mrcnn-detections')
-
-    if not os.path.isdir(bbox_action_dir):
+    if '_dance' not in action_name or '_moonbaby' not in action_name:
         continue
 
     bbox_data[action_name] = {}
