@@ -35,7 +35,7 @@ model:
   volume_aggregation_method: "softmax"
 
   init_weights: true
-  checkpoint: "./logs/cmu/train/checkpoints/epoch28-weights.pth"
+  checkpoint: "./logs/cmu/train/checkpoints/epoch29-weights.pth"
 
   use_gt_pelvis: true
 
