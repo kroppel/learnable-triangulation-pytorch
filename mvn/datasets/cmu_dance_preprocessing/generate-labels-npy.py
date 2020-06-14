@@ -11,10 +11,10 @@ import json
 import pickle
 
 USAGE_PROMPT = """
-$ python3 generate-lables-npy.py <path/to/data> <path/to/bbox-npy-file> <number-of-processors> <1-for-debug(optional)>
+$ python3 generate-labels-npy.py <path/to/data> <path/to/bbox-npy-file> <number-of-processors> <1-for-debug(optional)>
 
 cmu-dance (default):
-$ python3 generate-lables-npy.py $THIS_REPOSITORY/data/cmu $THIS_REPOSITORY/data/cmu-dance/cmu-dance-bboxes.npy 4
+$ python3 generate-labels-npy.py $THIS_REPOSITORY/data/cmu $THIS_REPOSITORY/data/cmu-dance/cmu-dance-bboxes.npy 4
 """
 
 # TODO: If your files are not in JSON format, need to change parser accordingly
