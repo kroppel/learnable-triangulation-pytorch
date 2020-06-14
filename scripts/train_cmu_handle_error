@@ -15,10 +15,14 @@ epoch=$START
 while [ $epoch -le $END ]
 do
     git pull && ./scripts/clear_nvidia_cache
+
+    TIMESTAMP_START=`date +%Y-%m-%d_%H-%M-%S`
     ./scripts/train_cmu 3 || {
         cd ./logs/cmu/train
         ./change_checkpoints "cmu_vol_softmax_VolumetricTriangulationNet@*" $epoch
-        echo "Epoch $epoch complete!" >> ~/.messages # | write $WRITE_TO_USER
+
+        TIMESTAMP_END=`date +%Y-%m-%d_%H-%M-%S`
+        echo "Epoch $epoch complete! Time: $TIMESTAMP_START $TIMESTAMP_END" >> ~/.messages # | write $WRITE_TO_USER
         cd -
     }
 
