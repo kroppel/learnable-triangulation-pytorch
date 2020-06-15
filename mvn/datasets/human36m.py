@@ -145,7 +145,7 @@ class Human36MMultiViewDataset(Dataset):
             # TODO: Test with blur
             blur_size = 100
             if blur_size > 0:
-                image = cv2.blur(image, (blur_size, blur_size))
+                image = cv2.blur(image, (blur_size, blur_size), cv2.BORDER_DEFAULT)
 
             # load camera
             shot_camera = self.labels['cameras'][shot['subject_idx'], camera_idx]
