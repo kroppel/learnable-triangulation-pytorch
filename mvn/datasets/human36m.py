@@ -143,7 +143,7 @@ class Human36MMultiViewDataset(Dataset):
             image = cv2.imread(image_path)
 
             # TODO: Test with blur
-            blur_size = 10
+            blur_size = 100
             if blur_size > 0:
                 image = cv2.blur(image, (blur_size, blur_size))
 
