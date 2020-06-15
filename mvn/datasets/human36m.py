@@ -142,6 +142,11 @@ class Human36MMultiViewDataset(Dataset):
             assert os.path.isfile(image_path), '%s doesn\'t exist' % image_path
             image = cv2.imread(image_path)
 
+            # TODO: Test with blur
+            blur_size = 3
+            if blur_size > 0:
+                image = cv2.blur(img, (blur_size, blur_size))
+
             # load camera
             shot_camera = self.labels['cameras'][shot['subject_idx'], camera_idx]
             retval_camera = Camera(shot_camera['R'], shot_camera['t'], shot_camera['K'], shot_camera['dist'], camera_name)
