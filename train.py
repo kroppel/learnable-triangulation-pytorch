@@ -255,8 +255,8 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
     transfer_cmu_h36m = config.model.transfer_cmu_to_human36m if hasattr(config.model, "transfer_cmu_to_human36m") else False
 
     print("Transfer CMU to H36M: ", transfer_cmu_h36m)
-    print("Using GT Pelvis position: ", config.model.use_gt_pelvis)
-    print("Using cameras: ", dataloader.dataset.choose_cameras)
+    print("Using GT Pelvis position: ", config.model.use_gt_pelvis if hasattr(config.model, "use_gt_pelvis") else False)
+    print("Using cameras: ", dataloader.dataset.choose_cameras if hasattr(dataloader.dataset, "choose_cameras") else False)
     print("Debug Mode: ", DEBUG)
     print("Training: ", is_train)
 
