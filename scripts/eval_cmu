@@ -1,18 +1,21 @@
 #!/usr/bin/env bash
 
+LOGS_DIR=./logs/cmu/eval
+mkdir -p $LOGS_DIR
+
 if [ "$1" = "1" ]; then
   echo "Using small dataset"
 
   python3 train.py \
     --eval --eval_dataset val \
     --config experiments/cmupanoptic/eval/cmu_vol_softmax_small.yaml \
-    --logdir ./logs/cmu/eval
+    --logdir $LOGS_DIR
 else
   echo "Using main dataset"
 
   python3 train.py \
     --eval --eval_dataset val \
     --config experiments/cmupanoptic/eval/cmu_vol_softmax.yaml \
-    --logdir ./logs/cmu/eval
+    --logdir $LOGS_DIR
 fi
 

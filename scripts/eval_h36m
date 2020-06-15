@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 
+LOGS_DIR=./logs/h36m/eval
+
+mkdir -p $LOGS_DIR
+
 python3 train.py \
 --eval --eval_dataset val \
 --config experiments/human36m/eval/human36m_vol_softmax.yaml \
---logdir ./logs
+--logdir $LOGS_DIR
 
