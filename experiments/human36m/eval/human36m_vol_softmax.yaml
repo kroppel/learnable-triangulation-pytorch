@@ -4,6 +4,7 @@ vis_freq: 1000
 vis_n_elements: 10
 
 image_shape: [384, 384] # change accordingly
+debug_mode: true
 
 opt:
   criterion: "MAE"
