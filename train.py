@@ -257,7 +257,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
     print("Transfer CMU to H36M: ", transfer_cmu_h36m)
     print("Using GT Pelvis position: ", config.model.use_gt_pelvis if hasattr(config.model, "use_gt_pelvis") else False)
     print("Using cameras: ", dataloader.dataset.choose_cameras if hasattr(dataloader.dataset, "choose_cameras") else False)
-    print("Debug Mode: ", DEBUG)
+    print("Debug Mode: ", DEBU
     print("Training: ", is_train)
 
     train_eval_mode = "Train" if is_train else "Eval"
@@ -672,7 +672,7 @@ def main(args):
             new_key = key.replace("module.", "")
             state_dict[new_key] = state_dict.pop(key)
 
-        model.load_state_dict(state_dict, strict=True)
+        model.load_state_dict(state_dict, strict=False)
         print("Successfully loaded pretrained weights for whole model")
 
     # criterion
