@@ -1,6 +1,6 @@
 title: "cmu_vol_softmax"
-kind: "coco"
-# pred_kind: "human36m"
+kind: "cmu"
+pred_kind: "coco"
 vis_freq: 1000
 vis_n_elements: 10
 
