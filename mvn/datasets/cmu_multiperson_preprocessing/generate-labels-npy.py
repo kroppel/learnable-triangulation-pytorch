@@ -176,8 +176,7 @@ for action_name in os.listdir(cmu_multiperson_root):
 
     # Only frames with full count are counted
     valid_frames = []
-    person_data = {}  # by frame name
-
+    
     for frame_name in frame_cnt:
         if frame_cnt[frame_name] == 1 + len(camera_names):
             valid_frames.append(frame_name)
@@ -185,7 +184,6 @@ for action_name in os.listdir(cmu_multiperson_root):
     del frame_cnt
 
     data['valid_frames'] = sorted(valid_frames)
-    data['person_data'] = person_data
     data['camera_names'] = sorted(camera_names)
 
     # Generate camera data
