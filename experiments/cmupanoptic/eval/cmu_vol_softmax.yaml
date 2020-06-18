@@ -1,5 +1,5 @@
 title: "cmu_vol_softmax"
-kind: "cmu"
+kind: "coco"
 # pred_kind: "human36m"
 vis_freq: 1000
 vis_n_elements: 10
@@ -31,8 +31,9 @@ opt:
 
 model:
   name: "vol"
-  kind: "mpii"
-  volume_aggregation_method: "softmax"
+  kind: "coco"
+  # kind: "mpii"
+  volume_aggregation_method: "conf_norm" # "softmax"
 
   init_weights: true
   transfer_cmu_to_human36m: false
@@ -41,7 +42,7 @@ model:
 
   use_gt_pelvis: true
 
-  cuboid_side: 250.0 # 2500.0
+  cuboid_side: 250.0
 
   volume_size: 64
   volume_multiplier: 1.0
@@ -57,7 +58,7 @@ model:
     init_weights: true
     checkpoint: "./data/pretrained/human36m/pose_resnet_4.5_pixels_human36m.pth"
 
-    num_joints: 19
+    num_joints: 17
     num_layers: 152
 
 dataset:
