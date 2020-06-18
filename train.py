@@ -433,7 +433,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                         base_point_pred = base_points_pred[batch_i]
 
                         if config.model.kind == "coco":
-                            base_point_gt = (keypoints_3d_gt[batch_i, 11, :3] + keypoints_3d[batch_i, 12, :3]) / 2
+                            base_point_gt = (keypoints_3d_gt[batch_i, 11, :3] + keypoints_3d_gt[batch_i, 12, :3]) / 2
                         elif config.model.kind == "mpii":
                             base_point_gt = keypoints_3d_gt[batch_i, 6, :3]
                         elif config.model.kind == "cmu":
