@@ -339,7 +339,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                 # force ground truth keypoints to fit config kind
                 keypoints_gt_original = keypoints_3d_gt.clone()
 
-                if keypoints_3d_gt.shape[1] != n_joints and transfer_cmu_h36m:
+                if keypoints_3d_gt.shape[1] != n_joints : #and transfer_cmu_h36m:
                     print(
                         f"[Warning] Possibly due to different pretrained model type, ground truth has {keypoints_3d_gt.shape[1]} keypoints while predicted has {n_joints} keypoints"
                     )
