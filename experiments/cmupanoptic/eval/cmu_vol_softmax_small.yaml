@@ -36,8 +36,9 @@ model:
   volume_aggregation_method: "softmax"
 
   init_weights: true
-  transfer_cmu_to_human36m: true
-  checkpoint: "./data/pretrained/human36m/human36m_vol_softmax_10-08-2019/checkpoints/0040/weights.pth"   
+  transfer_cmu_to_human36m: false
+  checkpoint: "./data/pretrained/cmu/cmu_vol.pth"
+  # checkpoint: "./data/pretrained/human36m/human36m_vol_softmax_10-08-2019/checkpoints/0040/weights.pth"   
 
   use_gt_pelvis: true
 
