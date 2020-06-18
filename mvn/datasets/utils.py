@@ -60,7 +60,6 @@ def prepare_batch(batch, device, config, is_train=True):
     keypoints_3d_validity_batch_gt = None
 
     try:
-
         # 3D keypoints (ground truths)
         keypoints_3d_batch_gt = torch.from_numpy(np.stack(batch['keypoints_3d'], axis=0)[:, :, :3]).float().to(device)
 

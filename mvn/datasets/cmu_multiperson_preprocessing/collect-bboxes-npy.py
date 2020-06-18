@@ -59,6 +59,7 @@ for action_name in os.listdir(bbox_dir):
         continue
 
     bbox_data[action_name] = {}
+    bbox_action_dir = os.path.join(bbox_dir, action_name)
 
     for camera_name in os.listdir(bbox_action_dir):
         bbox_data_arr = jsonToDict(os.path.join(bbox_action_dir, camera_name))
