@@ -61,7 +61,7 @@ class CMUPanopticDataset(Dataset):
         """
         assert train or test, '`CMUPanopticDataset` must be constructed with at least ' \
                               'one of `test=True` / `train=True`'
-        assert kind in ("mpii", "cmu")
+        assert kind in ("mpii", "cmu", "coco")
 
         self.cmu_root = cmu_root
         self.labels_path = labels_path
