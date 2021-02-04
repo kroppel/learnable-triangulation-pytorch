@@ -395,6 +395,37 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
             if DEBUG:
                 print(f"Training of epoch {epoch}, batch {iter_i} complete!")
 
+    # save results file
+    if master:
+        checkpoint_dir = os.path.join(
+            experiment_dir, "checkpoints", "{:04}".format(epoch))
+        os.makedirs(checkpoint_dir, exist_ok=True)
+
+        # dump results
+        with open(os.path.join(checkpoint_dir, "results.pkl"), 'wb') as fout:
+            if DEBUG:
+                print(
+                    f"Dumping results to {checkpoint_dir}/results.pkl... ", end="")
+            pickle.dump(results, fout, protocol=4)
+            if DEBUG:
+                print("Dumped!")
+
+        # dump extra data as pkl file if need to reconstruct anything
+        if save_extra_data:
+            with open(os.path.join(checkpoint_dir, "extra_data.pkl"), 'wb') as fout:
+                if DEBUG:
+                    print(
+                        f"Dumping extra data to {checkpoint_dir}/extra_data.pkl... ", end="")
+
+                pickle.dump(extra_data, fout, protocol=4)
+
+                if DEBUG:
+                    print("Dumped!")
+
+        # dump to tensorboard per-epoch stats
+        for title, value in metric_dict.items():
+            writer.add_scalar(f"{name}/{title}_epoch", np.mean(value), epoch)
+
     print(f"Epoch {epoch} {train_eval_mode} complete!")
 
     return n_iters_total
@@ -498,6 +529,7 @@ def main(args):
     if master:
         experiment_dir, writer = setup_experiment(config, type(model).__name__)
 
+    opt = None
     one_epoch(model, criterion, opt, config, val_dataloader, device, 0,
               n_iters_total=0, master=master, experiment_dir=experiment_dir, writer=writer)
 
