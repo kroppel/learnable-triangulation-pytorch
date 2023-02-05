@@ -12,7 +12,7 @@ from mvn.utils.multiview import Camera
 from mvn.utils.img import get_square_bbox, resize_image, crop_image, normalize_image, scale_bbox
 from mvn.utils import volumetric, vis, cfg
 
-class CMUPanopticDataset(Dataset):
+class CMUPanopticPose3Dataset(Dataset):
     """
         CMU Panoptic for multiview tasks.
         Adapted from the original dataset class (human36m.py)
@@ -95,7 +95,8 @@ class CMUPanopticDataset(Dataset):
         assert len(self.choose_cameras) >= 1, "You must choose at least 1 camera!"
 
         # Get these from the config file?
-        self.frames_split = self.read_frames_split_file(frames_split_file)
+        # Fix frames split to be set in this script
+        self.frames_split = None#self.read_frames_split_file(frames_split_file)
 
         # Prune based on action names from split
         indices = []
@@ -135,12 +136,12 @@ class CMUPanopticDataset(Dataset):
                 indices.extend(np.nonzero(mask)[0])
 
             indices = [np.array(indices)]
+        # Fix data split
         else:
             train_actions = [
-                "171026_pose3", "171026_pose2", "171026_pose1", "171204_pose4",
-                "171204_pose3", "171204_pose2", "171204_pose1"
+                "171204_pose3"
             ]
-            val_actions = ["171204_pose5", "171204_pose6"]
+            val_actions = ["171204_pose3"]
 
             train_actions = [
                 self.labels['action_names'].index(x) for x in train_actions if x in self.labels['action_names']
@@ -247,6 +248,7 @@ class CMUPanopticDataset(Dataset):
             # load image
             # $DIR_ROOT/[action_NAME]/hdImgs/[VIEW_ID]/[VIEW_ID]_[FRAME_ID].jpg
             # NOTE: pad with 0s using {frame_idx:08}
+            frame_idx = frame_idx % 10
             image_path = os.path.join(
                 self.cmu_root, action, 'hdImgs',
                 camera_name, f'{camera_name}_{frame_idx:08}.jpg')

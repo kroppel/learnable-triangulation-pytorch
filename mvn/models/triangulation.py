@@ -4,6 +4,8 @@ import pickle
 import random
 
 from scipy.optimize import least_squares
+from PIL import Image
+import time
 
 import torch
 from torch import nn
@@ -32,6 +34,8 @@ class RANSACTriangulationNet(nn.Module):
 
         # forward backbone and integrate
         heatmaps, _, _, _ = self.backbone(images)
+
+
 
         # reshape back
         images = images.view(batch_size, n_views, *images.shape[1:])
@@ -159,6 +163,9 @@ class AlgebraicTriangulationNet(nn.Module):
         else:
             heatmaps, _, _, _ = self.backbone(images)
             alg_confidences = torch.ones(batch_size * n_views, heatmaps.shape[1]).type(torch.float).to(device)
+        # write heatmap to file
+        im = Image.fromarray(heatmaps[0,0,:].cpu().numpy()).convert("L")
+        im.save("heatmap_{}.jpeg".format(time.time()))
 
         heatmaps_before_softmax = heatmaps.view(batch_size, n_views, *heatmaps.shape[1:])
         keypoints_2d, heatmaps = op.integrate_tensor_2d(heatmaps * self.heatmap_multiplier, self.heatmap_softmax)
@@ -192,9 +199,9 @@ class AlgebraicTriangulationNet(nn.Module):
         except RuntimeError as e:
             print("Error: ", e)
 
-            print("confidences =", confidences_batch_pred)
+            #print("confidences =", alg_confidences)
             print("proj_matricies = ", proj_matricies)
-            print("keypoints_2d_batch_pred =", keypoints_2d_batch_pred)
+            #print("keypoints_2d_batch_pred =", keypoints_2d_batch_pred)
             exit()
 
         return keypoints_3d, keypoints_2d, heatmaps, alg_confidences

@@ -26,7 +26,7 @@ from mvn.models.triangulation import RANSACTriangulationNet, AlgebraicTriangulat
 from mvn.models.loss import KeypointsMSELoss, KeypointsMSESmoothLoss, KeypointsMAELoss, KeypointsL2Loss, VolumetricCELoss
 
 from mvn.utils import img, multiview, op, vis, misc, cfg
-from mvn.datasets import human36m, cmupanoptic
+from mvn.datasets import human36m, cmupanoptic, cmupanoptic_pose3
 from mvn.datasets import utils as dataset_utils
 
 # need this to overcome overflow error with pickling
@@ -189,14 +189,86 @@ def setup_cmu_dataloaders(config, is_train, distributed_train):
 
     return train_dataloader, val_dataloader, train_sampler
 
+def setup_cmu_pose3_dataloaders(config, is_train, distributed_train):
+    train_dataloader = None
+    if is_train:
+        # train
+        train_dataset = cmupanoptic_pose3.CMUPanopticPose3Dataset(
+            cmu_root=config.dataset.train.cmu_root,
+            pred_results_path=config.dataset.train.pred_results_path if hasattr(config.dataset.train, "pred_results_path") else None,
+            train=True,
+            test=False,
+            image_shape=config.image_shape if hasattr(config, "image_shape") else (256, 256),
+            labels_path=config.dataset.train.labels_path,
+            scale_bbox=config.dataset.train.scale_bbox,
+            square_bbox=config.dataset.train.square_bbox if hasattr(config.dataset.train, "square_bbox") else True,
+            kind=config.kind,
+            transfer_cmu_to_human36m=config.model.transfer_cmu_to_human36m if hasattr(config.model, "transfer_cmu_to_human36m") else False,
+            choose_cameras=config.dataset.train.choose_cameras if hasattr(config.dataset.train, "choose_cameras") else [],
+            ignore_cameras=config.dataset.train.ignore_cameras if hasattr(config.dataset.train, "ignore_cameras") else [],
+            crop=config.dataset.train.crop if hasattr(config.dataset.train, "crop") else True,
+            frames_split_file=config.opt.frames_split_file if hasattr(config.opt, "frames_split_file") else None
+        )
+
+        train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset) if distributed_train else None
+
+        train_dataloader = DataLoader(
+            train_dataset,
+            batch_size=config.opt.batch_size,
+            shuffle=config.dataset.train.shuffle and (train_sampler is None),  # debatable
+            sampler=train_sampler,
+            collate_fn=dataset_utils.make_collate_fn(randomize_n_views=config.dataset.train.randomize_n_views,
+                                                     min_n_views=config.dataset.train.min_n_views,
+                                                     max_n_views=config.dataset.train.max_n_views),
+            num_workers=config.dataset.train.num_workers,
+            worker_init_fn=dataset_utils.worker_init_fn,
+            pin_memory=True,
+            drop_last=False
+        )
+
+    # val
+    val_dataset = cmupanoptic_pose3.CMUPanopticPose3Dataset(
+        cmu_root=config.dataset.val.cmu_root,
+        pred_results_path=config.dataset.val.pred_results_path if hasattr(
+            config.dataset.val, "pred_results_path") else None,
+        train=False,
+        test=True,
+        image_shape=config.image_shape if hasattr(config, "image_shape") else (256, 256),
+        labels_path=config.dataset.val.labels_path,
+        retain_every_n_frames_in_test=config.dataset.val.retain_every_n_frames_in_test,
+        scale_bbox=config.dataset.val.scale_bbox,
+        square_bbox=config.dataset.val.square_bbox if hasattr(config.dataset.val, "square_bbox") else True,
+        kind=config.kind,
+        choose_cameras=config.dataset.val.choose_cameras if hasattr(config.dataset.val, "choose_cameras") else [],
+        ignore_cameras=config.dataset.val.ignore_cameras if hasattr(config.dataset.val, "ignore_cameras") else [],
+        crop=config.dataset.val.crop if hasattr(config.dataset.val, "crop") else True,
+        frames_split_file=config.opt.frames_split_file if hasattr(config.opt, "frames_split_file") else None
+    )
+
+    val_dataloader = DataLoader(
+        val_dataset,
+        batch_size=config.opt.val_batch_size if hasattr(config.opt, "val_batch_size") else config.opt.batch_size,
+        shuffle=config.dataset.val.shuffle,
+        collate_fn=dataset_utils.make_collate_fn(randomize_n_views=config.dataset.val.randomize_n_views,
+                                                 min_n_views=config.dataset.val.min_n_views,
+                                                 max_n_views=config.dataset.val.max_n_views),
+        num_workers=config.dataset.val.num_workers,
+        worker_init_fn=dataset_utils.worker_init_fn,
+        pin_memory=True,
+        drop_last=False
+    )
+
+    return train_dataloader, val_dataloader, train_sampler
+
+
 
 def setup_dataloaders(config, is_train=True, distributed_train=False):
     if config.dataset.kind == 'human36m':
         train_dataloader, val_dataloader, train_sampler = setup_human36m_dataloaders(config, is_train, distributed_train)
     elif config.dataset.kind in ['cmu', 'cmupanoptic']:
         train_dataloader, val_dataloader, train_sampler = setup_cmu_dataloaders(config, is_train, distributed_train)
-    elif config.dataset.kind == 'example':
-        raise NotImplementedError("Please follow instructions at TESTING_ON_GENERAL_DATASET.md to implement your dataset")
+    elif config.dataset.kind == 'cmu_pose3':
+        train_dataloader, val_dataloader, train_sampler = setup_cmu_pose3_dataloaders(config, is_train, distributed_train)
         # train_dataloader, val_dataloader, train_sampler = setup_example_dataloaders(config, is_train, distributed_train)
     else:
         raise NotImplementedError("Unknown dataset: {}".format(config.dataset.kind))
@@ -288,6 +360,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
         ignore_batch = [ ]
 
         for iter_i, batch in iterator:
+            print("BATCH NR {}".format(iter_i))
             if not is_train and iter_i in ignore_batch:
                 continue
 
