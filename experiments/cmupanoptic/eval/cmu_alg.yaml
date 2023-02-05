@@ -27,7 +27,7 @@ model:
 
   init_weights: true
   # checkpoint: "./data/pretrained/cmu/cmu_alg_10-04-2019/checkpoints/0060/weights.pth"
-  checkpoint: "./data/pretrained/cmu/cmu_alg.pth"
+  checkpoint: "./data/pretrained/cmu/weights_alg.pth"
 
   use_confidences: true
   heatmap_multiplier: 100.0
@@ -39,7 +39,7 @@ model:
 
     init_weights: true
     transfer_cmu_to_human36m: true
-    checkpoint: "./data/pretrained/human36m/pose_resnet_4.5_pixels_cmu.pth"
+    checkpoint: "./data/pretrained/human36m/pose_resnet_4.5_pixels_human36m.pth"
 
     num_joints: 17
     num_layers: 152
