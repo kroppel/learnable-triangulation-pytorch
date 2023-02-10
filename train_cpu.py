@@ -306,7 +306,7 @@ def setup_experiment(config, model_name, is_train=True):
     return experiment_dir, writer
 
 
-def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_total=0, is_train=True, caption='', master=False, experiment_dir=None, writer=None):
+def one_epoch(model, criterion, opt, config, dataloader, epoch, n_iters_total=0, is_train=True, caption='', master=False, experiment_dir=None, writer=None):
     name = "train" if is_train else "val"
     model_type = config.model.name
 
@@ -377,7 +377,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                     print(f"{train_eval_mode} batch {iter_i}...")
                     print(f"[{train_eval_mode}, {epoch}, {iter_i}] Preparing batch... ", end="")
 
-                images_batch, keypoints_3d_gt, keypoints_3d_validity_gt, proj_matricies_batch = dataset_utils.prepare_batch(batch, device, config)
+                images_batch, keypoints_3d_gt, keypoints_3d_validity_gt, proj_matricies_batch = dataset_utils.prepare_batch(batch, config)
 
                 if DEBUG: 
                     print("Prepared!")
@@ -670,30 +670,6 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
     return n_iters_total
 
 
-def init_distributed(args):
-    if "WORLD_SIZE" not in os.environ or int(os.environ["WORLD_SIZE"]) < 1:
-        return False
-
-    torch.cuda.set_device(args.local_rank)
-
-    assert os.environ["MASTER_PORT"], "set the MASTER_PORT variable or use pytorch launcher"
-    assert os.environ["RANK"], "use pytorch launcher and explicitly state the rank of the process"
-
-    torch.manual_seed(args.seed)
-
-    # Default timeout: 30 min
-    # BUT NOTE: Must set `NCCL_BLOCKING_WAIT=1`
-    # NOTE: Timeout doesnt work
-    os.environ["NCCL_BLOCKING_WAIT"] = "1"
-    os.environ['CUDA_VISIBLE_DEVICES'] = "1,2"
-    torch.distributed.init_process_group(backend="nccl", init_method="env://")
-
-    if DEBUG:
-        os.environ["NCCL_DEBUG"] = "INFO"
-
-    return True
-
-
 def main(args):
     print("Number of available GPUs: {}".format(torch.cuda.device_count()))
 
@@ -708,18 +684,12 @@ def main(args):
     DEBUG = config.debug_mode if hasattr(config, "debug_mode") else False
     print("Debugging Mode: ", DEBUG)
 
-    is_distributed = init_distributed(args)
+    is_distributed = False
     print("Using distributed:", is_distributed)
 
     master = True
-    if is_distributed and os.environ["RANK"]:
-        master = int(os.environ["RANK"]) == 0
-
-    if is_distributed:
-        print("Rank:", args.local_rank)
-        device = torch.device(args.local_rank)
-    else:
-        device = torch.device(0)
+    
+    device = torch.device(0)
 
     # config
     config.opt.n_iters_per_epoch = config.opt.n_objects_per_epoch // config.opt.batch_size
@@ -733,7 +703,7 @@ def main(args):
         "ransac": RANSACTriangulationNet,
         "alg": AlgebraicTriangulationNet,
         "vol": VolumetricTriangulationNet
-    }[config.model.name](config, device=device).to(device)
+    }[config.model.name](config)
 
     # NOTE: May be a bad idea to share memory since NCCL used
     # https://pytorch.org/docs/stable/distributed.html#torch.distributed.Backend
@@ -785,9 +755,6 @@ def main(args):
     if master:
         experiment_dir, writer = setup_experiment(config, type(model).__name__, is_train=not args.eval)
 
-    # multi-gpu
-    if is_distributed:
-        model = DistributedDataParallel(model, device_ids=[device])
 
     if not args.eval:
         print(f"Performing training with {config.opt.n_epochs} total epochs...")
@@ -805,7 +772,7 @@ def main(args):
             # torch.cuda.empty_cache()
             # print("CUDA Cache Empty!")
 
-            n_iters_total_train = one_epoch(model, criterion, opt, config, train_dataloader, device, epoch, n_iters_total=n_iters_total_train, is_train=True, master=master, experiment_dir=experiment_dir, writer=writer)
+            n_iters_total_train = one_epoch(model, criterion, opt, config, train_dataloader, epoch, n_iters_total=n_iters_total_train, is_train=True, master=master, experiment_dir=experiment_dir, writer=writer)
 
             if DEBUG:
                 print(f"Epoch {epoch} training complete!")
@@ -814,7 +781,7 @@ def main(args):
 
                 print(f"Evaluating epoch {epoch}...")
 
-            n_iters_total_val = one_epoch(model, criterion, opt, config, val_dataloader, device, epoch, n_iters_total=n_iters_total_val, is_train=False, master=master, experiment_dir=experiment_dir, writer=writer)
+            n_iters_total_val = one_epoch(model, criterion, opt, config, val_dataloader, epoch, n_iters_total=n_iters_total_val, is_train=False, master=master, experiment_dir=experiment_dir, writer=writer)
 
             if DEBUG:
                 print(f"Epoch {epoch} evaluation complete!")
@@ -834,9 +801,9 @@ def main(args):
             print(f"{n_iters_total_train} iters done.")
     else:
         if args.eval_dataset == 'train':
-            one_epoch(model, criterion, opt, config, train_dataloader, device, 0, n_iters_total=0, is_train=False, master=master, experiment_dir=experiment_dir, writer=writer)
+            one_epoch(model, criterion, opt, config, train_dataloader, 0, n_iters_total=0, is_train=False, master=master, experiment_dir=experiment_dir, writer=writer)
         else:
-            one_epoch(model, criterion, opt, config, val_dataloader, device, 0, n_iters_total=0, is_train=False, master=master, experiment_dir=experiment_dir, writer=writer)
+            one_epoch(model, criterion, opt, config, val_dataloader, 0, n_iters_total=0, is_train=False, master=master, experiment_dir=experiment_dir, writer=writer)
 
     print("Done.")
 
