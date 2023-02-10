@@ -1,0 +1,104 @@
+title: "cmu_pose3_vol_softmax"
+kind: "cmu_pose3"
+pred_kind: "coco"
+vis_freq: 1000
+vis_n_elements: 10
+
+debug_mode: true
+
+image_shape: [384, 384] # change accordingly
+
+opt:
+  criterion: "MAE"
+
+  use_volumetric_ce_loss: true
+  volumetric_ce_loss_weight: 0.01
+
+  n_objects_per_epoch: 100
+  n_objects_per_epoch_val: 100
+  n_epochs: 5
+
+  batch_size: 1
+  val_batch_size: 5
+
+  lr: 0.0001
+  process_features_lr: 0.001
+  volume_net_lr: 0.001
+
+  scale_keypoints_3d: 0.1
+  scale_keypoints_3d_gt: 1.0
+
+  frames_split_file: './experiments/cmupanoptic/cmu_frames.yaml'
+
+model:
+  name: "vol"
+  kind: "coco"
+  # kind: "mpii"
+  volume_aggregation_method: "conf_norm" # "softmax"
+
+  init_weights: true
+  transfer_cmu_to_human36m: false
+  checkpoint: "./data/pretrained/cmu/weights_cmu_vol.pth"
+
+  use_gt_pelvis: true
+
+  cuboid_side: 250.0
+
+  volume_size: 64
+  volume_multiplier: 1.0
+  volume_softmax: true
+
+  heatmap_softmax: true
+  heatmap_multiplier: 100.0
+
+  backbone:
+    name: "resnet152"
+    style: "simple"
+
+    init_weights: true
+    checkpoint: "./data/pretrained/human36m/pose_resnet_4.5_pixels_human36m.pth"
+
+    num_joints: 19
+    num_layers: 152
+
+dataset:
+  kind: "cmu_pose3"
+
+  train:
+    cmu_root: "./data/cmupanoptic"
+    labels_path: "./data/cmupanoptic/cmu-multiview-labels-MRCNNbboxes.npy" 
+    # pred_results_path: "./data/pretrained/human36m/human36m_alg_10-04-2019/checkpoints/0060/results/train.pkl"
+
+    with_damaged_actions: true
+    undistort_images: true
+    choose_cameras:
+      - 1
+      - 2
+
+    scale_bbox: 1.0
+
+    shuffle: true
+    randomize_n_views: false
+    min_n_views: null
+    max_n_views: null
+    num_workers: 2
+    
+  val:
+    cmu_root: "./data/cmupanoptic"
+    labels_path: "./data/cmupanoptic/cmu-multiview-labels-MRCNNbboxes.npy"
+    # pred_results_path: "./data/pretrained/human36m/human36m_alg_10-04-2019/checkpoints/0060/results/val.pkl"
+
+    undistort_images: true
+    choose_cameras:
+      - 1
+      - 2
+      
+    scale_bbox: 1.0
+
+    shuffle: false
+    randomize_n_views: false
+    min_n_views: null
+    max_n_views: null
+    num_workers: 2
+
+    retain_every_n_frames_in_test: 1
