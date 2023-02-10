@@ -427,7 +427,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
 
                     if config.kind == "human36m":
                         base_joint = 6
-                    elif config.kind in ["coco", "cmu", "cmupanoptic"]:
+                    elif config.kind in ["coco", "cmu", "cmupanoptic", "cmu_pose3"]:
                         base_joint = 11
 
                     keypoints_3d_gt_transformed = keypoints_3d_gt.clone()

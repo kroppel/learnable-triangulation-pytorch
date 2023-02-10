@@ -248,7 +248,7 @@ class CMUPanopticPose3Dataset(Dataset):
             # load image
             # $DIR_ROOT/[action_NAME]/hdImgs/[VIEW_ID]/[VIEW_ID]_[FRAME_ID].jpg
             # NOTE: pad with 0s using {frame_idx:08}
-            frame_idx = frame_idx % 10
+            # frame_idx = frame_idx % 10
             image_path = os.path.join(
                 self.cmu_root, action, 'hdImgs',
                 camera_name, f'{camera_name}_{frame_idx:08}.jpg')
