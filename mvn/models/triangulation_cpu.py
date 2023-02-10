@@ -15,14 +15,13 @@ from mvn.utils import op, multiview, img, misc, volumetric
 from mvn.models import pose_resnet
 from mvn.models.v2v import V2VModel
 
-
 class RANSACTriangulationNet(nn.Module):
-    def __init__(self, config, device='cuda:0'):
+    def __init__(self, config):
         super().__init__()
 
         config.model.backbone.alg_confidences = False
         config.model.backbone.vol_confidences = False
-        self.backbone = pose_resnet.get_pose_net(config.model.backbone, device=device)
+        self.backbone = pose_resnet.get_pose_net(config.model.backbone)
         
         self.direct_optimization = config.model.direct_optimization
 
@@ -36,7 +35,6 @@ class RANSACTriangulationNet(nn.Module):
         heatmaps, _, _, _ = self.backbone(images)
 
 
-
         # reshape back
         images = images.view(batch_size, n_views, *images.shape[1:])
         heatmaps = heatmaps.view(batch_size, n_views, *heatmaps.shape[1:])
@@ -47,7 +45,7 @@ class RANSACTriangulationNet(nn.Module):
 
         # keypoints 2d
         _, max_indicies = torch.max(heatmaps.view(batch_size, n_views, n_joints, -1), dim=-1)
-        keypoints_2d = torch.stack([max_indicies % heatmap_shape[1], max_indicies // heatmap_shape[1]], dim=-1).to(images.device)
+        keypoints_2d = torch.stack([max_indicies % heatmap_shape[1], max_indicies // heatmap_shape[1]], dim=-1)
 
         # upscale keypoints_2d, because image shape != heatmap shape
         keypoints_2d_transformed = torch.zeros_like(keypoints_2d)
@@ -68,8 +66,8 @@ class RANSACTriangulationNet(nn.Module):
                 keypoint_3d, _ = self.triangulate_ransac(current_proj_matricies, points, direct_optimization=self.direct_optimization)
                 keypoints_3d[batch_i, joint_i] = keypoint_3d
 
-        keypoints_3d = torch.from_numpy(keypoints_3d).type(torch.float).to(images.device)
-        confidences = torch.from_numpy(confidences).type(torch.float).to(images.device)
+        keypoints_3d = torch.from_numpy(keypoints_3d).type(torch.float)
+        confidences = torch.from_numpy(confidences).type(torch.float)
 
         return keypoints_3d, keypoints_2d, heatmaps, confidences
 
@@ -133,7 +131,7 @@ class RANSACTriangulationNet(nn.Module):
 
 
 class AlgebraicTriangulationNet(nn.Module):
-    def __init__(self, config, device='cuda:0'):
+    def __init__(self, config):
         super().__init__()
 
         self.use_confidences = config.model.use_confidences
@@ -144,14 +142,13 @@ class AlgebraicTriangulationNet(nn.Module):
         if self.use_confidences:
             config.model.backbone.alg_confidences = True
 
-        self.backbone = pose_resnet.get_pose_net(config.model.backbone, device=device)
+        self.backbone = pose_resnet.get_pose_net(config.model.backbone)
 
         self.heatmap_softmax = config.model.heatmap_softmax
         self.heatmap_multiplier = config.model.heatmap_multiplier
 
 
     def forward(self, images, proj_matricies, batch):
-        device = images.device
         batch_size, n_views = images.shape[:2]
 
         # reshape n_views dimension to batch dimension
@@ -162,7 +159,7 @@ class AlgebraicTriangulationNet(nn.Module):
             heatmaps, _, alg_confidences, _ = self.backbone(images)
         else:
             heatmaps, _, _, _ = self.backbone(images)
-            alg_confidences = torch.ones(batch_size * n_views, heatmaps.shape[1]).type(torch.float).to(device)
+            alg_confidences = torch.ones(batch_size * n_views, heatmaps.shape[1]).type(torch.float)
         # write heatmap to file
         im = Image.fromarray(heatmaps[0,0,:].cpu().numpy()).convert("L")
         im.save("heatmap_{}.jpeg".format(time.time()))
@@ -208,7 +205,7 @@ class AlgebraicTriangulationNet(nn.Module):
 
 
 class VolumetricTriangulationNet(nn.Module):
-    def __init__(self, config, device='cuda:0'):
+    def __init__(self, config):
         super().__init__()
 
         self.num_joints = config.model.backbone.num_joints
@@ -237,7 +234,7 @@ class VolumetricTriangulationNet(nn.Module):
         if self.volume_aggregation_method.startswith('conf'):
             config.model.backbone.vol_confidences = True
 
-        self.backbone = pose_resnet.get_pose_net(config.model.backbone, device=device)
+        self.backbone = pose_resnet.get_pose_net(config.model.backbone)
 
         for p in self.backbone.final_layer.parameters():
             p.requires_grad = False
@@ -250,7 +247,6 @@ class VolumetricTriangulationNet(nn.Module):
 
 
     def forward(self, images, proj_matricies, batch):
-        device = images.device
         batch_size, n_views = images.shape[:2]
 
         # reshape for backbone forward
@@ -282,12 +278,12 @@ class VolumetricTriangulationNet(nn.Module):
                 new_cameras[view_i][batch_i].update_after_resize(image_shape, heatmap_shape)
 
         proj_matricies = torch.stack([torch.stack([torch.from_numpy(camera.projection) for camera in camera_batch], dim=0) for camera_batch in new_cameras], dim=0).transpose(1, 0)  # shape (batch_size, n_views, 3, 4)
-        proj_matricies = proj_matricies.float().to(device)
+        proj_matricies = proj_matricies.float()
 
         # build coord volumes
         cuboids = []
-        base_points = torch.zeros(batch_size, 3, device=device)
-        coord_volumes = torch.zeros(batch_size, self.volume_size, self.volume_size, self.volume_size, 3, device=device)
+        base_points = torch.zeros(batch_size, 3)
+        coord_volumes = torch.zeros(batch_size, self.volume_size, self.volume_size, self.volume_size, 3)
         for batch_i in range(batch_size):
             # if self.use_precalculated_pelvis:
             if self.use_gt_pelvis:
@@ -302,7 +298,7 @@ class VolumetricTriangulationNet(nn.Module):
             elif self.kind == "cmu":
                 base_point = keypoints_3d[2, :3]
 
-            base_points[batch_i] = torch.from_numpy(base_point).to(device)
+            base_points[batch_i] = torch.from_numpy(base_point)
 
             # build cuboid
             # NOTE: This is part of the paper where they build the cuboid used 
@@ -314,7 +310,7 @@ class VolumetricTriangulationNet(nn.Module):
             cuboids.append(cuboid)
 
             # build coord volume
-            xxx, yyy, zzz = torch.meshgrid(torch.arange(self.volume_size, device=device), torch.arange(self.volume_size, device=device), torch.arange(self.volume_size, device=device))
+            xxx, yyy, zzz = torch.meshgrid(torch.arange(self.volume_size), torch.arange(self.volume_size), torch.arange(self.volume_size))
             grid = torch.stack([xxx, yyy, zzz], dim=-1).type(torch.float)
             grid = grid.reshape((-1, 3))
 
@@ -336,7 +332,7 @@ class VolumetricTriangulationNet(nn.Module):
             elif self.kind in ("mpii", "cmu"):
                 axis = [0, 0, 1]  # z axis
 
-            center = torch.from_numpy(base_point).type(torch.float).to(device)
+            center = torch.from_numpy(base_point).type(torch.float)
 
             # rotate
             coord_volume = coord_volume - center
@@ -346,7 +342,7 @@ class VolumetricTriangulationNet(nn.Module):
             # transfer
             if self.transfer_cmu_to_human36m or self.kind == "cmu":  # different world coordinates
                 coord_volume = coord_volume.permute(0, 2, 1, 3)
-                inv_idx = torch.arange(coord_volume.shape[1] - 1, -1, -1).long().to(device)
+                inv_idx = torch.arange(coord_volume.shape[1] - 1, -1, -1).long()
                 coord_volume = coord_volume.index_select(1, inv_idx)
 
                 # print("Using different world coordinates")

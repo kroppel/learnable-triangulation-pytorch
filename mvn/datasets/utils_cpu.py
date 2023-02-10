@@ -4,7 +4,6 @@ import torch
 from mvn.utils.img import image_batch_to_torch
 
 def make_collate_fn(randomize_n_views=True, min_n_views=10, max_n_views=31):
-
     def collate_fn(items):
         items = list(filter(lambda x: x is not None, items))
         if len(items) == 0:
@@ -46,12 +45,12 @@ def make_collate_fn(randomize_n_views=True, min_n_views=10, max_n_views=31):
 def worker_init_fn(worker_id):
     np.random.seed(np.random.get_state()[1][0] + worker_id)
 
-def prepare_batch(batch, device, config, is_train=True):
+def prepare_batch(batch, config, is_train=True):
     # images
     images_batch = []
     for image_batch in batch['images']:
         image_batch = image_batch_to_torch(image_batch)
-        image_batch = image_batch.to(device)
+        image_batch = image_batch.to
         images_batch.append(image_batch)
 
     images_batch = torch.stack(images_batch, dim=0)
@@ -61,15 +60,15 @@ def prepare_batch(batch, device, config, is_train=True):
 
     try:
         # 3D keypoints (ground truths)
-        keypoints_3d_batch_gt = torch.from_numpy(np.stack(batch['keypoints_3d'], axis=0)[:, :, :3]).float().to(device)
+        keypoints_3d_batch_gt = torch.from_numpy(np.stack(batch['keypoints_3d'], axis=0)[:, :, :3]).float()
 
         # 3D keypoints validity (confidences)'
-        keypoints_3d_validity_batch_gt = torch.from_numpy(np.stack(batch['keypoints_3d'], axis=0)[:, :, 3:]).float().to(device)
+        keypoints_3d_validity_batch_gt = torch.from_numpy(np.stack(batch['keypoints_3d'], axis=0)[:, :, 3:]).float()
     except KeyError:
         print("No 3D ground truth provided.")
 
     # projection matricies
     proj_matricies_batch = torch.stack([torch.stack([torch.from_numpy(camera.projection) for camera in camera_batch], dim=0) for camera_batch in batch['cameras']], dim=0).transpose(1, 0)  # shape (batch_size, n_views, 3, 4)
-    proj_matricies_batch = proj_matricies_batch.float().to(device)
+    proj_matricies_batch = proj_matricies_batch.float()
 
     return images_batch, keypoints_3d_batch_gt, keypoints_3d_validity_batch_gt, proj_matricies_batch
