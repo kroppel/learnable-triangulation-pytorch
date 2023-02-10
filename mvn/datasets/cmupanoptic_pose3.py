@@ -340,6 +340,7 @@ class CMUPanopticPose3Dataset(Dataset):
         
 
     def evaluate(self, keypoints_3d_predicted, split_by_subject=False):
+        # USE ONLY KEYPOINTS MATCHING THE AVAILABLE DATA
         keypoints_gt = self.labels['table']['keypoints'][:, :, :3]
 
         # Likely due to batch size problems
