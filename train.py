@@ -401,6 +401,13 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                     keypoints_3d_pred, heatmaps_pred, volumes_pred, confidences_pred, cuboids_pred, coord_volumes_pred, base_points_pred = model(images_batch, proj_matricies_batch, batch)
                 else:
                     raise NotImplementedError(f"Unknown model type {model_type}")
+                
+                if DEBUG:
+                    print("Keypoints GT: {}".format(keypoints_gt))
+                    print("Keypoints PRED: {}".format(keypoints_3d_pred))
+                    
+
+
 
                 if DEBUG:
                     print("Done!")

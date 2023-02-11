@@ -5,7 +5,7 @@ vis_n_elements: 10
 
 image_shape: [384, 384]
 
-debug_mode: false
+debug_mode: true
 
 opt:
   criterion: "MAE"
@@ -13,8 +13,8 @@ opt:
   use_volumetric_ce_loss: true
   volumetric_ce_loss_weight: 0.01
 
-  n_objects_per_epoch: 1000
-  n_objects_per_epoch_val: 5
+  n_objects_per_epoch: 1
+  n_objects_per_epoch_val: 1
 
   n_epochs: 1
 
@@ -23,7 +23,7 @@ opt:
 
   lr: 0.001 #0.0001
   process_features_lr: 0.001
-  volume_net_lr: 0.001
+  volume_net_lr: 0.01 #0.001
 
   scale_keypoints_3d: 1.0
 
