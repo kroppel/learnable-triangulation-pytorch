@@ -164,6 +164,9 @@ class CMUPanopticPose3Dataset(Dataset):
             
         self.labels['table'] = self.labels['table'][np.concatenate(indices)]
 
+        ### REDUCE KEYPOINTS
+        self.labels['table']['keypoints'] = self.labels['table']['keypoints'][0:100]
+
         self.num_keypoints = 19
 
         assert self.labels['table']['keypoints'].shape[1] == self.num_keypoints, "Error with keypoints in 'labels' file"
