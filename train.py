@@ -359,10 +359,13 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
         '''
         ignore_batch = [ ]
 
+        if config.kind == "cmu_pose3":
+            keypoints_gt = torch.zeros([config.opt.n_objects_per_epoch_val,19,3])
+
         for iter_i, batch in iterator:
             print("BATCH NR {}".format(iter_i))
             if not is_train and iter_i in ignore_batch:
-                continue
+                continue                
 
             if True: # with autograd.detect_anomaly():
                 # measure data loading time
@@ -378,6 +381,11 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                     print(f"[{train_eval_mode}, {epoch}, {iter_i}] Preparing batch... ", end="")
 
                 images_batch, keypoints_3d_gt, keypoints_3d_validity_gt, proj_matricies_batch = dataset_utils.prepare_batch(batch, device, config)
+
+                if (not is_train) and config.kind == "cmu_pose3":
+                    # MB move keypoints gt to device?
+                    # MB use first element of keypoints (Batchsize=1)
+                    keypoints_gt[iter_i,:,:] = keypoints_3d_gt
 
                 if DEBUG: 
                     print("Prepared!")
@@ -411,7 +419,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
 
                 # force ground truth keypoints to fit config kind
                 keypoints_gt_original = keypoints_3d_gt.clone()
-
+                
                 if keypoints_3d_gt.shape[1] != n_joints : #and transfer_cmu_h36m:
                     print(
                         f"[Warning] Possibly due to different pretrained model type, ground truth has {keypoints_3d_gt.shape[1]} keypoints while predicted has {n_joints} keypoints"
@@ -477,7 +485,7 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
 
                     if hasattr(config.opt, "grad_clip"):
                         torch.nn.utils.clip_grad_norm_(model.parameters(), config.opt.grad_clip / config.opt.lr)
-
+                    
                     metric_dict['grad_norm_times_lr'].append(config.opt.lr * misc.calc_gradient_norm(filter(lambda x: x[1].requires_grad, model.named_parameters())))
 
                     opt.step()
@@ -619,7 +627,10 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
             results['indexes'] = np.concatenate(results['indexes'])
 
             try:
-                scalar_metric, full_metric = dataloader.dataset.evaluate(results['keypoints_3d'])
+                if config.kind == "cmu_pose3":
+                    scalar_metric, full_metric = dataloader.dataset.evaluate(results['keypoints_3d'], keypoints_gt)
+                else:
+                    scalar_metric, full_metric = dataloader.dataset.evaluate(results['keypoints_3d'])
             except Exception as e:
                 print("Failed to evaluate. Reason: ", e)
                 scalar_metric, full_metric = 0.0, {}

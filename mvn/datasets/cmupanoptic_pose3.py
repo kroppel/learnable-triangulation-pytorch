@@ -164,9 +164,6 @@ class CMUPanopticPose3Dataset(Dataset):
             
         self.labels['table'] = self.labels['table'][np.concatenate(indices)]
 
-        ### REDUCE KEYPOINTS
-        self.labels['table']['keypoints'] = self.labels['table']['keypoints'][0:100]
-
         self.num_keypoints = 19
 
         assert self.labels['table']['keypoints'].shape[1] == self.num_keypoints, "Error with keypoints in 'labels' file"
@@ -342,9 +339,9 @@ class CMUPanopticPose3Dataset(Dataset):
         return person_scores
         
 
-    def evaluate(self, keypoints_3d_predicted, split_by_subject=False):
+    def evaluate(self, keypoints_3d_predicted, keypoints_gt, split_by_subject=False):
         # USE ONLY KEYPOINTS MATCHING THE AVAILABLE DATA
-        keypoints_gt = self.labels['table']['keypoints'][:, :, :3]
+        #keypoints_gt = self.labels['table']['keypoints'][:, :, :3]
 
         # Likely due to batch size problems
         if keypoints_3d_predicted.shape != keypoints_gt.shape:
