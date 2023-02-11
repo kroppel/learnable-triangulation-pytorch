@@ -5,7 +5,7 @@ vis_n_elements: 10
 
 image_shape: [384, 384]
 
-debug_mode: true
+debug_mode: false
 
 opt:
   criterion: "MAE"
@@ -13,13 +13,13 @@ opt:
   use_volumetric_ce_loss: true
   volumetric_ce_loss_weight: 0.01
 
-  n_objects_per_epoch: 100
+  n_objects_per_epoch: 1000
   n_objects_per_epoch_val: 5
 
-  n_epochs: 5
+  n_epochs: 1
 
   batch_size: 1
-  val_batch_size: 5
+  val_batch_size: 1
 
   lr: 0.001 #0.0001
   process_features_lr: 0.001
@@ -35,7 +35,7 @@ model:
   volume_aggregation_method: "softmax"
 
   init_weights: false
-  checkpoint: "./logs/cmu/train/checkpoints/epoch30-weights.pth"
+  checkpoint: "./data/pretrained/cmu/weights_cmu_vol.pth"
 
   use_gt_pelvis: true
 

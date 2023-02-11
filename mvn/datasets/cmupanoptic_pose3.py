@@ -311,8 +311,7 @@ class CMUPanopticPose3Dataset(Dataset):
             }
 
             for action_idx in range(len(self.labels['action_names'])):
-                action_mask = (self.labels['table']['action_idx'] == action_idx) & mask
-                action_per_pose_error = per_pose_error[action_mask]
+                action_per_pose_error = per_pose_error
                 action_scores[self.labels['action_names'][action_idx]] = {
                     'total_loss': action_per_pose_error.sum(), 'frame_count': len(action_per_pose_error)
                 }
@@ -376,7 +375,7 @@ class CMUPanopticPose3Dataset(Dataset):
                 keypoints_new.append(keypoint_new)
 
             return keypoints_new
-
+        
         #keypoints_gt = remap_keypoints(keypoints_gt, "cmu", "coco")
         #keypoints_3d_predicted = map_keypoints_cmu_to_h36m(keypoints_3d_predicted, "cmu", "coco")
 

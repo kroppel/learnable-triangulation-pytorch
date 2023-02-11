@@ -626,14 +626,13 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                 results['keypoints_3d'], axis=0)
             results['indexes'] = np.concatenate(results['indexes'])
 
-            try:
-                if config.kind == "cmu_pose3":
-                    scalar_metric, full_metric = dataloader.dataset.evaluate(results['keypoints_3d'], keypoints_gt)
-                else:
-                    scalar_metric, full_metric = dataloader.dataset.evaluate(results['keypoints_3d'])
-            except Exception as e:
-                print("Failed to evaluate. Reason: ", e)
-                scalar_metric, full_metric = 0.0, {}
+            
+            if config.kind == "cmu_pose3":
+                scalar_metric, full_metric = dataloader.dataset.evaluate(results['keypoints_3d'], keypoints_gt)
+            else:
+                scalar_metric, full_metric = dataloader.dataset.evaluate(results['keypoints_3d'])
+            
+            scalar_metric, full_metric = 0.0, {}
 
             metric_dict['dataset_metric'].append(scalar_metric)
 
