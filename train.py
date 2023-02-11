@@ -402,11 +402,18 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                 else:
                     raise NotImplementedError(f"Unknown model type {model_type}")
                 
-                if DEBUG:
+                if DEBUG and not is_train:
                     print("Keypoints GT: {}".format(keypoints_gt))
                     print("Keypoints PRED: {}".format(keypoints_3d_pred))
-                    
-
+                    print(images_batch[0,0])
+                    print(np.swapaxes(np.swapaxes(images_batch[0,0].cpu().numpy(), 0, 1), 1, 2))
+                    cv2.imwrite("img1.png", np.swapaxes(np.swapaxes(images_batch[0,0].cpu().numpy(), 0, 1), 1, 2))
+                    cv2.imwrite("img2.png", np.swapaxes(np.swapaxes(images_batch[0,1].cpu().numpy(), 0, 1), 1, 2))
+                    """for heatmap in heatmaps_pred[0,0]:
+                        cv2.imwrite("heatmap1{}.png".format(time.time()), heatmap.cpu().detach().numpy())
+                    for heatmap in heatmaps_pred[0,1]:
+                        cv2.imwrite("heatmap2{}.png".format(time.time()), heatmap.cpu().detach().numpy())
+                    """
 
 
                 if DEBUG:
