@@ -1,3 +1,4 @@
+from logging import exception
 import os
 import shutil
 import argparse
@@ -405,13 +406,15 @@ def one_epoch(model, criterion, opt, config, dataloader, device, epoch, n_iters_
                 if DEBUG and not is_train:
                     print("Keypoints GT: {}".format(keypoints_gt))
                     print("Keypoints PRED: {}".format(keypoints_3d_pred))
-                    print(images_batch.shape)
+                    print(heatmaps_pred.shape)
                     cv2.imwrite("img1.jpg", img.denormalize_image(img.image_batch_to_numpy(images_batch[0])[0]))
                     cv2.imwrite("img2.jpg", img.denormalize_image(img.image_batch_to_numpy(images_batch[0])[1]))
-                    for heatmap in heatmaps_pred[0,0]:
-                        cv2.imwrite("heatmap1{}.png".format(time.time()), img.denormalize_image(img.image_batch_to_numpy(heatmap)))
-                    for heatmap in heatmaps_pred[0,1]:
-                        cv2.imwrite("heatmap2{}.png".format(time.time()), img.denormalize_image(img.image_batch_to_numpy(heatmap)))
+                    heatmaps_numpy = heatmaps_pred[0].cpu().detach().numpy()
+                    print(heatmaps_numpy[0][6]*255.0)
+                    for j, heatmap in enumerate(heatmaps_numpy[0]):
+                        cv2.imwrite("heatmap1_{}_{}.png".format(j, time.time()), heatmap*255.0)
+                    for j, heatmap in enumerate(heatmaps_numpy[1]):
+                        cv2.imwrite("heatmap2_{}_{}.png".format(j, time.time()), heatmap*255.0)
                     
 
 
