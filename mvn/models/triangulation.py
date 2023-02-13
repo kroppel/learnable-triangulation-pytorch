@@ -10,7 +10,7 @@ import time
 import torch
 from torch import nn
 
-from mvn.utils import op, multiview, img, misc, volumetric
+from mvn.utils import op, multiview, img, misc, volumetric, vis
 
 from mvn.models import pose_resnet
 from mvn.models.v2v import V2VModel
@@ -259,6 +259,9 @@ class VolumetricTriangulationNet(nn.Module):
         # forward backbone
         heatmaps, features, _, vol_confidences = self.backbone(images)
 
+        # swap joint order!
+        #heatmaps = heatmaps
+
         # reshape back
         images = images.view(batch_size, n_views, *images.shape[1:])
         heatmaps = heatmaps.view(batch_size, n_views, *heatmaps.shape[1:])
@@ -301,6 +304,8 @@ class VolumetricTriangulationNet(nn.Module):
                 base_point = keypoints_3d[6, :3]
             elif self.kind == "cmu":
                 base_point = keypoints_3d[2, :3]
+            elif self.kind == "cmu_pose3":
+                base_point = keypoints_3d[2, :3]
 
             base_points[batch_i] = torch.from_numpy(base_point).to(device)
 
@@ -333,7 +338,7 @@ class VolumetricTriangulationNet(nn.Module):
 
             if self.kind == "coco":
                 axis = [0, 1, 0]  # y axis
-            elif self.kind in ("mpii", "cmu"):
+            elif self.kind in ("mpii", "cmu", "cmu_pose3"):
                 axis = [0, 0, 1]  # z axis
 
             center = torch.from_numpy(base_point).type(torch.float).to(device)
@@ -344,7 +349,7 @@ class VolumetricTriangulationNet(nn.Module):
             coord_volume = coord_volume + center
 
             # transfer
-            if self.transfer_cmu_to_human36m or self.kind == "cmu":  # different world coordinates
+            if self.transfer_cmu_to_human36m or self.kind == "cmu" or self.kind == "cmu_pose3":  # different world coordinates
                 coord_volume = coord_volume.permute(0, 2, 1, 3)
                 inv_idx = torch.arange(coord_volume.shape[1] - 1, -1, -1).long().to(device)
                 coord_volume = coord_volume.index_select(1, inv_idx)
