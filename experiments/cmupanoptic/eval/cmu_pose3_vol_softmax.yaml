@@ -1,6 +1,6 @@
 title: "cmu_pose3_vol_softmax"
 kind: "cmu_pose3"
-pred_kind: "coco"
+pred_kind: "cmu_pose3"
 vis_freq: 1000
 vis_n_elements: 10
 
@@ -32,7 +32,7 @@ opt:
 
 model:
   name: "vol"
-  kind: "coco"
+  kind: "cmu_pose3"
   # kind: "mpii"
   volume_aggregation_method: "conf_norm" # "softmax"
 

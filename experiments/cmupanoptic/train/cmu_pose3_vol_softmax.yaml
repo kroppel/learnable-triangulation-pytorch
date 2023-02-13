@@ -2,7 +2,7 @@ title: "cmu_pose3_vol_softmax"
 kind: "cmu_pose3"
 vis_freq: 500
 vis_n_elements: 10
-pred_kind: "cmu"
+pred_kind: "cmu_pose3"
 
 image_shape: [384, 384]
 
